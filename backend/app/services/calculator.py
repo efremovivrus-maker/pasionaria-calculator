@@ -366,6 +366,11 @@ def _calculate(
                 "MISSING_RULE",
                 f"Нельзя применить тариф операции {operation_id!r}.",
             )
+        if (
+            operation_id == "OP_021"
+            and (configuration.get("heading") or "").casefold() == "люверсы"
+        ):
+            line = {**line, "variant": "Люверсы"}
         base_lines.append(line)
         audit.setdefault("operations", []).append(line)
 

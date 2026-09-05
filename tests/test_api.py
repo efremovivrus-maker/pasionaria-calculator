@@ -154,29 +154,93 @@ class CalculationApiTests(unittest.TestCase):
         )
         self.assert_components_match_retail(economy_payload)
 
-    def test_generic_eyelets_are_controlled_unavailable(self) -> None:
-        response = self.client.post(
+    def test_generic_eyelets_alias_matches_exact_no_layer_variant(self) -> None:
+        request = {
+            "product_type": "curtain",
+            "model": "Вандер",
+            "width_cm": 140,
+            "height_cm": 270,
+            "quantity": 2,
+            "extra_operations": [],
+        }
+        alias_response = self.client.post(
             "/api/calculate",
             json={
-                "product_type": "curtain",
-                "model": "Вандер",
-                "width_cm": 140,
-                "height_cm": 270,
-                "quantity": 2,
+                **request,
                 "configuration": {"heading": "Люверсы"},
-                "extra_operations": [],
+            },
+        )
+        exact_response = self.client.post(
+            "/api/calculate",
+            json={
+                **request,
+                "configuration": {
+                    "heading": "Люверсы D35 матовое серебро, без слоя"
+                },
             },
         )
 
-        payload = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(payload["status"], "unavailable")
-        self.assertEqual(
-            payload["reason_code"],
-            "CONFIGURATION_NOT_SUPPORTED",
+        alias = alias_response.json()
+        exact = exact_response.json()
+        alias_eyelets = [
+            component
+            for component in alias["components"]
+            if component["name"] == "Люверсы"
+        ]
+        alias_component_ids = {
+            component.get("operation_id")
+            for component in alias["components"]
+        }
+        self.assertEqual(alias_response.status_code, 200)
+        self.assertEqual(exact_response.status_code, 200)
+        self.assertEqual(alias["status"], "success")
+        self.assertEqual(alias["retail_price"], exact["retail_price"])
+        self.assertEqual(alias["operation_cost"], exact["operation_cost"])
+        self.assertEqual(len(alias_eyelets), 1)
+        self.assertEqual(alias_eyelets[0]["tariff"], 660.0)
+        self.assertNotIn("OP_001", alias_component_ids)
+        self.assertNotIn("OP_043", alias_component_ids)
+        self.assert_components_match_retail(alias)
+        self.assert_components_match_retail(exact)
+
+    def test_all_exact_eyelet_variants_use_the_display_alias(self) -> None:
+        data_dir = (
+            Path(__file__).resolve().parents[1] / "backend" / "app" / "data"
         )
-        self.assertEqual(payload["details"]["field"], "heading")
-        self.assertEqual(payload["details"]["requested_value"], "Люверсы")
+        eyelet_operations = [
+            operation
+            for operation in json.loads(
+                (data_dir / "operations.json").read_text(encoding="utf-8")
+            )["records"]
+            if operation["group"] == "Крепление портьеры"
+            and operation["variant"].startswith("Люверсы")
+        ]
+
+        self.assertEqual(len(eyelet_operations), 12)
+        for operation in eyelet_operations:
+            with self.subTest(variant=operation["variant"]):
+                payload = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "curtain",
+                        "model": "Вандер",
+                        "width_cm": 140,
+                        "height_cm": 270,
+                        "quantity": 2,
+                        "configuration": {
+                            "heading": operation["variant"]
+                        },
+                    },
+                ).json()
+                eyelets = [
+                    component
+                    for component in payload["components"]
+                    if component["name"] == "Люверсы"
+                ]
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(len(eyelets), 1)
+                self.assertEqual(eyelets[0]["tariff"], operation["tariff_rub"])
+                self.assert_components_match_retail(payload)
 
     def test_roman_ibiza_with_explicit_prime_embroidery(self) -> None:
         response = self.client.post(
@@ -231,6 +295,13 @@ class CalculationApiTests(unittest.TestCase):
         self.assertIn("OP_084", component_ids)
         self.assertNotIn("OP_001", component_ids)
         self.assertNotIn("OP_043", component_ids)
+        self.assertEqual(
+            sum(
+                component["name"] == "Люверсы"
+                for component in payload["components"]
+            ),
+            1,
+        )
         self.assert_components_match_retail(payload)
 
     def test_exact_lining_and_explicit_default_mounting(self) -> None:

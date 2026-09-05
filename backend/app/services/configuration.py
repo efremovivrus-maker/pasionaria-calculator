@@ -143,10 +143,14 @@ def apply_configuration(
             "шторная лента",
             default_heading.casefold(),
         }:
-            selected = _exact_variant(
-                operations,
-                group="Крепление портьеры",
-                value=heading,
+            selected = (
+                operations_by_id["OP_021"]
+                if heading.strip().casefold() == "люверсы"
+                else _exact_variant(
+                    operations,
+                    group="Крепление портьеры",
+                    value=heading,
+                )
             )
             if selected is None:
                 matching_family = [

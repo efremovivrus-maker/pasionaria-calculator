@@ -20,7 +20,11 @@ function productName(type?: string) {
 }
 
 export function ResultCard({ result, onReset }: ResultCardProps) {
-  const groupedBreakdown = result.components.reduce(
+  const components = result.components ?? [];
+  const operationComponents = components.filter(
+    (component) => component.category !== "fabric",
+  );
+  const groupedBreakdown = components.reduce(
     (groups, component) => {
       const label =
         component.category === "fabric"
@@ -94,13 +98,13 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
             ))}
           </dl>
 
-          {result.components.length > 0 && (
-            <details className="group mt-7 border-t border-stone-400/50 pt-5">
-              <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-[0.14em] text-stone-600 transition-colors hover:text-stone-950">
+          {operationComponents.length > 0 && (
+            <div className="mt-7 border-t border-stone-400/50 pt-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
                 Состав расчёта
-              </summary>
+              </p>
               <ul className="mt-4 space-y-3 text-xs leading-5 text-stone-600">
-                {result.components.map(
+                {operationComponents.map(
                   (component, index) => (
                     <li
                       key={
@@ -117,7 +121,7 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
                   ),
                 )}
               </ul>
-            </details>
+            </div>
           )}
         </div>
       </div>

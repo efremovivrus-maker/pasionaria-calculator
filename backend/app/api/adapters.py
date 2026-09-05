@@ -39,6 +39,10 @@ def _component_category(
 def _component_name(line: dict[str, Any]) -> str:
     group = str(line["group"])
     variant = str(line["variant"])
+    if group == "Крепление портьеры" and variant.casefold().startswith(
+        "люверсы"
+    ):
+        return "Люверсы"
     if "вышив" in group.casefold():
         return f"{group} «{variant}»"
     return f"{group} — {variant}"

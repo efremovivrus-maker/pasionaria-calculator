@@ -9,39 +9,57 @@ import { ResultCard } from "./ResultCard";
 afterEach(cleanup);
 
 describe("ResultCard", () => {
-  it("shows every non-zero backend component", () => {
+  it("shows Roman operations immediately without duplicating fabric", () => {
     const result: CalculationResult = {
       status: "success",
-      retailPrice: 11784.4,
-      model: "Прайм",
-      productType: "curtain",
+      retailPrice: 11410,
+      model: "Вандер",
+      productType: "roman",
       widthCm: 120,
-      heightCm: 280,
+      heightCm: 200,
       quantity: 2,
+      fabricName: "Вандер",
       operations: [],
       extras: [],
       components: [
-        { category: "fabric", name: "Ткань «Ибица»", cost: 7938 },
+        { category: "fabric", name: "Ткань «Вандер»", cost: 2730 },
         {
           category: "production",
-          name: "Шторная лента 6 см",
-          cost: 288,
+          name: "Пошив римской шторы — Стандартная сборка",
+          cost: 1024,
         },
         {
-          category: "embroidery",
-          name: "Вышивка по всей площади «Прайм»",
-          cost: 2486.4,
+          category: "hardware",
+          name: "Механизм — Эконом",
+          cost: 4200,
+        },
+        {
+          category: "hardware",
+          name: "Крепления к механизму — Кулиска + Кольца",
+          cost: 2832,
+        },
+        {
+          category: "production",
+          name: "Монтаж римской шторы — Стандарт",
+          cost: 624,
         },
       ],
     };
 
     render(<ResultCard result={result} onReset={vi.fn()} />);
 
-    expect(screen.getByText("Ткань «Ибица»")).toBeTruthy();
-    expect(screen.getByText("Шторная лента 6 см")).toBeTruthy();
+    expect(screen.getByText("Состав расчёта")).toBeTruthy();
+    expect(screen.getByText("Механизм — Эконом")).toBeTruthy();
     expect(
-      screen.getByText("Вышивка по всей площади «Прайм»"),
+      screen.getByText("Крепления к механизму — Кулиска + Кольца"),
     ).toBeTruthy();
+    expect(
+      screen.getByText(
+        (_, element) =>
+          element?.textContent?.replace(/\s/g, " ") === "4 200 ₽",
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText("Ткань «Вандер»")).toBeNull();
   });
 
   it("renders adapter fallback and omits zero-value groups", () => {
@@ -64,5 +82,19 @@ describe("ResultCard", () => {
       0,
     );
     expect(screen.queryByText("Дополнительные операции")).toBeNull();
+  });
+
+  it("does not show an empty composition block", () => {
+    const result: CalculationResult = {
+      status: "success",
+      retailPrice: 4555,
+      operations: [],
+      extras: [],
+      components: [],
+    };
+
+    render(<ResultCard result={result} onReset={vi.fn()} />);
+
+    expect(screen.queryByText("Состав расчёта")).toBeNull();
   });
 });
