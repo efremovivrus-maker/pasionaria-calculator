@@ -428,6 +428,32 @@ class CalculationApiTests(unittest.TestCase):
             "EXTRA_OPERATION_NOT_FOUND",
         )
 
+    def test_unknown_mechanism_returns_catalog_options(self) -> None:
+        response = self.client.post(
+            "/api/calculate",
+            json={
+                "product_type": "roman",
+                "model": "Вандер",
+                "width_cm": 120,
+                "height_cm": 200,
+                "quantity": 1,
+                "configuration": {"mechanism": "Премиум"},
+            },
+        )
+
+        payload = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            payload["reason_code"],
+            "CONFIGURATION_OPTION_NOT_FOUND",
+        )
+        self.assertEqual(payload["details"]["field"], "mechanism")
+        self.assertEqual(payload["details"]["requested_value"], "Премиум")
+        self.assertEqual(
+            payload["details"]["available_options"],
+            ["Стандарт", "Эконом"],
+        )
+
     def test_prime_embroidery_is_a_component(self) -> None:
         response = self.client.post(
             "/api/calculate",

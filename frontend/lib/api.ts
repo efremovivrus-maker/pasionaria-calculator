@@ -4,6 +4,7 @@ import type {
   OperationLine,
   WebhookResponse,
 } from "@/lib/types";
+import { formatUnavailableMessage } from "@/lib/unavailable";
 
 type JsonObject = Record<string, unknown>;
 
@@ -276,15 +277,9 @@ export function adaptWebhookResponse(value: unknown): WebhookResponse {
   }
 
   if (payload.status === "unavailable") {
-    const details = asObject(payload.details);
     return {
       type: "unavailable",
-      message:
-        asString(payload.message) ??
-        asString(payload.reason) ??
-        asString(details?.reason) ??
-        asString(payload.explanation) ??
-        "Расчёт для этого варианта пока недоступен.",
+      message: formatUnavailableMessage(payload),
     };
   }
 

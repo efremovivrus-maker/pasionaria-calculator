@@ -12,6 +12,7 @@ class ConfigurationUnavailable:
     reason: str
     field: str
     requested_value: str
+    available_options: list[str] | None = None
 
 
 @dataclass(frozen=True)
@@ -45,12 +46,17 @@ def _group_variants(
     return [operation for operation in operations if operation["group"] == group]
 
 
-def _not_found(field: str, value: str) -> ConfigurationUnavailable:
+def _not_found(
+    field: str,
+    value: str,
+    available_options: list[str] | None = None,
+) -> ConfigurationUnavailable:
     return ConfigurationUnavailable(
         reason_code="CONFIGURATION_OPTION_NOT_FOUND",
         reason=f"В справочнике не найден вариант {field}={value!r}.",
         field=field,
         requested_value=value,
+        available_options=available_options,
     )
 
 
@@ -58,12 +64,14 @@ def _not_supported(
     field: str,
     value: str,
     reason: str,
+    available_options: list[str] | None = None,
 ) -> ConfigurationUnavailable:
     return ConfigurationUnavailable(
         reason_code="CONFIGURATION_NOT_SUPPORTED",
         reason=reason,
         field=field,
         requested_value=value,
+        available_options=available_options,
     )
 
 
@@ -116,9 +124,21 @@ def apply_configuration(
             value=mechanism,
         )
         if selected is None:
+            mechanism_options = _group_variants(operations, "Механизм")
+            default_ids = set(recipe_operation_ids)
+            mechanism_options.sort(
+                key=lambda operation: operation["id"] not in default_ids
+            )
             return ConfigurationResolution(
                 operation_ids,
-                _not_found("mechanism", mechanism),
+                _not_found(
+                    "mechanism",
+                    mechanism,
+                    [
+                        operation["variant"]
+                        for operation in mechanism_options
+                    ],
+                ),
             )
         operation_ids = _replace_group(
             operation_ids,
@@ -172,11 +192,25 @@ def apply_configuration(
                                 "Вариант верхней обработки неоднозначен: "
                                 "нужно выбрать точный вариант из справочника."
                             ),
+                            [
+                                operation["variant"]
+                                for operation in matching_family
+                            ],
                         ),
                     )
                 return ConfigurationResolution(
                     operation_ids,
-                    _not_found("heading", heading),
+                    _not_found(
+                        "heading",
+                        heading,
+                        [
+                            operation["variant"]
+                            for operation in _group_variants(
+                                operations,
+                                "Крепление портьеры",
+                            )
+                        ],
+                    ),
                 )
             operation_ids = _replace_group(
                 operation_ids,
@@ -213,9 +247,23 @@ def apply_configuration(
                     "lining",
                     lining,
                     "Вариант подкладки неоднозначен; нужен точный вариант.",
+                    [
+                        operation["variant"]
+                        for operation in matching_family
+                    ],
                 )
                 if matching_family
-                else _not_found("lining", lining)
+                else _not_found(
+                    "lining",
+                    lining,
+                    [
+                        operation["variant"]
+                        for operation in _group_variants(
+                            operations,
+                            "Подкладка",
+                        )
+                    ],
+                )
             )
             return ConfigurationResolution(operation_ids, error)
         if (
@@ -252,7 +300,17 @@ def apply_configuration(
         if selected is None:
             return ConfigurationResolution(
                 operation_ids,
-                _not_found("mounting", mounting),
+                _not_found(
+                    "mounting",
+                    mounting,
+                    [
+                        operation["variant"]
+                        for operation in _group_variants(
+                            operations,
+                            "Монтаж римской шторы",
+                        )
+                    ],
+                ),
             )
         operation_ids = _replace_group(
             operation_ids,
@@ -299,6 +357,10 @@ def resolve_extra_operation_ids(
                     ),
                     field="extra_operations",
                     requested_value=value,
+                    available_options=[
+                        operation["variant"]
+                        for operation in embroidery_operations
+                    ],
                 ),
             )
         if selected["id"] not in seen:

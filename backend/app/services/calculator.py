@@ -344,6 +344,7 @@ def _calculate(
                 "requested_value": error.requested_value,
                 "model": model["model"],
                 "product_type": product_type,
+                "available_options": error.available_options,
             },
         )
 
@@ -392,6 +393,7 @@ def _calculate(
                 "requested_value": extra_error.requested_value,
                 "model": model["model"],
                 "product_type": product_type,
+                "available_options": extra_error.available_options,
             },
         )
 
