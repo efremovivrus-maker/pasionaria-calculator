@@ -1,0 +1,191 @@
+{
+  "source": "pasionaria_master_production_final_v2.xlsx",
+  "recipes": [
+    {
+      "code": "CURTAIN_BASE",
+      "product_type": "curtain",
+      "name": "Базовая прямая портьера",
+      "operation_ids": [
+        "OP_001",
+        "OP_044",
+        "OP_060",
+        "OP_043",
+        "OP_061"
+      ],
+      "omitted_operations": [],
+      "source_operations": "Шторная лента 6 см белая, без слоя; Боковые швы 2×2; Нижний шов 10×10; Сборка шторной ленты; Упаковка портьеры",
+      "source_rule": "Лента: 120 ₽ × ширина; боковые швы: 50 ₽ × высота × 2; низ 10×10: 70 ₽ × ширина; сборка ленты: 35 ₽ × ширина; упаковка: 130 ₽ × количество изделий"
+    },
+    {
+      "code": "ROMAN_BASE",
+      "product_type": "roman",
+      "name": "Базовая римская штора",
+      "operation_ids": [
+        "OP_106",
+        "OP_111",
+        "OP_115",
+        "OP_117"
+      ],
+      "omitted_operations": [
+        {
+          "name": "Базовая обработка низа",
+          "reason": "Исключена по подтверждённому решению: тариф отсутствует."
+        }
+      ],
+      "source_operations": "Пошив римской шторы — стандартная сборка; Механизм «Стандарт»; Кулиска + кольца; Монтаж римской шторы; Базовая обработка низа",
+      "source_rule": "Пошив: 80 ₽ × периметр; механизм «Стандарт»: 2500 ₽ × ширина; кулиска + кольца: 590 ₽ × площадь; монтаж: 130 ₽ × площадь; базовая обработка низа — отдельный тариф в PDF не указан"
+    }
+  ],
+  "confirmed_nuances": [
+    {
+      "product_type": "curtain",
+      "model": "Амми",
+      "fabric_name": null,
+      "description": "Вышивка по всей площади",
+      "source_tariff": "310 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Аника",
+      "fabric_name": "Ибица",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "910 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Бриджит",
+      "fabric_name": "Софт",
+      "description": "Вышивка с одной стороны",
+      "source_tariff": "500 ₽/м.п.",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Бэлли",
+      "fabric_name": "Софт",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "510 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Вайн",
+      "fabric_name": "Ибица",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "1240 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Валери",
+      "fabric_name": "Каспиан",
+      "description": "Вышивка с одной стороны",
+      "source_tariff": "815 ₽/м.п.",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Джим",
+      "fabric_name": "Каспиан",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "670 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Дюпон",
+      "fabric_name": "Ибица",
+      "description": "Вышивка с одной стороны",
+      "source_tariff": "560 ₽/м.п.",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Лея",
+      "fabric_name": "Софт",
+      "description": "Вышивка с одной стороны",
+      "source_tariff": "910 ₽/м.п.",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Либерти",
+      "fabric_name": "Софт",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "660 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Лилас",
+      "fabric_name": "Каспиан",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "360 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Лука",
+      "fabric_name": "Джерри",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "470 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Мика",
+      "fabric_name": "Бадди",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "640 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Прайм",
+      "fabric_name": "Ибица",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "370 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Фито",
+      "fabric_name": "Луара",
+      "description": "Вышивка «Фито (мушки)» по всей площади",
+      "source_tariff": "300 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Флэш",
+      "fabric_name": "Ибица",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "305 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Шейн",
+      "fabric_name": "Фиджи",
+      "description": "Вышивка с одной стороны",
+      "source_tariff": "440 ₽/м.п.",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
+      "model": "Элис",
+      "fabric_name": null,
+      "description": "Вышивка по всей площади",
+      "source_tariff": "1080 ₽/м²",
+      "status": "Подтверждено"
+    }
+  ],
+  "excluded_operation_groups": [
+    {
+      "group": "Коэффициент типа ткани",
+      "reason": "Подтверждено: коэффициенты типа ткани не используются."
+    }
+  ]
+}

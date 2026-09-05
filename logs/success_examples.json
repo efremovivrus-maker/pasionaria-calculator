@@ -1,0 +1,533 @@
+[
+  {
+    "status": "success",
+    "request": {
+      "product_type": "curtain",
+      "model": "Вандер",
+      "width_cm": 130.0,
+      "height_cm": 280.0,
+      "quantity": 2
+    },
+    "model": {
+      "name": "Вандер",
+      "status": "active",
+      "recipe_code": "CURTAIN_BASE"
+    },
+    "fabric": {
+      "name": "Вандер",
+      "article": "PAS-F-03-61",
+      "width_cm": 280,
+      "price_type": "RRC",
+      "price_rub_per_m": 1050,
+      "status": "OK"
+    },
+    "consumption": {
+      "status": "success",
+      "consumption_m": 3.0,
+      "layout": "rotated_shared",
+      "cuts": 1,
+      "items_per_cut": 2,
+      "reason_code": null,
+      "reason": null,
+      "explanation": "Высота с запасом не помещается в ширину ткани, поэтому шторы развёрнуты. В одном отрезе помещается 2 шт.; требуется отрезов: 1."
+    },
+    "operations": {
+      "base": [
+        {
+          "operation_id": "OP_001",
+          "group": "Крепление портьеры",
+          "variant": "Шторная лента 6 см белая, без слоя",
+          "unit": "МП",
+          "calculation_basis": "длина элемента крепления",
+          "tariff_rub": 120.0,
+          "formula": "width",
+          "basis_value": 2.6,
+          "cost_rub": 312.0
+        },
+        {
+          "operation_id": "OP_044",
+          "group": "Боковые швы",
+          "variant": "2х2",
+          "unit": "МП",
+          "calculation_basis": "погонный метр строчки",
+          "tariff_rub": 50.0,
+          "formula": "height*2",
+          "basis_value": 11.2,
+          "cost_rub": 560.0
+        },
+        {
+          "operation_id": "OP_060",
+          "group": "Нижний шов",
+          "variant": "10х10",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 70.0,
+          "formula": "width",
+          "basis_value": 2.6,
+          "cost_rub": 182.0
+        },
+        {
+          "operation_id": "OP_043",
+          "group": "Сборка шторной ленты",
+          "variant": "Стандарт",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 35.0,
+          "formula": "width",
+          "basis_value": 2.6,
+          "cost_rub": 91.0
+        },
+        {
+          "operation_id": "OP_061",
+          "group": "Упаковка портьеры",
+          "variant": "Чехол ПВХ/спандбонд + картон",
+          "unit": "ШТ",
+          "calculation_basis": "за изделие",
+          "tariff_rub": 130.0,
+          "formula": "quantity",
+          "basis_value": 2.0,
+          "cost_rub": 260.0
+        }
+      ],
+      "additional": [],
+      "omitted": []
+    },
+    "pricing": {
+      "fabric_cost": 3150.0,
+      "operation_cost": 1405.0,
+      "labor_cost": null,
+      "hardware_cost": null,
+      "extras_cost": 0.0,
+      "known_components_total": 4555.0,
+      "retail_price": 4555.0,
+      "retail_price_status": "CALCULATED",
+      "retail_pricing_rule": "fabric_cost + operation_cost + extras_cost"
+    }
+  },
+  {
+    "status": "success",
+    "request": {
+      "product_type": "curtain",
+      "model": "Каспиан",
+      "width_cm": 140.0,
+      "height_cm": 270.0,
+      "quantity": 1
+    },
+    "model": {
+      "name": "Каспиан",
+      "status": "active",
+      "recipe_code": "CURTAIN_BASE"
+    },
+    "fabric": {
+      "name": "Каспиан/Довер",
+      "article": "PAS-F-02-02",
+      "width_cm": 280,
+      "price_type": "RRC",
+      "price_rub_per_m": 1470,
+      "status": "OK"
+    },
+    "consumption": {
+      "status": "success",
+      "consumption_m": 1.6,
+      "layout": "standard",
+      "cuts": 1,
+      "items_per_cut": 1,
+      "reason_code": null,
+      "reason": null,
+      "explanation": "Высота изделия с технологическим запасом 10 см помещается в ширину ткани; расход равен ширине изделия + 20 см на каждую штору."
+    },
+    "operations": {
+      "base": [
+        {
+          "operation_id": "OP_001",
+          "group": "Крепление портьеры",
+          "variant": "Шторная лента 6 см белая, без слоя",
+          "unit": "МП",
+          "calculation_basis": "длина элемента крепления",
+          "tariff_rub": 120.0,
+          "formula": "width",
+          "basis_value": 1.4,
+          "cost_rub": 168.0
+        },
+        {
+          "operation_id": "OP_044",
+          "group": "Боковые швы",
+          "variant": "2х2",
+          "unit": "МП",
+          "calculation_basis": "погонный метр строчки",
+          "tariff_rub": 50.0,
+          "formula": "height*2",
+          "basis_value": 5.4,
+          "cost_rub": 270.0
+        },
+        {
+          "operation_id": "OP_060",
+          "group": "Нижний шов",
+          "variant": "10х10",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 70.0,
+          "formula": "width",
+          "basis_value": 1.4,
+          "cost_rub": 98.0
+        },
+        {
+          "operation_id": "OP_043",
+          "group": "Сборка шторной ленты",
+          "variant": "Стандарт",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 35.0,
+          "formula": "width",
+          "basis_value": 1.4,
+          "cost_rub": 49.0
+        },
+        {
+          "operation_id": "OP_061",
+          "group": "Упаковка портьеры",
+          "variant": "Чехол ПВХ/спандбонд + картон",
+          "unit": "ШТ",
+          "calculation_basis": "за изделие",
+          "tariff_rub": 130.0,
+          "formula": "quantity",
+          "basis_value": 1.0,
+          "cost_rub": 130.0
+        }
+      ],
+      "additional": [],
+      "omitted": []
+    },
+    "pricing": {
+      "fabric_cost": 2352.0,
+      "operation_cost": 715.0,
+      "labor_cost": null,
+      "hardware_cost": null,
+      "extras_cost": 0.0,
+      "known_components_total": 3067.0,
+      "retail_price": 3067.0,
+      "retail_price_status": "CALCULATED",
+      "retail_pricing_rule": "fabric_cost + operation_cost + extras_cost"
+    }
+  },
+  {
+    "status": "success",
+    "request": {
+      "product_type": "curtain",
+      "model": "Фито",
+      "width_cm": 100.0,
+      "height_cm": 200.0,
+      "quantity": 1
+    },
+    "model": {
+      "name": "Фито",
+      "status": "active",
+      "recipe_code": "CURTAIN_BASE"
+    },
+    "fabric": {
+      "name": "Луара",
+      "article": null,
+      "width_cm": 300,
+      "price_type": "RRC",
+      "price_rub_per_m": 2800,
+      "status": "OK"
+    },
+    "consumption": {
+      "status": "success",
+      "consumption_m": 1.2,
+      "layout": "standard",
+      "cuts": 1,
+      "items_per_cut": 1,
+      "reason_code": null,
+      "reason": null,
+      "explanation": "Высота изделия с технологическим запасом 10 см помещается в ширину ткани; расход равен ширине изделия + 20 см на каждую штору."
+    },
+    "operations": {
+      "base": [
+        {
+          "operation_id": "OP_001",
+          "group": "Крепление портьеры",
+          "variant": "Шторная лента 6 см белая, без слоя",
+          "unit": "МП",
+          "calculation_basis": "длина элемента крепления",
+          "tariff_rub": 120.0,
+          "formula": "width",
+          "basis_value": 1.0,
+          "cost_rub": 120.0
+        },
+        {
+          "operation_id": "OP_044",
+          "group": "Боковые швы",
+          "variant": "2х2",
+          "unit": "МП",
+          "calculation_basis": "погонный метр строчки",
+          "tariff_rub": 50.0,
+          "formula": "height*2",
+          "basis_value": 4.0,
+          "cost_rub": 200.0
+        },
+        {
+          "operation_id": "OP_060",
+          "group": "Нижний шов",
+          "variant": "10х10",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 70.0,
+          "formula": "width",
+          "basis_value": 1.0,
+          "cost_rub": 70.0
+        },
+        {
+          "operation_id": "OP_043",
+          "group": "Сборка шторной ленты",
+          "variant": "Стандарт",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 35.0,
+          "formula": "width",
+          "basis_value": 1.0,
+          "cost_rub": 35.0
+        },
+        {
+          "operation_id": "OP_061",
+          "group": "Упаковка портьеры",
+          "variant": "Чехол ПВХ/спандбонд + картон",
+          "unit": "ШТ",
+          "calculation_basis": "за изделие",
+          "tariff_rub": 130.0,
+          "formula": "quantity",
+          "basis_value": 1.0,
+          "cost_rub": 130.0
+        }
+      ],
+      "additional": [
+        {
+          "operation_id": "OP_068",
+          "group": "Вышивка по всей площади",
+          "variant": "Фито (мушки)",
+          "unit": "М2",
+          "calculation_basis": "площадь изделия",
+          "tariff_rub": 300.0,
+          "formula": "area",
+          "basis_value": 2.0,
+          "cost_rub": 600.0
+        }
+      ],
+      "omitted": []
+    },
+    "pricing": {
+      "fabric_cost": 3360.0,
+      "operation_cost": 555.0,
+      "labor_cost": null,
+      "hardware_cost": null,
+      "extras_cost": 600.0,
+      "known_components_total": 4515.0,
+      "retail_price": 4515.0,
+      "retail_price_status": "CALCULATED",
+      "retail_pricing_rule": "fabric_cost + operation_cost + extras_cost"
+    }
+  },
+  {
+    "status": "success",
+    "request": {
+      "product_type": "roman",
+      "model": "Вандер",
+      "width_cm": 165.0,
+      "height_cm": 180.0,
+      "quantity": 1
+    },
+    "model": {
+      "name": "Вандер",
+      "status": "active",
+      "recipe_code": "ROMAN_BASE"
+    },
+    "fabric": {
+      "name": "Вандер",
+      "article": "PAS-F-03-61",
+      "width_cm": 280,
+      "price_type": "RRC",
+      "price_rub_per_m": 1050,
+      "status": "OK"
+    },
+    "consumption": {
+      "status": "success",
+      "consumption_m": 1.75,
+      "layout": "standard",
+      "cuts": 1,
+      "items_per_cut": 1,
+      "reason_code": null,
+      "reason": null,
+      "explanation": "Расход римской шторы равен её ширине + 10 см на каждое изделие."
+    },
+    "operations": {
+      "base": [
+        {
+          "operation_id": "OP_106",
+          "group": "Пошив римской шторы",
+          "variant": "Стандартная сборка",
+          "unit": "МП",
+          "calculation_basis": "строчка по периметру изделия",
+          "tariff_rub": 80.0,
+          "formula": "2*(width+height)",
+          "basis_value": 6.9,
+          "cost_rub": 552.0
+        },
+        {
+          "operation_id": "OP_111",
+          "group": "Механизм",
+          "variant": "Стандарт",
+          "unit": "МП",
+          "calculation_basis": "длина механизма",
+          "tariff_rub": 2500.0,
+          "formula": "width",
+          "basis_value": 1.65,
+          "cost_rub": 4125.0
+        },
+        {
+          "operation_id": "OP_115",
+          "group": "Крепления к механизму",
+          "variant": "Кулиска + Кольца",
+          "unit": "М2",
+          "calculation_basis": "площадь изделия",
+          "tariff_rub": 590.0,
+          "formula": "area",
+          "basis_value": 2.97,
+          "cost_rub": 1752.3
+        },
+        {
+          "operation_id": "OP_117",
+          "group": "Монтаж римской шторы",
+          "variant": "Стандарт",
+          "unit": "М2",
+          "calculation_basis": "площадь изделия",
+          "tariff_rub": 130.0,
+          "formula": "area",
+          "basis_value": 2.97,
+          "cost_rub": 386.1
+        }
+      ],
+      "additional": [],
+      "omitted": [
+        {
+          "name": "Базовая обработка низа",
+          "reason": "Исключена по подтверждённому решению: тариф отсутствует."
+        }
+      ]
+    },
+    "pricing": {
+      "fabric_cost": 1837.5,
+      "operation_cost": 6815.4,
+      "labor_cost": null,
+      "hardware_cost": null,
+      "extras_cost": 0.0,
+      "known_components_total": 8652.9,
+      "retail_price": 8652.9,
+      "retail_price_status": "CALCULATED",
+      "retail_pricing_rule": "fabric_cost + operation_cost + extras_cost"
+    }
+  },
+  {
+    "status": "success",
+    "request": {
+      "product_type": "curtain",
+      "model": "Сири",
+      "width_cm": 100.0,
+      "height_cm": 170.0,
+      "quantity": 1
+    },
+    "model": {
+      "name": "Сири",
+      "status": "active",
+      "recipe_code": "CURTAIN_BASE"
+    },
+    "fabric": {
+      "name": "Сири",
+      "article": "PAS-F-05-30",
+      "width_cm": 180,
+      "price_type": "RRC",
+      "price_rub_per_m": 1510,
+      "status": "Проверить"
+    },
+    "consumption": {
+      "status": "success",
+      "consumption_m": 1.2,
+      "layout": "standard",
+      "cuts": 1,
+      "items_per_cut": 1,
+      "reason_code": null,
+      "reason": null,
+      "explanation": "Высота изделия с технологическим запасом 10 см помещается в ширину ткани; расход равен ширине изделия + 20 см на каждую штору."
+    },
+    "operations": {
+      "base": [
+        {
+          "operation_id": "OP_001",
+          "group": "Крепление портьеры",
+          "variant": "Шторная лента 6 см белая, без слоя",
+          "unit": "МП",
+          "calculation_basis": "длина элемента крепления",
+          "tariff_rub": 120.0,
+          "formula": "width",
+          "basis_value": 1.0,
+          "cost_rub": 120.0
+        },
+        {
+          "operation_id": "OP_044",
+          "group": "Боковые швы",
+          "variant": "2х2",
+          "unit": "МП",
+          "calculation_basis": "погонный метр строчки",
+          "tariff_rub": 50.0,
+          "formula": "height*2",
+          "basis_value": 3.4,
+          "cost_rub": 170.0
+        },
+        {
+          "operation_id": "OP_060",
+          "group": "Нижний шов",
+          "variant": "10х10",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 70.0,
+          "formula": "width",
+          "basis_value": 1.0,
+          "cost_rub": 70.0
+        },
+        {
+          "operation_id": "OP_043",
+          "group": "Сборка шторной ленты",
+          "variant": "Стандарт",
+          "unit": "МП",
+          "calculation_basis": "ширина изделия",
+          "tariff_rub": 35.0,
+          "formula": "width",
+          "basis_value": 1.0,
+          "cost_rub": 35.0
+        },
+        {
+          "operation_id": "OP_061",
+          "group": "Упаковка портьеры",
+          "variant": "Чехол ПВХ/спандбонд + картон",
+          "unit": "ШТ",
+          "calculation_basis": "за изделие",
+          "tariff_rub": 130.0,
+          "formula": "quantity",
+          "basis_value": 1.0,
+          "cost_rub": 130.0
+        }
+      ],
+      "additional": [],
+      "omitted": []
+    },
+    "pricing": {
+      "fabric_cost": 1812.0,
+      "operation_cost": 525.0,
+      "labor_cost": null,
+      "hardware_cost": null,
+      "extras_cost": 0.0,
+      "known_components_total": 2337.0,
+      "retail_price": 2337.0,
+      "retail_price_status": "CALCULATED",
+      "retail_pricing_rule": "fabric_cost + operation_cost + extras_cost"
+    }
+  }
+]
