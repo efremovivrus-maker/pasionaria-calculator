@@ -24,6 +24,7 @@ router = APIRouter(prefix="/api")
 @router.post(
     "/calculate",
     response_model=Union[SuccessResponse, UnavailableResponse],
+    response_model_exclude_none=True,
     responses={500: {"model": ErrorResponse}},
 )
 def calculate_endpoint(

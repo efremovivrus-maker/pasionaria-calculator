@@ -248,6 +248,63 @@ class CalculatorTests(unittest.TestCase):
                     "Расчёт для этой модели пока недоступен.",
                 )
 
+    def test_all_confirmed_extra_bindings_and_tariffs(self) -> None:
+        expected = {
+            "Амми": ("problematic", "area", 310),
+            "Аника": ("active", "area", 910),
+            "Бриджит": ("active", "height", 500),
+            "Бэлли": ("active", "area", 510),
+            "Вайн": ("active", "area", 1240),
+            "Валери": ("active", "height", 815),
+            "Джим": ("active", "area", 670),
+            "Дюпон": ("active", "height", 560),
+            "Лея": ("active", "height", 910),
+            "Либерти": ("active", "area", 660),
+            "Лилас": ("active", "area", 360),
+            "Лука": ("active", "area", 470),
+            "Мика": ("active", "area", 640),
+            "Прайм": ("active", "area", 370),
+            "Фито": ("active", "area", 300),
+            "Флэш": ("active", "area", 305),
+            "Шейн": ("active", "height", 440),
+            "Элис": ("problematic", "area", 1080),
+        }
+        data_dir = (
+            Path(__file__).resolve().parents[1] / "backend" / "app" / "data"
+        )
+        master = json.loads(
+            (data_dir / "master.json").read_text(encoding="utf-8")
+        )["records"]
+        operations = {
+            operation["id"]: operation
+            for operation in json.loads(
+                (data_dir / "operations.json").read_text(encoding="utf-8")
+            )["records"]
+        }
+        nuances = json.loads(
+            (data_dir / "recipes.json").read_text(encoding="utf-8")
+        )["confirmed_nuances"]
+
+        self.assertEqual({item["model"] for item in nuances}, set(expected))
+        for model_name, (status, formula, tariff) in expected.items():
+            with self.subTest(model=model_name):
+                model = next(
+                    item
+                    for item in master
+                    if item["product_type"] == "curtain"
+                    and item["model"] == model_name
+                )
+                self.assertEqual(model["status"], status)
+                if status == "problematic":
+                    nuance = next(
+                        item for item in nuances if item["model"] == model_name
+                    )
+                    self.assertIn(str(tariff), nuance["source_tariff"])
+                    continue
+                operation = operations[model["additional_operation_id"]]
+                self.assertEqual(operation["formula"], formula)
+                self.assertEqual(operation["tariff_rub"], tariff)
+
 
 class AuditLogTests(unittest.TestCase):
     def setUp(self) -> None:

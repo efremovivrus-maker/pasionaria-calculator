@@ -8,6 +8,10 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .audit_log import safe_record_calculation
+from .configuration import (
+    apply_configuration,
+    resolve_extra_operation_ids,
+)
 from .fabric_calculator import calculate_fabric_consumption
 from .pricing import build_pricing, money
 
@@ -37,13 +41,17 @@ def _unavailable(
     reason: str,
     *,
     message: str = "Не могу надёжно рассчитать этот вариант.",
+    details: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
+    result = {
         "status": "unavailable",
         "reason_code": reason_code,
         "message": message,
         "reason": reason,
     }
+    if details:
+        result["details"] = details
+    return result
 
 
 def _find_casefold(
@@ -167,6 +175,35 @@ def _calculate(
             "MISSING_RULE",
             "Размеры должны быть положительными, количество — целым и положительным.",
         )
+
+    configuration_value = request.get("configuration") or {}
+    if not isinstance(configuration_value, dict):
+        return _unavailable(
+            "MISSING_RULE",
+            "Поле configuration должно быть объектом.",
+        )
+    configuration: dict[str, str | None] = {}
+    for field in ("heading", "mechanism", "lining", "mounting"):
+        value = configuration_value.get(field)
+        if value is not None and not isinstance(value, str):
+            return _unavailable(
+                "MISSING_RULE",
+                f"Поле configuration.{field} должно быть строкой или null.",
+            )
+        configuration[field] = value.strip() if value else None
+
+    extra_operations_value = request.get("extra_operations") or []
+    if not isinstance(extra_operations_value, list) or any(
+        not isinstance(value, str) or not value.strip()
+        for value in extra_operations_value
+    ):
+        return _unavailable(
+            "MISSING_RULE",
+            "Поле extra_operations должно быть массивом непустых строк.",
+        )
+    requested_extra_operations = [
+        value.strip() for value in extra_operations_value
+    ]
     audit.update(
         {
             "model": str(request["model"]).strip(),
@@ -290,8 +327,28 @@ def _calculate(
     width_m = width_cm / Decimal("100")
     height_m = height_cm / Decimal("100")
 
+    configuration_resolution = apply_configuration(
+        product_type=product_type,
+        configuration=configuration,
+        recipe_operation_ids=recipe["operation_ids"],
+        operations=operations,
+    )
+    if configuration_resolution.error:
+        error = configuration_resolution.error
+        return _unavailable(
+            error.reason_code,
+            error.reason,
+            message="Не могу надёжно рассчитать выбранный вариант комплектации.",
+            details={
+                "field": error.field,
+                "requested_value": error.requested_value,
+                "model": model["model"],
+                "product_type": product_type,
+            },
+        )
+
     base_lines: list[dict[str, Any]] = []
-    for operation_id in recipe["operation_ids"]:
+    for operation_id in configuration_resolution.operation_ids:
         operation = operations_by_id.get(operation_id)
         if operation is None:
             return _unavailable(
@@ -312,9 +369,29 @@ def _calculate(
         base_lines.append(line)
         audit.setdefault("operations", []).append(line)
 
+    extra_operation_ids, extra_error = resolve_extra_operation_ids(
+        requested_values=requested_extra_operations,
+        built_in_operation_id=model.get("additional_operation_id"),
+        operations=operations,
+    )
+    if extra_error:
+        return _unavailable(
+            extra_error.reason_code,
+            extra_error.reason,
+            message=(
+                "Не могу надёжно рассчитать выбранную "
+                "дополнительную операцию."
+            ),
+            details={
+                "field": extra_error.field,
+                "requested_value": extra_error.requested_value,
+                "model": model["model"],
+                "product_type": product_type,
+            },
+        )
+
     extra_lines: list[dict[str, Any]] = []
-    extra_operation_id = model.get("additional_operation_id")
-    if extra_operation_id:
+    for extra_operation_id in extra_operation_ids:
         operation = operations_by_id.get(extra_operation_id)
         if operation is None:
             return _unavailable(
@@ -362,6 +439,8 @@ def _calculate(
             "width_cm": float(width_cm),
             "height_cm": float(height_cm),
             "quantity": quantity,
+            "configuration": configuration,
+            "extra_operations": requested_extra_operations,
         },
         "model": {
             "name": model["model"],
