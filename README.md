@@ -55,7 +55,11 @@ Set the webhook URL in `frontend/.env.local`:
 
 ```dotenv
 NEXT_PUBLIC_N8N_WEBHOOK_URL=https://your-n8n-host/webhook/...
+NEXT_PUBLIC_BACKEND_URL=https://your-render-backend.onrender.com
 ```
+
+`NEXT_PUBLIC_BACKEND_URL` is used only for a non-blocking `/health` warm-up
+when the page first opens.
 
 Install dependencies and start the development server:
 

@@ -7,6 +7,8 @@ import type {
 import { formatUnavailableMessage } from "@/lib/unavailable";
 
 type JsonObject = Record<string, unknown>;
+const BACKEND_WARM_UP_TIMEOUT_MS = 12_000;
+let backendWarmUpPromise: Promise<void> | undefined;
 
 function asObject(value: unknown): JsonObject | undefined {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -296,6 +298,38 @@ export function adaptWebhookResponse(value: unknown): WebhookResponse {
   }
 
   throw new Error("Unsupported webhook response");
+}
+
+export function warmUpBackend(): Promise<void> {
+  if (backendWarmUpPromise) {
+    return backendWarmUpPromise;
+  }
+
+  backendWarmUpPromise = (async () => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.trim();
+    if (!backendUrl) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(
+      () => controller.abort(),
+      BACKEND_WARM_UP_TIMEOUT_MS,
+    );
+    try {
+      await fetch(new URL("/health", backendUrl), {
+        method: "GET",
+        cache: "no-store",
+        signal: controller.signal,
+      });
+    } catch {
+      // Render pre-warm is best-effort and must never affect calculator UX.
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  })();
+
+  return backendWarmUpPromise;
 }
 
 export async function sendChatMessage(

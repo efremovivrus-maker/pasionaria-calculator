@@ -11,7 +11,7 @@ import {
 import { Message } from "@/components/Message";
 import { ResultCard } from "@/components/ResultCard";
 import { ThinkingState } from "@/components/ThinkingState";
-import { sendChatMessage } from "@/lib/api";
+import { sendChatMessage, warmUpBackend } from "@/lib/api";
 import type { CalculationResult, ChatMessage } from "@/lib/types";
 
 const EXAMPLES = [
@@ -37,6 +37,7 @@ export function CalculatorChat() {
 
   useEffect(() => {
     setSessionId(createId());
+    void warmUpBackend();
   }, []);
 
   useEffect(() => {
