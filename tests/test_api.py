@@ -416,7 +416,7 @@ class CalculationApiTests(unittest.TestCase):
 
     def test_generic_lining_uses_product_defaults_once(self) -> None:
         cases = (
-            ("curtain", "OP_062", 180.0),
+            ("curtain", "OP_062", 400.0),
             ("roman", "OP_065", 500.0),
         )
         for product_type, operation_id, tariff in cases:

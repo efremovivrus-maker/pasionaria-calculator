@@ -739,7 +739,7 @@
       "group": "Подкладка",
       "variant": "Отлетная по низу, заведена в боковые швы",
       "unit": "М2",
-      "tariff_rub": 180,
+      "tariff_rub": 400,
       "calculation_basis": "площадь изделия",
       "formula": "area",
       "source_page": 5,
