@@ -63,7 +63,7 @@ export function formatUnavailableMessage(value: unknown): string {
   if (reasonCode === "MODEL_NOT_FOUND") {
     const model = requestedModel(payload, details);
     return model
-      ? `Не нашёл модель «${model}». Проверьте название модели и попробуйте ещё раз.`
+      ? `Не удалось найти модель «${model}». Укажите название модели как на сайте pasionaria.ru.`
       : SAFE_FALLBACK;
   }
 

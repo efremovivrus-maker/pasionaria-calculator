@@ -13,6 +13,7 @@ from .configuration import (
     resolve_extra_operation_ids,
 )
 from .fabric_calculator import calculate_fabric_consumption
+from .model_matching import resolve_model
 from .pricing import build_pricing, money
 
 
@@ -133,6 +134,10 @@ def _calculate(
         {
             "product_type": request.get("product_type"),
             "model": request.get("model"),
+            "requested_model": request.get("model"),
+            "normalized_model": None,
+            "match_type": None,
+            "match_distance": None,
             "width_cm": request.get("width_cm"),
             "height_cm": request.get("height_cm"),
             "quantity": request.get("quantity"),
@@ -214,22 +219,30 @@ def _calculate(
     )
 
     master = _read_catalog("master.json", "records")
-    model = next(
+    requested_model = str(request["model"]).strip()
+    model_match = resolve_model(
+        requested_model,
         (
             record
             for record in master
             if record["product_type"] == product_type
-            and record["model"].strip().casefold()
-            == str(request["model"]).strip().casefold()
         ),
-        None,
+    )
+    model = model_match.model
+    audit.update(
+        {
+            "normalized_model": model["model"] if model else None,
+            "match_type": model_match.match_type,
+            "match_distance": model_match.distance,
+        }
     )
     if model is None:
         return _unavailable(
             "MODEL_NOT_FOUND",
-            (
-                f"Модель {request['model']!r} не найдена для выбранного "
-                "типа изделия."
+            f"Модель {requested_model!r} не найдена в master-каталоге.",
+            message=(
+                f"Не удалось найти модель «{requested_model}». "
+                "Укажите название модели как на сайте pasionaria.ru."
             ),
         )
     audit.update(
@@ -372,6 +385,8 @@ def _calculate(
             and (configuration.get("heading") or "").casefold() == "люверсы"
         ):
             line = {**line, "variant": "Люверсы"}
+        if operation["group"] == "Подкладка":
+            line = {**line, "variant": "Подкладка"}
         base_lines.append(line)
         audit.setdefault("operations", []).append(line)
 

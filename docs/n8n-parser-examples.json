@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "quantity_cases": [
+    {
+      "input": "римская штора Вандер",
+      "expected": {
+        "product_type": "roman",
+        "model": "Вандер",
+        "quantity": 1,
+        "quantity_source": "inferred_singular",
+        "quantity_missing": false
+      }
+    },
+    {
+      "input": "штора Вандер",
+      "expected": {
+        "product_type": "curtain",
+        "model": "Вандер",
+        "quantity": 1,
+        "quantity_source": "inferred_singular",
+        "quantity_missing": false
+      }
+    },
+    {
+      "input": "комплект штор Вандер",
+      "expected": {
+        "product_type": "curtain",
+        "model": "Вандер",
+        "quantity": null,
+        "quantity_source": "missing",
+        "quantity_missing": true
+      }
+    },
+    {
+      "input": "шторы Вандер",
+      "expected": {
+        "product_type": "curtain",
+        "model": "Вандер",
+        "quantity": null,
+        "quantity_source": "missing",
+        "quantity_missing": true
+      }
+    },
+    {
+      "input": "2 римские шторы Вандер",
+      "expected": {
+        "product_type": "roman",
+        "model": "Вандер",
+        "quantity": 2,
+        "quantity_source": "explicit",
+        "quantity_missing": false
+      }
+    },
+    {
+      "input": "3 комплекта штор Вандер",
+      "expected": {
+        "product_type": "curtain",
+        "model": "Вандер",
+        "quantity": 3,
+        "quantity_source": "explicit",
+        "quantity_missing": false
+      }
+    }
+  ]
+}

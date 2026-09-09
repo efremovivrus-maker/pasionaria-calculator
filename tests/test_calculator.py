@@ -344,11 +344,33 @@ class AuditLogTests(unittest.TestCase):
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["status"], "success")
         self.assertEqual(records[0]["raw_request"], "Две шторы Вандер 130×280")
+        self.assertEqual(records[0]["requested_model"], "Вандер")
+        self.assertEqual(records[0]["normalized_model"], "Вандер")
+        self.assertEqual(records[0]["match_type"], "exact")
+        self.assertEqual(records[0]["match_distance"], 0)
         self.assertEqual(records[0]["fabric_consumption_m"], 3.0)
         self.assertEqual(records[0]["known_components_total"], 4555.0)
         self.assertEqual(records[0]["retail_price"], 4555.0)
         self.assertEqual(records[0]["retail_price_status"], "CALCULATED")
         self.assertEqual(len(records[0]["operations"]), 5)
+
+    def test_fuzzy_model_match_is_logged(self) -> None:
+        result = calculate(
+            {
+                "product_type": "curtain",
+                "model": "Вандр",
+                "width_cm": 130,
+                "height_cm": 280,
+                "quantity": 2,
+            }
+        )
+
+        record = self.read_records()[0]
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(record["requested_model"], "Вандр")
+        self.assertEqual(record["normalized_model"], "Вандер")
+        self.assertEqual(record["match_type"], "fuzzy")
+        self.assertEqual(record["match_distance"], 1)
 
     def test_unavailable_calculation_keeps_partial_data(self) -> None:
         result = calculate(

@@ -1315,7 +1315,7 @@
       "group": "Механизм",
       "variant": "Эконом",
       "unit": "МП",
-      "tariff_rub": 1750,
+      "tariff_rub": 4375,
       "calculation_basis": "длина механизма",
       "formula": "width",
       "source_page": 8,
@@ -1327,7 +1327,7 @@
       "group": "Механизм",
       "variant": "Стандарт",
       "unit": "МП",
-      "tariff_rub": 2500,
+      "tariff_rub": 6250,
       "calculation_basis": "длина механизма",
       "formula": "width",
       "source_page": 8,
@@ -1500,6 +1500,30 @@
       "formula": "base_labor*coefficient",
       "source_page": 7,
       "comment": "В PDF приведено как «Тип ткани»; нужно подтвердить, к каким именно операциям применяется коэффициент."
+    },
+    {
+      "id": "OP_126",
+      "category_source": "Римская штора",
+      "group": "Механизм",
+      "variant": "День-ночь Эконом",
+      "unit": "МП",
+      "tariff_rub": 7656.25,
+      "calculation_basis": "длина механизма",
+      "formula": "width",
+      "source_page": 8,
+      "comment": "Итоговый тариф: новый Эконом × 1.75."
+    },
+    {
+      "id": "OP_127",
+      "category_source": "Римская штора",
+      "group": "Механизм",
+      "variant": "День-ночь Стандарт",
+      "unit": "МП",
+      "tariff_rub": 10937.5,
+      "calculation_basis": "длина механизма",
+      "formula": "width",
+      "source_page": 8,
+      "comment": "Итоговый тариф: новый Стандарт × 1.75."
     }
   ]
 }

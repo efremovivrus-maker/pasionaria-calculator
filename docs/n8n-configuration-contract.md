@@ -44,6 +44,7 @@ Require JSON with this shape:
     "configuration.heading",
     "extra_operations"
   ],
+  "inferred_fields": [],
   "missing_fields": []
 }
 ```
@@ -62,6 +63,21 @@ Add these rules to the parser prompt:
    message. This is required for safe session merging.
 7. Do not invent catalog values. Preserve the user's wording when an option
    needs backend validation.
+8. If the user explicitly uses a singular product form (`штора` or
+   `римская штора`) and does not specify a quantity, set `quantity: 1` and
+   include `quantity` in `inferred_fields`, not in `fields_present`.
+9. Do not infer quantity for plural or set forms such as `шторы`,
+   `римские шторы` or `комплект штор`. Keep `quantity` null and include it in
+   `missing_fields`.
+10. An explicit quantity (`2 шт`, `2 римские шторы`, `3 комплекта`, etc.)
+    always wins and is listed in `fields_present`; do not also list it in
+    `inferred_fields`.
+11. Generic wording `на подкладке` produces
+    `configuration.lining: "Подкладка"`; do not ask for a concrete lining
+    variant unless the user explicitly names one.
+12. Preserve the selected Roman mechanism kind. Normalize differences in
+    case, spaces and the hyphen in `день-ночь`, but do not reduce
+    `День-ночь Эконом` or `День-ночь Стандарт` to a base mechanism.
 
 Prompt examples:
 
@@ -73,8 +89,18 @@ Prompt examples:
   `configuration.mechanism: "Эконом"`.
 - `шторы Вандер на люверсах 140x270 2 шт` →
   `configuration.heading: "Люверсы"`.
+- `шторы Вандер на подкладке 140x270 2 шт` →
+  `configuration.lining: "Подкладка"`.
+- `римская штора Вандер день ночь эконом 120x200` →
+  `configuration.mechanism: "День-ночь Эконом"`.
 - `шторы Ибица на люверсах с вышивкой Лея 140x270 2 шт` → model
   `Ибица`, heading `Люверсы`, extras `["Лея"]`.
+- `римская штора Вандер` → `quantity: 1`,
+  `inferred_fields: ["quantity"]`.
+- `штора Вандер` → `quantity: 1`,
+  `inferred_fields: ["quantity"]`.
+- `комплект штор Вандер` → `quantity: null`; quantity remains missing.
+- `шторы Вандер` → `quantity: null`; quantity remains missing.
 
 ## Session merge
 
@@ -91,6 +117,9 @@ Merge the current parser output into the stored session field by field:
 5. When extras are explicitly present, append and deduplicate by normalized
    case-insensitive name. Do not add the base model to extras.
 6. Store the merged state before asking the next clarification.
+7. If `quantity` is in `inferred_fields`, store the inferred value only when
+   the session does not already contain an explicit quantity. A value listed
+   in `fields_present` always overwrites the stored value.
 
 Example:
 

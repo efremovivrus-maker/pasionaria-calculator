@@ -96,7 +96,7 @@ class CalculationApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload["status"], "success")
         self.assertEqual(payload["fabric"]["consumption_m"], 1.75)
-        self.assertEqual(payload["retail_price"], 8652.9)
+        self.assertEqual(payload["retail_price"], 14840.4)
         self.assertTrue(
             any(
                 component["category"] == "fabric"
@@ -106,7 +106,7 @@ class CalculationApiTests(unittest.TestCase):
         self.assertTrue(
             any(
                 "Механизм" in component["name"]
-                and component["cost"] == 4125.0
+                and component["cost"] == 10312.5
                 for component in payload["components"]
             )
         )
@@ -147,12 +147,79 @@ class CalculationApiTests(unittest.TestCase):
         self.assertIn("Стандарт", default_mechanisms[0]["name"])
         self.assertEqual(len(economy_mechanisms), 1)
         self.assertIn("Эконом", economy_mechanisms[0]["name"])
-        self.assertEqual(economy_mechanisms[0]["tariff"], 1750.0)
+        self.assertEqual(economy_mechanisms[0]["tariff"], 4375.0)
         self.assertNotIn(
             "Стандарт",
             " ".join(component["name"] for component in economy_mechanisms),
         )
         self.assert_components_match_retail(economy_payload)
+
+    def test_all_roman_mechanism_tariffs_and_normalized_names(self) -> None:
+        cases = (
+            ("Эконом", "OP_110", "Эконом", 4375.0),
+            ("Стандарт", "OP_111", "Стандарт", 6250.0),
+            (
+                "день ночь эконом",
+                "OP_126",
+                "День-ночь Эконом",
+                7656.25,
+            ),
+            (
+                "ДЕНЬ НОЧЬ СТАНДАРТ",
+                "OP_127",
+                "День-ночь Стандарт",
+                10937.5,
+            ),
+        )
+        for requested, operation_id, display_name, tariff in cases:
+            with self.subTest(requested=requested):
+                response = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "roman",
+                        "model": "Вандер",
+                        "width_cm": 120,
+                        "height_cm": 200,
+                        "quantity": 1,
+                        "configuration": {"mechanism": requested},
+                    },
+                )
+                payload = response.json()
+                mechanisms = [
+                    component
+                    for component in payload["components"]
+                    if component.get("operation_id") == operation_id
+                ]
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(len(mechanisms), 1)
+                self.assertIn(display_name, mechanisms[0]["name"])
+                self.assertEqual(mechanisms[0]["tariff"], tariff)
+                self.assert_components_match_retail(payload)
+
+    def test_bare_day_night_mechanism_is_ambiguous(self) -> None:
+        response = self.client.post(
+            "/api/calculate",
+            json={
+                "product_type": "roman",
+                "model": "Вандер",
+                "width_cm": 120,
+                "height_cm": 200,
+                "quantity": 1,
+                "configuration": {"mechanism": "день ночь"},
+            },
+        )
+
+        payload = response.json()
+        self.assertEqual(payload["status"], "unavailable")
+        self.assertEqual(
+            payload["reason_code"],
+            "CONFIGURATION_NOT_SUPPORTED",
+        )
+        self.assertEqual(
+            payload["details"]["available_options"],
+            ["День-ночь Эконом", "День-ночь Стандарт"],
+        )
 
     def test_generic_eyelets_alias_matches_exact_no_layer_variant(self) -> None:
         request = {
@@ -347,6 +414,69 @@ class CalculationApiTests(unittest.TestCase):
         self.assert_components_match_retail(curtain)
         self.assert_components_match_retail(roman)
 
+    def test_generic_lining_uses_product_defaults_once(self) -> None:
+        cases = (
+            ("curtain", "OP_062", 180.0),
+            ("roman", "OP_065", 500.0),
+        )
+        for product_type, operation_id, tariff in cases:
+            with self.subTest(product_type=product_type):
+                payload = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": product_type,
+                        "model": "Вандер",
+                        "width_cm": 120,
+                        "height_cm": 200,
+                        "quantity": 1,
+                        "configuration": {"lining": "Подкладка"},
+                    },
+                ).json()
+                lining = [
+                    component
+                    for component in payload["components"]
+                    if component["name"] == "Подкладка"
+                ]
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(len(lining), 1)
+                self.assertEqual(lining[0]["operation_id"], operation_id)
+                self.assertEqual(lining[0]["tariff"], tariff)
+                self.assert_components_match_retail(payload)
+
+    def test_specific_and_equivalent_lining_variants(self) -> None:
+        cases = (
+            (
+                "Отлетная по низу с перегибами по боковым швам",
+                "OP_063",
+                220.0,
+            ),
+            ("Притачная по боковым швам и низу", "OP_066", 260.0),
+            ("Притачная", "OP_064", 260.0),
+        )
+        for requested, operation_id, tariff in cases:
+            with self.subTest(requested=requested):
+                payload = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "curtain",
+                        "model": "Вандер",
+                        "width_cm": 120,
+                        "height_cm": 200,
+                        "quantity": 1,
+                        "configuration": {"lining": requested},
+                    },
+                ).json()
+                lining = [
+                    component
+                    for component in payload["components"]
+                    if component["name"] == "Подкладка"
+                ]
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(len(lining), 1)
+                self.assertEqual(lining[0]["operation_id"], operation_id)
+                self.assertEqual(lining[0]["tariff"], tariff)
+                self.assert_components_match_retail(payload)
+
     def test_explicit_built_in_extra_is_deduplicated(self) -> None:
         request = {
             "product_type": "curtain",
@@ -451,7 +581,12 @@ class CalculationApiTests(unittest.TestCase):
         self.assertEqual(payload["details"]["requested_value"], "Премиум")
         self.assertEqual(
             payload["details"]["available_options"],
-            ["Стандарт", "Эконом"],
+            [
+                "Стандарт",
+                "Эконом",
+                "День-ночь Эконом",
+                "День-ночь Стандарт",
+            ],
         )
 
     def test_prime_embroidery_is_a_component(self) -> None:
@@ -538,6 +673,57 @@ class CalculationApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload["status"], "unavailable")
         self.assertEqual(payload["reason_code"], "MODEL_NOT_FOUND")
+        self.assertEqual(
+            payload["message"],
+            (
+                "Не удалось найти модель «Неизвестная». "
+                "Укажите название модели как на сайте pasionaria.ru."
+            ),
+        )
+
+    def test_catalog_model_matching_normalizes_and_corrects_typos(self) -> None:
+        cases = (
+            ("вАнДер", "Вандер"),
+            ("Мери", "Мэри"),
+            ("Вандр", "Вандер"),
+            ("Репаблк", "Репаблик"),
+        )
+        for requested, expected in cases:
+            with self.subTest(requested=requested):
+                payload = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "curtain",
+                        "model": requested,
+                        "width_cm": 100,
+                        "height_cm": 200,
+                        "quantity": 1,
+                    },
+                ).json()
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(
+                    payload["normalized_request"]["model"],
+                    expected,
+                )
+
+    def test_catalog_model_matching_does_not_guess(self) -> None:
+        for requested in ("Оска", "Нея", "абракадабра"):
+            with self.subTest(requested=requested):
+                payload = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "curtain",
+                        "model": requested,
+                        "width_cm": 100,
+                        "height_cm": 200,
+                        "quantity": 1,
+                    },
+                ).json()
+                self.assertEqual(payload["status"], "unavailable")
+                self.assertEqual(
+                    payload["reason_code"],
+                    "MODEL_NOT_FOUND",
+                )
 
     def test_invalid_width_returns_422(self) -> None:
         response = self.client.post(

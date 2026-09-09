@@ -43,6 +43,8 @@ def _component_name(line: dict[str, Any]) -> str:
         "люверсы"
     ):
         return "Люверсы"
+    if group == "Подкладка":
+        return "Подкладка"
     if "вышив" in group.casefold():
         return f"{group} «{variant}»"
     return f"{group} — {variant}"

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import Any, Iterable
+import unicodedata
 
 
 @dataclass(frozen=True)
@@ -19,6 +21,13 @@ class ConfigurationUnavailable:
 class ConfigurationResolution:
     operation_ids: list[str]
     error: ConfigurationUnavailable | None = None
+
+
+def _normalize_option(value: str) -> str:
+    normalized = unicodedata.normalize("NFKC", value).strip().casefold()
+    normalized = normalized.replace("ё", "е")
+    normalized = re.sub(r"[-‐‑‒–—]+", " ", normalized)
+    return " ".join(normalized.split())
 
 
 def _exact_variant(
@@ -118,17 +127,41 @@ def apply_configuration(
                     "Механизмы римской шторы не применяются к шторам.",
                 ),
             )
-        selected = _exact_variant(
-            operations,
-            group="Механизм",
-            value=mechanism,
+        normalized_mechanism = _normalize_option(mechanism)
+        mechanism_options = _group_variants(operations, "Механизм")
+        selected = next(
+            (
+                operation
+                for operation in mechanism_options
+                if _normalize_option(str(operation["variant"]))
+                == normalized_mechanism
+            ),
+            None,
         )
         if selected is None:
-            mechanism_options = _group_variants(operations, "Механизм")
+            matching_family = [
+                operation
+                for operation in mechanism_options
+                if normalized_mechanism
+                in _normalize_option(str(operation["variant"]))
+            ]
             default_ids = set(recipe_operation_ids)
             mechanism_options.sort(
                 key=lambda operation: operation["id"] not in default_ids
             )
+            if len(matching_family) > 1:
+                return ConfigurationResolution(
+                    operation_ids,
+                    _not_supported(
+                        "mechanism",
+                        mechanism,
+                        "Вариант механизма неоднозначен; нужен точный вариант.",
+                        [
+                            operation["variant"]
+                            for operation in matching_family
+                        ],
+                    ),
+                )
             return ConfigurationResolution(
                 operation_ids,
                 _not_found(
@@ -230,18 +263,40 @@ def apply_configuration(
 
     lining = configuration.get("lining")
     if lining:
-        selected = _exact_variant(
-            operations,
-            group="Подкладка",
-            value=lining,
-        )
+        lining_options = _group_variants(operations, "Подкладка")
+        normalized_lining = _normalize_option(lining)
+        if normalized_lining == "подкладка":
+            default_lining_id = (
+                "OP_065" if product_type == "roman" else "OP_062"
+            )
+            selected = operations_by_id[default_lining_id]
+        else:
+            selected = _exact_variant(
+                lining_options,
+                group="Подкладка",
+                value=lining,
+            )
         if selected is None:
             matching_family = [
                 operation
-                for operation in _group_variants(operations, "Подкладка")
-                if lining.strip().casefold()
-                in str(operation["variant"]).casefold()
+                for operation in lining_options
+                if normalized_lining
+                in _normalize_option(str(operation["variant"]))
             ]
+            pricing_signatures = {
+                (
+                    operation.get("formula"),
+                    operation.get("tariff_rub"),
+                    operation.get("unit"),
+                )
+                for operation in matching_family
+            }
+            if matching_family and len(pricing_signatures) == 1:
+                selected = min(
+                    matching_family,
+                    key=lambda operation: operation["id"],
+                )
+        if selected is None:
             error = (
                 _not_supported(
                     "lining",
@@ -258,10 +313,7 @@ def apply_configuration(
                     lining,
                     [
                         operation["variant"]
-                        for operation in _group_variants(
-                            operations,
-                            "Подкладка",
-                        )
+                        for operation in lining_options
                     ],
                 )
             )
@@ -278,8 +330,12 @@ def apply_configuration(
                     "Этот вариант подкладки предназначен для римских штор.",
                 ),
             )
-        if selected["id"] not in operation_ids:
-            operation_ids.append(selected["id"])
+        operation_ids = _replace_group(
+            operation_ids,
+            operations_by_id,
+            "Подкладка",
+            selected["id"],
+        )
 
     mounting = configuration.get("mounting")
     if mounting:
