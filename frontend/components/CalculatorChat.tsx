@@ -8,17 +8,39 @@ import {
   useState,
 } from "react";
 
+import { FeedbackPrompt } from "@/components/FeedbackPrompt";
 import { Message } from "@/components/Message";
 import { ResultCard } from "@/components/ResultCard";
 import { ThinkingState } from "@/components/ThinkingState";
-import { sendChatMessage, warmUpBackend } from "@/lib/api";
-import type { CalculationResult, ChatMessage } from "@/lib/types";
+import {
+  CalculationResponseError,
+  sendChatMessage,
+  warmUpBackend,
+} from "@/lib/api";
+import { createFeedbackContext } from "@/lib/feedback";
+import type {
+  CalculationResult,
+  ChatMessage,
+  FeedbackContext,
+} from "@/lib/types";
 
 const EXAMPLES = [
   "Две шторы Вандер 130 × 280",
   "Римская штора Вандер 165 × 180",
   "Комплект штор Фито 140 × 270",
 ];
+const CALCULATION_ERROR_MESSAGE =
+  "Не удалось выполнить расчёт. Попробуйте ещё раз.";
+
+type CompletedCalculation = {
+  result: CalculationResult;
+  feedback: FeedbackContext;
+};
+
+type FailedAttempt = {
+  rawRequest: string;
+  feedback: FeedbackContext;
+};
 
 function createId() {
   return crypto.randomUUID();
@@ -28,12 +50,15 @@ export function CalculatorChat() {
   const [sessionId, setSessionId] = useState("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [result, setResult] = useState<CalculationResult | null>(null);
+  const [completed, setCompleted] =
+    useState<CompletedCalculation | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [failedMessage, setFailedMessage] = useState<string | null>(null);
+  const [failedAttempt, setFailedAttempt] =
+    useState<FailedAttempt | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  const hasConversation = messages.length > 0 || isLoading || result !== null;
+  const hasConversation =
+    messages.length > 0 || isLoading || completed !== null;
 
   useEffect(() => {
     setSessionId(createId());
@@ -44,11 +69,11 @@ export function CalculatorChat() {
     if (hasConversation) {
       endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-  }, [hasConversation, isLoading, messages, result]);
+  }, [completed, hasConversation, isLoading, messages]);
 
   async function submitMessage(message: string, appendUser = true) {
     const trimmed = message.trim();
-    if (!trimmed || !sessionId || isLoading || result) {
+    if (!trimmed || !sessionId || isLoading || completed) {
       return;
     }
 
@@ -59,7 +84,7 @@ export function CalculatorChat() {
       ]);
     }
     setInput("");
-    setFailedMessage(null);
+    setFailedAttempt(null);
     setIsLoading(true);
 
     try {
@@ -80,13 +105,30 @@ export function CalculatorChat() {
             id: createId(),
             role: "assistant",
             content: response.message,
+            feedback: createFeedbackContext(
+              trimmed,
+              response.payload,
+            ),
           },
         ]);
       } else {
-        setResult(response.result);
+        setCompleted({
+          result: response.result,
+          feedback: createFeedbackContext(trimmed, response.payload),
+        });
       }
-    } catch {
-      setFailedMessage(trimmed);
+    } catch (error) {
+      const errorResult =
+        error instanceof CalculationResponseError && error.payload
+          ? error.payload
+          : {
+              status: "error",
+              message: CALCULATION_ERROR_MESSAGE,
+            };
+      setFailedAttempt({
+        rawRequest: trimmed,
+        feedback: createFeedbackContext(trimmed, errorResult),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -108,8 +150,8 @@ export function CalculatorChat() {
     setSessionId(createId());
     setInput("");
     setMessages([]);
-    setResult(null);
-    setFailedMessage(null);
+    setCompleted(null);
+    setFailedAttempt(null);
     setIsLoading(false);
   }
 
@@ -183,31 +225,47 @@ export function CalculatorChat() {
         <section className="min-h-0">
           <div className="border-t border-stone-300">
             {messages.map((message) => (
-              <Message key={message.id} message={message} />
+              <div key={message.id}>
+                <Message message={message} />
+                {message.feedback && (
+                  <FeedbackPrompt context={message.feedback} />
+                )}
+              </div>
             ))}
             {isLoading && <ThinkingState />}
           </div>
 
-          {failedMessage && !isLoading && (
-            <div
-              className="message-enter mt-4 flex flex-col items-start justify-between gap-4 border-y border-stone-300 py-5 sm:flex-row sm:items-center"
-              role="alert"
-            >
-              <p className="text-sm text-stone-700">
-                Не удалось выполнить расчёт. Попробуйте ещё раз.
-              </p>
-              <button
-                type="button"
-                onClick={() => void submitMessage(failedMessage, false)}
-                className="min-h-10 border border-stone-700 px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50"
+          {failedAttempt && !isLoading && (
+            <div className="message-enter mt-4">
+              <div
+                className="flex flex-col items-start justify-between gap-4 border-y border-stone-300 py-5 sm:flex-row sm:items-center"
+                role="alert"
               >
-                Повторить
-              </button>
+                <p className="text-sm text-stone-700">
+                  {CALCULATION_ERROR_MESSAGE}
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    void submitMessage(failedAttempt.rawRequest, false)
+                  }
+                  className="min-h-10 border border-stone-700 px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50"
+                >
+                  Повторить
+                </button>
+              </div>
+              <FeedbackPrompt context={failedAttempt.feedback} />
             </div>
           )}
 
-          {result ? (
-            <ResultCard result={result} onReset={resetCalculation} />
+          {completed ? (
+            <>
+              <ResultCard
+                result={completed.result}
+                onReset={resetCalculation}
+              />
+              <FeedbackPrompt context={completed.feedback} />
+            </>
           ) : (
             <form
               onSubmit={handleSubmit}

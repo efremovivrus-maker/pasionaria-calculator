@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 
-import { adaptWebhookResponse } from "./api";
+import {
+  adaptWebhookResponse,
+  CalculationResponseError,
+} from "./api";
 
 describe("adaptWebhookResponse components", () => {
   it("preserves universal components from the backend", () => {
-    const response = adaptWebhookResponse({
+    const payload = {
       status: "success",
+      calculation_id: "calc-components",
       retail_price: 11784.4,
       components: [
         { category: "fabric", name: "Ткань «Ибица»", cost: 7938 },
@@ -30,13 +34,15 @@ describe("adaptWebhookResponse components", () => {
           cost: 800,
         },
       ],
-    });
+    };
+    const response = adaptWebhookResponse(payload);
 
     expect(response.type).toBe("result");
     if (response.type !== "result") {
       return;
     }
     expect(response.result.components).toHaveLength(4);
+    expect(response.payload).toBe(payload);
     expect(response.result.components[2]).toMatchObject({
       category: "embroidery",
       cost: 2486.4,
@@ -85,5 +91,21 @@ describe("adaptWebhookResponse components", () => {
     expect(
       response.result.components.some((component) => component.cost === 0),
     ).toBe(false);
+  });
+
+  it("preserves an error payload for feedback", () => {
+    const payload = {
+      status: "error",
+      reason_code: "CALCULATION_ERROR",
+      message: "Не удалось выполнить расчёт.",
+    };
+
+    try {
+      adaptWebhookResponse(payload);
+      throw new Error("Expected an error response");
+    } catch (error) {
+      expect(error).toBeInstanceOf(CalculationResponseError);
+      expect((error as CalculationResponseError).payload).toBe(payload);
+    }
   });
 });

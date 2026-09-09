@@ -2,6 +2,15 @@ export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
+  feedback?: FeedbackContext;
+};
+
+export type CalculationResponsePayload = Record<string, unknown>;
+
+export type FeedbackContext = {
+  calculationId: string | null;
+  rawRequest: string;
+  result: CalculationResponsePayload;
 };
 
 export type OperationLine = {
@@ -51,8 +60,10 @@ export type WebhookResponse =
   | {
       type: "result";
       result: CalculationResult;
+      payload: CalculationResponsePayload;
     }
   | {
       type: "unavailable";
       message: string;
+      payload: CalculationResponsePayload;
     };

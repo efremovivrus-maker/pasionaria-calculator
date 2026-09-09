@@ -1,4 +1,5 @@
 import type {
+  CalculationResponsePayload,
   CalculationResult,
   CostComponent,
   OperationLine,
@@ -9,6 +10,16 @@ import { formatUnavailableMessage } from "@/lib/unavailable";
 type JsonObject = Record<string, unknown>;
 const BACKEND_WARM_UP_TIMEOUT_MS = 12_000;
 let backendWarmUpPromise: Promise<void> | undefined;
+
+export class CalculationResponseError extends Error {
+  constructor(
+    message: string,
+    readonly payload: CalculationResponsePayload | null = null,
+  ) {
+    super(message);
+    this.name = "CalculationResponseError";
+  }
+}
 
 function asObject(value: unknown): JsonObject | undefined {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -282,12 +293,19 @@ export function adaptWebhookResponse(value: unknown): WebhookResponse {
     return {
       type: "unavailable",
       message: formatUnavailableMessage(payload),
+      payload,
     };
+  }
+  if (payload.status === "error") {
+    throw new CalculationResponseError(
+      asString(payload.message) ?? "Calculation response is an error",
+      payload,
+    );
   }
 
   const result = adaptResult(payload);
   if (result) {
-    return { type: "result", result };
+    return { type: "result", result, payload };
   }
 
   const message =
@@ -297,7 +315,10 @@ export function adaptWebhookResponse(value: unknown): WebhookResponse {
     return { type: "clarification", question: message };
   }
 
-  throw new Error("Unsupported webhook response");
+  throw new CalculationResponseError(
+    "Unsupported webhook response",
+    payload,
+  );
 }
 
 export function warmUpBackend(): Promise<void> {
@@ -351,7 +372,17 @@ export async function sendChatMessage(
   });
 
   if (!response.ok) {
-    throw new Error(`Webhook returned HTTP ${response.status}`);
+    let payload: CalculationResponsePayload | null = null;
+    try {
+      const unwrapped = unwrapResponse(await response.json());
+      payload = Object.keys(unwrapped).length > 0 ? unwrapped : null;
+    } catch {
+      // The calculation response has no usable JSON body.
+    }
+    throw new CalculationResponseError(
+      `Webhook returned HTTP ${response.status}`,
+      payload,
+    );
   }
 
   return adaptWebhookResponse(await response.json());
