@@ -822,7 +822,7 @@ class CalculationApiTests(unittest.TestCase):
                 self.assertEqual(payload["status"], "success")
                 self.assert_components_match_retail(payload)
 
-        self.assertEqual(success_count, 94)
+        self.assertEqual(success_count, 95)
         self.assertEqual(problematic_count, 7)
 
 
@@ -1071,6 +1071,330 @@ class DayNightRomanTests(unittest.TestCase):
         self.assertEqual(len(self.operation_ids(payload, "OP_126")), 1)
         self.assertEqual(len(self.operation_ids(payload, "OP_117")), 1)
         self.assert_components_match_retail(payload)
+
+
+class ReportedModelAuditTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.client = TestClient(app)
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.log_path_patcher = patch.object(
+            audit_log,
+            "CALCULATION_LOG_PATH",
+            Path(self.temporary_directory.name) / "calculations.jsonl",
+        )
+        self.log_path_patcher.start()
+
+    def tearDown(self) -> None:
+        self.log_path_patcher.stop()
+        self.temporary_directory.cleanup()
+
+    def calculate(self, **payload: object) -> dict:
+        response = self.client.post("/api/calculate", json=payload)
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def test_mary_includes_anika_embroidery_once(self) -> None:
+        single = self.calculate(
+            product_type="curtain",
+            model="Мэри",
+            width_cm=140,
+            height_cm=270,
+            quantity=1,
+        )
+        repeated = self.calculate(
+            product_type="curtain",
+            model="Мэри",
+            width_cm=140,
+            height_cm=270,
+            quantity=1,
+            extra_operations=["Мэри"],
+        )
+        pair = self.calculate(
+            product_type="curtain",
+            model="Мэри",
+            width_cm=140,
+            height_cm=270,
+            quantity=2,
+        )
+        resized = self.calculate(
+            product_type="curtain",
+            model="Мэри",
+            width_cm=100,
+            height_cm=200,
+            quantity=2,
+        )
+        anika = self.calculate(
+            product_type="curtain",
+            model="Аника",
+            width_cm=100,
+            height_cm=200,
+            quantity=2,
+        )
+
+        def embroidery(payload: dict) -> list[dict]:
+            return [
+                component
+                for component in payload["components"]
+                if component.get("operation_id") == "OP_128"
+            ]
+
+        single_embroidery = embroidery(single)
+        self.assertEqual(single["status"], "success")
+        self.assertEqual(single["fabric"]["name"], "Ибица")
+        self.assertEqual(single["fabric"]["price_per_m"], 2835.0)
+        self.assertEqual(single["fabric"]["consumption_m"], 1.6)
+        self.assertEqual(len(single_embroidery), 1)
+        self.assertEqual(single_embroidery[0]["tariff"], 910.0)
+        self.assertEqual(single_embroidery[0]["quantity"], 3.78)
+        self.assertEqual(single_embroidery[0]["cost"], 3439.8)
+        self.assertEqual(len(embroidery(repeated)), 1)
+        self.assertEqual(repeated["retail_price"], single["retail_price"])
+        self.assertEqual(embroidery(pair)[0]["cost"], 6879.6)
+        self.assertEqual(embroidery(resized)[0]["cost"], 3640.0)
+        self.assertEqual(
+            embroidery(resized)[0]["cost"],
+            next(
+                component["cost"]
+                for component in anika["components"]
+                if component.get("operation_id") == "OP_071"
+            ),
+        )
+        for payload in (single, repeated, pair, resized, anika):
+            component_total = sum(
+                component["cost"] for component in payload["components"]
+            )
+            self.assertAlmostEqual(
+                component_total,
+                payload["retail_price"],
+                places=2,
+            )
+
+    def test_soft_has_no_second_fabric(self) -> None:
+        payload = self.calculate(
+            product_type="curtain",
+            model="Софт",
+            width_cm=140,
+            height_cm=270,
+            quantity=2,
+        )
+        fabric_names = [
+            component["name"]
+            for component in payload["components"]
+            if component["category"] == "fabric"
+        ]
+
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(fabric_names, ["Ткань «Софт»"])
+
+    def test_liberty_embroidery_remains_on_a_taller_curtain(self) -> None:
+        payload = self.calculate(
+            product_type="curtain",
+            model="Либерти",
+            width_cm=140,
+            height_cm=320,
+            quantity=2,
+        )
+        embroidery = [
+            component
+            for component in payload["components"]
+            if component.get("operation_id") == "OP_069"
+        ]
+
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(payload["fabric"]["layout"], "rotated_shared")
+        self.assertEqual(len(embroidery), 1)
+        self.assertEqual(embroidery[0]["tariff"], 660.0)
+
+    def test_miriam_tiebacks_are_not_free(self) -> None:
+        payload = self.calculate(
+            product_type="curtain",
+            model="Мириам",
+            width_cm=140,
+            height_cm=270,
+            quantity=2,
+            extra_operations=["подхваты"],
+        )
+
+        self.assertEqual(payload["status"], "unavailable")
+        self.assertEqual(payload["reason_code"], "EXTRA_OPERATION_NOT_FOUND")
+        self.assertNotIn("retail_price", payload)
+
+    def test_blackout_word_keeps_explicit_miriam_model(self) -> None:
+        dimensions = {
+            "product_type": "curtain",
+            "width_cm": 140,
+            "height_cm": 270,
+            "quantity": 1,
+        }
+        plain = self.calculate(model="Мириам", **dimensions)
+        described = self.calculate(
+            model="Блэкаут шторы Мириам",
+            **dimensions,
+        )
+        described_extra = self.calculate(
+            model="Мириам",
+            extra_operations=["Блэкаут"],
+            **dimensions,
+        )
+        blackout_model = self.calculate(model="Блэкаут", **dimensions)
+
+        self.assertEqual(plain["status"], "success")
+        self.assertEqual(plain["normalized_request"]["model"], "Мириам")
+        self.assertEqual(plain["fabric"]["name"], "Мириам")
+        self.assertEqual(described["normalized_request"]["model"], "Мириам")
+        self.assertEqual(described["fabric"]["name"], "Мириам")
+        self.assertEqual(described["retail_price"], plain["retail_price"])
+        self.assertEqual(
+            described_extra["retail_price"],
+            plain["retail_price"],
+        )
+        self.assertEqual(described_extra["extras"], [])
+        self.assertNotEqual(
+            blackout_model["fabric"]["name"],
+            plain["fabric"]["name"],
+        )
+        self.assertNotEqual(
+            blackout_model["retail_price"],
+            plain["retail_price"],
+        )
+        for payload in (plain, described, described_extra, blackout_model):
+            self.assertEqual(payload["status"], "success")
+            self.assertFalse(
+                any(
+                    component["name"] == "Подкладка"
+                    or "блэкаут" in component["name"].casefold()
+                    for component in payload["components"]
+                    if payload is not blackout_model
+                    or component["category"] != "fabric"
+                )
+            )
+            self.assertAlmostEqual(
+                sum(component["cost"] for component in payload["components"]),
+                payload["retail_price"],
+                places=2,
+            )
+
+    def test_miriam_phrase_uses_curtain_only_n8n_json(self) -> None:
+        dimensions = {
+            "width_cm": 140,
+            "height_cm": 270,
+            "quantity": 1,
+        }
+        plain = self.calculate(
+            product_type="curtain",
+            model="Мириам",
+            **dimensions,
+        )
+        parsed = self.calculate(
+            product_type="curtain",
+            model="Мириам",
+            configuration={
+                "heading": None,
+                "mechanism": None,
+                "lining": None,
+                "mounting": None,
+            },
+            day_fabric=None,
+            extra_operations=[],
+            raw_request="Блэкаут шторы с подхватами Мириам 140x270",
+            **dimensions,
+        )
+        phrase_as_model = self.calculate(
+            product_type="curtain",
+            model="Блэкаут шторы с подхватами Мириам",
+            configuration={
+                "heading": None,
+                "mechanism": None,
+                "lining": None,
+                "mounting": None,
+            },
+            extra_operations=[],
+            **dimensions,
+        )
+        tiebacks_as_extra = self.calculate(
+            product_type="curtain",
+            model="Мириам",
+            configuration={"lining": None},
+            extra_operations=["подхваты"],
+            raw_request="Блэкаут шторы с подхватами Мириам 140x270",
+            **dimensions,
+        )
+
+        for payload in (parsed, phrase_as_model):
+            self.assertEqual(payload["status"], "success")
+            self.assertEqual(payload["normalized_request"]["model"], "Мириам")
+            self.assertEqual(payload["fabric"]["name"], "Мириам")
+            self.assertEqual(payload["extras"], [])
+            self.assertEqual(payload["retail_price"], plain["retail_price"])
+            self.assertIsNone(
+                payload["normalized_request"]["configuration"].get("lining")
+            )
+            self.assertFalse(
+                any(
+                    "подхват" in component["name"].casefold()
+                    or component["name"] == "Подкладка"
+                    for component in payload["components"]
+                )
+            )
+            self.assertAlmostEqual(
+                sum(component["cost"] for component in payload["components"]),
+                payload["retail_price"],
+                places=2,
+            )
+
+        self.assertEqual(tiebacks_as_extra["status"], "unavailable")
+        self.assertEqual(
+            tiebacks_as_extra["reason_code"],
+            "EXTRA_OPERATION_NOT_FOUND",
+        )
+        self.assertNotIn("retail_price", tiebacks_as_extra)
+
+    def test_maya_spellings_use_standard_curtain_recipe(self) -> None:
+        standard_prices = []
+        for model in ("Майа", "Майя", "Мая"):
+            with self.subTest(model=model):
+                payload = self.calculate(
+                    product_type="curtain",
+                    model=model,
+                    width_cm=140,
+                    height_cm=270,
+                    quantity=1,
+                )
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(payload["normalized_request"]["model"], "Майа")
+                self.assertEqual(payload["fabric"]["name"], "Майа")
+                self.assertEqual(payload["fabric"]["width_cm"], 320)
+                self.assertEqual(payload["fabric"]["price_per_m"], 1845)
+                self.assertEqual(payload["fabric"]["layout"], "standard")
+                self.assertEqual(payload["fabric"]["consumption_m"], 1.6)
+                self.assertEqual(payload["fabric"]["cost"], 2952)
+                self.assertEqual(payload["extras"], [])
+                self.assertEqual(payload["retail_price"], 3667)
+                self.assertAlmostEqual(
+                    sum(component["cost"] for component in payload["components"]),
+                    payload["retail_price"],
+                    places=2,
+                )
+                standard_prices.append(payload["retail_price"])
+        self.assertEqual(len(set(standard_prices)), 1)
+
+        tall = self.calculate(
+            product_type="curtain",
+            model="Майя",
+            width_cm=140,
+            height_cm=320,
+            quantity=1,
+        )
+        self.assertEqual(tall["status"], "success")
+        self.assertEqual(tall["normalized_request"]["model"], "Майа")
+        self.assertEqual(tall["fabric"]["layout"], "rotated")
+        self.assertEqual(tall["fabric"]["consumption_m"], 3.4)
+        self.assertEqual(tall["extras"], [])
+        self.assertAlmostEqual(
+            sum(component["cost"] for component in tall["components"]),
+            tall["retail_price"],
+            places=2,
+        )
 
 
 if __name__ == "__main__":

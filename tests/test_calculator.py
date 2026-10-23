@@ -263,6 +263,7 @@ class CalculatorTests(unittest.TestCase):
             "Лилас": ("active", "area", 360),
             "Лука": ("active", "area", 470),
             "Мика": ("active", "area", 640),
+            "Мэри": ("active", "area", 910),
             "Прайм": ("active", "area", 370),
             "Фито": ("active", "area", 300),
             "Флэш": ("active", "area", 305),

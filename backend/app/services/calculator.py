@@ -14,7 +14,7 @@ from .configuration import (
     resolve_extra_operation_ids,
 )
 from .fabric_calculator import calculate_fabric_consumption
-from .model_matching import resolve_model
+from .model_matching import normalize_model_name, resolve_model
 from .pricing import build_pricing, money
 
 
@@ -31,6 +31,7 @@ PRODUCT_ALIASES = {
     "римские шторы": "roman",
 }
 REQUIRED_FIELDS = ("product_type", "model", "width_cm", "height_cm", "quantity")
+BLACKOUT_FABRIC_DESCRIPTORS = {"блекаут"}
 DAY_NIGHT_MECHANISM_IDS = {"OP_126", "OP_127"}
 DEFAULT_DAY_FABRIC = "Вита"
 PANEL_OPERATION_GROUPS = (
@@ -60,6 +61,47 @@ def _unavailable(
     if details:
         result["details"] = details
     return result
+
+
+MAYA_MODEL_ALIASES = {"майа", "майя", "мая"}
+
+
+def _requested_model_name(requested: str) -> str:
+    """Apply confirmed model aliases without changing other catalog names."""
+    normalized = normalize_model_name(requested)
+    if normalized in MAYA_MODEL_ALIASES:
+        return "Майа"
+    if "мириам" in set(normalized.split()):
+        return "Мириам"
+    return requested.strip()
+
+
+def _without_miriam_blackout_descriptor(
+    model_name: str,
+    extra_operations: list[str],
+) -> list[str]:
+    if model_name != "Мириам":
+        return extra_operations
+    return [
+        value
+        for value in extra_operations
+        if normalize_model_name(value) not in BLACKOUT_FABRIC_DESCRIPTORS
+    ]
+
+
+def _catalog_fabric_by_name(name: str) -> dict[str, Any] | None:
+    """Return a fabric only when its name matches without fuzzy substitution."""
+    expected = normalize_model_name(name)
+    if not expected:
+        return None
+    matches = [
+        record
+        for record in _read_catalog("fabrics.json", "records")
+        if normalize_model_name(str(record.get("name") or "")) == expected
+    ]
+    if len(matches) != 1:
+        return None
+    return matches[0]
 
 
 def _find_casefold(
@@ -353,7 +395,7 @@ def _calculate(
     )
 
     master = _read_catalog("master.json", "records")
-    requested_model = str(request["model"]).strip()
+    requested_model = _requested_model_name(str(request["model"]))
     model_match = resolve_model(
         requested_model,
         (
@@ -371,6 +413,22 @@ def _calculate(
         }
     )
     if model is None:
+        fabric_match = _catalog_fabric_by_name(requested_model)
+        if fabric_match is not None:
+            message = (
+                f"Ткань «{fabric_match['name']}» есть в справочнике, "
+                "но модели шторы или римской шторы с таким названием нет."
+            )
+            return _unavailable(
+                "MODEL_NOT_FOUND",
+                message,
+                message=message,
+                details={
+                    "model": requested_model,
+                    "fabric_name": fabric_match["name"],
+                    "fabric_without_model": True,
+                },
+            )
         return _unavailable(
             "MODEL_NOT_FOUND",
             f"Модель {requested_model!r} не найдена в master-каталоге.",
@@ -629,7 +687,10 @@ def _calculate(
         audit.setdefault("operations", []).append(line)
 
     extra_operation_ids, extra_error = resolve_extra_operation_ids(
-        requested_values=requested_extra_operations,
+        requested_values=_without_miriam_blackout_descriptor(
+            model["model"],
+            requested_extra_operations,
+        ),
         built_in_operation_id=model.get("additional_operation_id"),
         operations=operations,
     )

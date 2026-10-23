@@ -62,6 +62,12 @@ export function formatUnavailableMessage(value: unknown): string {
 
   if (reasonCode === "MODEL_NOT_FOUND") {
     const model = requestedModel(payload, details);
+    if (details.fabric_without_model === true) {
+      const fabricName = asString(details.fabric_name) ?? model;
+      return fabricName
+        ? `Ткань «${fabricName}» есть в справочнике, но модели шторы или римской шторы с таким названием нет.`
+        : SAFE_FALLBACK;
+    }
     return model
       ? `Не удалось найти модель «${model}». Укажите название модели как на сайте pasionaria.ru.`
       : SAFE_FALLBACK;

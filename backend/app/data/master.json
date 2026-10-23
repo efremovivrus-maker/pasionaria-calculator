@@ -808,6 +808,18 @@
     {
       "product_type": "curtain",
       "product_type_source": "Шторы",
+      "model": "Майа",
+      "fabric_name": "Майа",
+      "recipe_code": "CURTAIN_BASE",
+      "additional_operation_code": null,
+      "additional_operation_id": null,
+      "additional_operation_status_source": "—",
+      "status": "active",
+      "reason": null
+    },
+    {
+      "product_type": "curtain",
+      "product_type_source": "Шторы",
       "model": "Майкл",
       "fabric_name": "Майкл",
       "recipe_code": "CURTAIN_BASE",
@@ -907,11 +919,11 @@
       "model": "Мэри",
       "fabric_name": "Ибица",
       "recipe_code": "CURTAIN_BASE",
-      "additional_operation_code": null,
-      "additional_operation_id": null,
-      "additional_operation_status_source": "—",
+      "additional_operation_code": "EMB_FULL_МЭРИ",
+      "additional_operation_id": "OP_128",
+      "additional_operation_status_source": "Подтверждено",
       "status": "active",
-      "reason": null
+      "reason": "Вышивка «Мэри» по всей площади: 910 ₽/м²."
     },
     {
       "product_type": "curtain",

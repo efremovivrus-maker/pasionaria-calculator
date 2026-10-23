@@ -86,6 +86,26 @@ Add these rules to the parser prompt:
 14. Include `day_fabric` in `fields_present` only when the current message
     explicitly names the day fabric. A day-night request without a day fabric
     keeps `day_fabric: null` and does not list the field.
+15. Do not drop a requested component that has no catalog price. Embroidery,
+    tulle and tiebacks (`подхваты`) go into `extra_operations` using the
+    user's wording. The backend must validate them. Exception: in
+    `Блэкаут шторы Мириам` and `Блэкаут шторы с подхватами Мириам`, the words
+    `Блэкаут` and `подхваты` are not extras. Leave `extra_operations` empty.
+16. A model with built-in embroidery, such as `Либерти` or `Мэри`, already
+    includes that embroidery. Do not also add the model name to
+    `extra_operations`. Words such as `нестандартный размер` are not part of
+    the model name. Send the numeric width and height when the user provides
+    them.
+17. In `Блэкаут шторы Мириам` and `Блэкаут шторы с подхватами Мириам`, the
+    model is only `Мириам`. Do not select the separate model `Блэкаут`. Do
+    not set `configuration.lining`. Do not add blackout, tiebacks, a second
+    fabric or any value to `extra_operations`. `Блэкаут` alone, without
+    `Мириам`, remains model `Блэкаут`. A separate request for tiebacks on
+    another model still goes into `extra_operations`.
+18. `Майа`, `Майя` and `Мая` are the same curtain model `Майа`. Do not replace
+    them with `Майкл`, `Мэри` or `Мириам`. Do not invent tulle for `Софт`.
+    Do not invent a separate embroidery tariff for `Мэри`: the backend
+    includes it.
 
 Prompt examples:
 
@@ -113,6 +133,40 @@ Prompt examples:
   `inferred_fields: ["quantity"]`.
 - `комплект штор Вандер` → `quantity: null`; quantity remains missing.
 - `шторы Вандер` → `quantity: null`; quantity remains missing.
+- `шторы Мэри` and `штора Мэри с вышивкой Мэри` → model `Мэри`,
+  `extra_operations: []`. The backend includes the embroidery once.
+- `комплект Софт с тюлем` → model `Софт`,
+  `extra_operations: ["тюль"]`. Do not add a tulle price locally.
+- `Блэкаут шторы Мириам 140x270` and
+  `Блэкаут шторы с подхватами Мириам 140x270` → model `Мириам`, width `140`,
+  height `270`, empty configuration (`lining: null`), `extra_operations: []`.
+  Quantity stays missing because the plural form has no count.
+  Do not ask whether the model is `Блэкаут` and do not add tiebacks.
+  Parser output:
+
+```json
+{
+  "product_type": "curtain",
+  "model": "Мириам",
+  "width_cm": 140,
+  "height_cm": 270,
+  "quantity": null,
+  "configuration": {
+    "heading": null,
+    "mechanism": null,
+    "lining": null,
+    "mounting": null
+  },
+  "day_fabric": null,
+  "extra_operations": [],
+  "raw_request": "Блэкаут шторы с подхватами Мириам 140x270"
+}
+```
+
+  If the parser instead sends `extra_operations: ["подхваты"]`, the backend
+  returns `EXTRA_OPERATION_NOT_FOUND` and does not calculate a price. Do not
+  hide or drop that response. Correct the prompt so the extra is not sent.
+- `шторы Майа`, `шторы Майя` and `штора Мая` → model `Майа`, not `Майкл`.
 
 ## Session merge
 

@@ -143,6 +143,14 @@
     },
     {
       "product_type": "curtain",
+      "model": "Мэри",
+      "fabric_name": "Ибица",
+      "description": "Вышивка по всей площади",
+      "source_tariff": "910 ₽/м²",
+      "status": "Подтверждено"
+    },
+    {
+      "product_type": "curtain",
       "model": "Прайм",
       "fabric_name": "Ибица",
       "description": "Вышивка по всей площади",

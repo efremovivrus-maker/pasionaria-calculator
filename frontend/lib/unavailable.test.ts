@@ -45,6 +45,22 @@ describe("formatUnavailableMessage", () => {
     );
   });
 
+  it("explains a fabric that has no product model", () => {
+    expect(
+      formatUnavailableMessage({
+        status: "unavailable",
+        reason_code: "MODEL_NOT_FOUND",
+        details: {
+          model: "Без модели",
+          fabric_name: "Без модели",
+          fabric_without_model: true,
+        },
+      }),
+    ).toBe(
+      "Ткань «Без модели» есть в справочнике, но модели шторы или римской шторы с таким названием нет.",
+    );
+  });
+
   it("uses the safe fallback for an unknown reason code", () => {
     expect(
       formatUnavailableMessage({
