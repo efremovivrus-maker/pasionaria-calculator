@@ -8,10 +8,19 @@ from typing import Any
 from ..schemas.calculation import CalculationRequest
 
 
+def _panel_suffix(line: dict[str, Any]) -> str:
+    panel = line.get("panel")
+    if panel == "main":
+        return ", основное полотно"
+    if panel == "day":
+        return ", дневное полотно"
+    return ""
+
+
 def _operation(line: dict[str, Any]) -> dict[str, Any]:
     return {
         "operation_id": line["operation_id"],
-        "name": f"{line['group']}: {line['variant']}",
+        "name": f"{line['group']}: {line['variant']}{_panel_suffix(line)}",
         "calculation_basis": line["calculation_basis"],
         "quantity": line["basis_value"],
         "tariff": line["tariff_rub"],
@@ -46,8 +55,8 @@ def _component_name(line: dict[str, Any]) -> str:
     if group == "Подкладка":
         return "Подкладка"
     if "вышив" in group.casefold():
-        return f"{group} «{variant}»"
-    return f"{group} — {variant}"
+        return f"{group} «{variant}»{_panel_suffix(line)}"
+    return f"{group} — {variant}{_panel_suffix(line)}"
 
 
 def _operation_component(
@@ -67,17 +76,49 @@ def _operation_component(
     }
 
 
+def _fabric_component(
+    fabric: dict[str, Any],
+    *,
+    cost: float,
+    panel: str | None = None,
+) -> dict[str, Any]:
+    name = f"Ткань «{fabric['name']}»"
+    if panel == "main":
+        name = f"{name} — основное полотно"
+    elif panel == "day":
+        name = f"{name} — дневное полотно"
+    return {
+        "category": "fabric",
+        "name": name,
+        "cost": cost,
+    }
+
+
 def _components(result: dict[str, Any]) -> list[dict[str, Any]]:
     fabric = result["fabric"]
     pricing = result["pricing"]
+    day_fabric = result.get("day_fabric")
     base_operations = result["operations"]["base"]
     extra_operations = result["operations"]["additional"]
+    if day_fabric:
+        fabric_components = [
+            _fabric_component(
+                fabric,
+                cost=fabric["cost_rub"],
+                panel="main",
+            ),
+            _fabric_component(
+                day_fabric,
+                cost=day_fabric["cost_rub"],
+                panel="day",
+            ),
+        ]
+    else:
+        fabric_components = [
+            _fabric_component(fabric, cost=pricing["fabric_cost"]),
+        ]
     components = [
-        {
-            "category": "fabric",
-            "name": f"Ткань «{fabric['name']}»",
-            "cost": pricing["fabric_cost"],
-        },
+        *fabric_components,
         *[
             _operation_component(line, is_extra=False)
             for line in base_operations
@@ -124,8 +165,9 @@ def adapt_calculation_result(
     pricing = result["pricing"]
     consumption = result["consumption"]
     fabric = result["fabric"]
+    day_fabric = result.get("day_fabric")
     components = _components(result)
-    return {
+    response = {
         "status": "success",
         "calculation_id": calculation_id,
         "normalized_request": result["request"],
@@ -135,7 +177,11 @@ def adapt_calculation_result(
             "price_per_m": fabric["price_rub_per_m"],
             "layout": consumption["layout"],
             "consumption_m": consumption["consumption_m"],
-            "cost": pricing["fabric_cost"],
+            "cost": (
+                fabric["cost_rub"]
+                if day_fabric
+                else pricing["fabric_cost"]
+            ),
         },
         "operations": [
             _operation(line) for line in result["operations"]["base"]
@@ -149,3 +195,14 @@ def adapt_calculation_result(
         "retail_price_status": pricing["retail_price_status"],
         "explanation": consumption["explanation"],
     }
+    if day_fabric:
+        day_consumption = day_fabric["consumption"]
+        response["day_fabric"] = {
+            "name": day_fabric["name"],
+            "width_cm": day_fabric["width_cm"],
+            "price_per_m": day_fabric["price_rub_per_m"],
+            "layout": day_consumption["layout"],
+            "consumption_m": day_consumption["consumption_m"],
+            "cost": day_fabric["cost_rub"],
+        }
+    return response

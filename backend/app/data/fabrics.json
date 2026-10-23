@@ -201,6 +201,18 @@
       "comment": null
     },
     {
+      "id": "FABRIC_VITA",
+      "name": "Вита",
+      "base_article": "FABRIC_VITA",
+      "width_cm": 280,
+      "base_price_rub_per_m": null,
+      "rrc_price_rub_per_m": 700,
+      "sku_count": 1,
+      "used_in_mvp": true,
+      "status": "OK",
+      "comment": "Цвет: белый. Состав: 100% полиэстер."
+    },
+    {
       "name": "Вудсток",
       "base_article": "PAS-F-04-40",
       "width_cm": 300,

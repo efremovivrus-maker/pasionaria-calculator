@@ -11,6 +11,7 @@ Keep the existing session fields and add:
 - `configuration_mechanism` — string / null
 - `configuration_lining` — string / null
 - `configuration_mounting` — string / null
+- `day_fabric` — string / null
 - `extra_operations_json` — JSON string, default `[]`
 
 If the Data Table supports native JSON, `configuration` may instead be stored
@@ -34,6 +35,7 @@ Require JSON with this shape:
     "lining": null,
     "mounting": null
   },
+  "day_fabric": null,
   "extra_operations": ["Лея"],
   "fields_present": [
     "product_type",
@@ -78,6 +80,12 @@ Add these rules to the parser prompt:
 12. Preserve the selected Roman mechanism kind. Normalize differences in
     case, spaces and the hyphen in `день-ночь`, but do not reduce
     `День-ночь Эконом` or `День-ночь Стандарт` to a base mechanism.
+13. Put an explicitly named day fabric only into `day_fabric`. Never copy it
+    into `model` and never invent `Вита`: the backend applies that default
+    when `day_fabric` is null and the mechanism is day-night.
+14. Include `day_fabric` in `fields_present` only when the current message
+    explicitly names the day fabric. A day-night request without a day fabric
+    keeps `day_fabric: null` and does not list the field.
 
 Prompt examples:
 
@@ -92,7 +100,11 @@ Prompt examples:
 - `шторы Вандер на подкладке 140x270 2 шт` →
   `configuration.lining: "Подкладка"`.
 - `римская штора Вандер день ночь эконом 120x200` →
-  `configuration.mechanism: "День-ночь Эконом"`.
+  `configuration.mechanism: "День-ночь Эконом"`, `day_fabric: null`.
+  Do not put `day_fabric` in `fields_present`.
+- `римская штора Вандер день ночь эконом, дневная ткань Вудсток 120x200` →
+  `configuration.mechanism: "День-ночь Эконом"`, `day_fabric: "Вудсток"`,
+  and `fields_present` includes `day_fabric`.
 - `шторы Ибица на люверсах с вышивкой Лея 140x270 2 шт` → model
   `Ибица`, heading `Люверсы`, extras `["Лея"]`.
 - `римская штора Вандер` → `quantity: 1`,
@@ -120,6 +132,11 @@ Merge the current parser output into the stored session field by field:
 7. If `quantity` is in `inferred_fields`, store the inferred value only when
    the session does not already contain an explicit quantity. A value listed
    in `fields_present` always overwrites the stored value.
+8. Treat `day_fabric` as a scalar. Overwrite the stored value only when
+   `day_fabric` is in `fields_present` and the new value is not null. A later
+   size clarification must not erase a previously named day fabric.
+9. Do not store the backend default `Вита` in the session. Leave `day_fabric`
+   null until the user names another fabric.
 
 Example:
 
@@ -127,6 +144,10 @@ Example:
 stored: mechanism=Эконом, width=null, height=null, quantity=null
 reply:  120x200, 2 штуки
 merged: mechanism=Эконом, width=120, height=200, quantity=2
+
+stored: mechanism=День-ночь Эконом, day_fabric=Вудсток, width=null
+reply:  120x200
+merged: mechanism=День-ночь Эконом, day_fabric=Вудсток, width=120, height=200
 ```
 
 No rule for removing an already selected option has been confirmed. Do not
@@ -149,6 +170,7 @@ Send the merged state to `POST /api/calculate`:
     "lining": null,
     "mounting": null
   },
+  "day_fabric": null,
   "extra_operations": [],
   "raw_request": "120x200, 2 штуки"
 }
@@ -157,3 +179,8 @@ Send the merged state to `POST /api/calculate`:
 Treat HTTP 200 with `status: "unavailable"` as a business response. Return the
 backend `message`, `reason_code` and `details` to the conversational branch;
 do not route it to the technical-error branch.
+
+If the backend says the day fabric was provided without a day-night mechanism,
+ask the user to choose `День-ночь Эконом` or `День-ночь Стандарт`. If it says
+the day fabric is missing from the catalog or does not fit the height, show
+that message and do not substitute another fabric or price.

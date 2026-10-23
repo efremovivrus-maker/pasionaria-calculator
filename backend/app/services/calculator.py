@@ -10,6 +10,7 @@ from typing import Any, Iterable
 from .audit_log import safe_record_calculation
 from .configuration import (
     apply_configuration,
+    find_exact_mechanism,
     resolve_extra_operation_ids,
 )
 from .fabric_calculator import calculate_fabric_consumption
@@ -30,6 +31,12 @@ PRODUCT_ALIASES = {
     "римские шторы": "roman",
 }
 REQUIRED_FIELDS = ("product_type", "model", "width_cm", "height_cm", "quantity")
+DAY_NIGHT_MECHANISM_IDS = {"OP_126", "OP_127"}
+DEFAULT_DAY_FABRIC = "Вита"
+PANEL_OPERATION_GROUPS = (
+    "Пошив римской шторы",
+    "Крепления к механизму",
+)
 
 
 def _read_catalog(filename: str, key: str) -> list[dict[str, Any]]:
@@ -126,6 +133,119 @@ def _price_operation(
     }
 
 
+def _is_day_night(configuration: dict[str, str | None]) -> bool:
+    mechanism = find_exact_mechanism(
+        configuration.get("mechanism"),
+        _read_catalog("operations.json", "records"),
+    )
+    return mechanism is not None and mechanism["id"] in DAY_NIGHT_MECHANISM_IDS
+
+
+def _panel_height_reason(fabric_name: str, *, day: bool) -> str:
+    role = "Дневная" if day else "Основная"
+    return (
+        f"{role} ткань «{fabric_name}» не подходит: высота римской шторы "
+        "превышает ширину ткани; разворот и стачивание не разрешены."
+    )
+
+
+def _day_fabric_unavailable(
+    reason_code: str,
+    reason: str,
+    *,
+    requested_value: str,
+) -> dict[str, Any]:
+    return _unavailable(
+        reason_code,
+        reason,
+        message=reason,
+        details={
+            "field": "day_fabric",
+            "requested_value": requested_value,
+        },
+    )
+
+
+def _resolve_day_fabric(
+    requested_name: str | None,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    fabric_name = requested_name or DEFAULT_DAY_FABRIC
+    fabric = _find_casefold(
+        _read_catalog("fabrics.json", "records"),
+        "name",
+        fabric_name,
+    )
+    if fabric is None:
+        return None, _day_fabric_unavailable(
+            "FABRIC_NOT_FOUND",
+            f"Дневная ткань «{fabric_name}» не найдена в справочнике.",
+            requested_value=fabric_name,
+        )
+    if fabric.get("width_cm") is None:
+        return None, _day_fabric_unavailable(
+            "FABRIC_WIDTH_UNKNOWN",
+            f"Для дневной ткани «{fabric['name']}» не указана ширина.",
+            requested_value=fabric["name"],
+        )
+    if fabric.get("rrc_price_rub_per_m") is None:
+        return None, _day_fabric_unavailable(
+            "FABRIC_PRICE_UNKNOWN",
+            f"Для дневной ткани «{fabric['name']}» не указана розничная цена.",
+            requested_value=fabric["name"],
+        )
+    return fabric, None
+
+
+def _expand_day_night_operations(
+    operation_ids: list[str],
+    operations_by_id: dict[str, dict[str, Any]],
+    *,
+    width_m: Decimal,
+    height_m: Decimal,
+    quantity: int,
+) -> tuple[list[dict[str, Any]] | None, str | None]:
+    """Price each panel operation twice and each shared operation once."""
+    panel_lines: dict[str, list[dict[str, Any]]] = {
+        group: [] for group in PANEL_OPERATION_GROUPS
+    }
+    shared_lines: list[dict[str, Any]] = []
+    other_lines: list[dict[str, Any]] = []
+    for operation_id in operation_ids:
+        operation = operations_by_id.get(operation_id)
+        if operation is None:
+            return None, operation_id
+        group = operation["group"]
+        panels = ("main", "day") if group in panel_lines else (None,)
+        for panel in panels:
+            line = _price_operation(
+                operation,
+                width_m=width_m,
+                height_m=height_m,
+                quantity=quantity,
+            )
+            if line is None:
+                return None, operation_id
+            if panel is not None:
+                line["panel"] = panel
+                panel_lines[group].append(line)
+            elif group in {"Механизм", "Монтаж римской шторы"}:
+                shared_lines.append(line)
+            else:
+                if group == "Подкладка":
+                    line = {**line, "variant": "Подкладка"}
+                other_lines.append(line)
+    return (
+        [
+            line
+            for group in PANEL_OPERATION_GROUPS
+            for line in panel_lines[group]
+        ]
+        + shared_lines
+        + other_lines,
+        None,
+    )
+
+
 def _calculate(
     request: dict[str, Any],
     audit: dict[str, Any],
@@ -209,6 +329,20 @@ def _calculate(
     requested_extra_operations = [
         value.strip() for value in extra_operations_value
     ]
+    if "day_fabric" in request and request["day_fabric"] is not None:
+        if not isinstance(request["day_fabric"], str):
+            return _unavailable(
+                "MISSING_RULE",
+                "Поле day_fabric должно быть строкой или null.",
+            )
+        requested_day_fabric = request["day_fabric"].strip()
+        if not requested_day_fabric:
+            return _unavailable(
+                "MISSING_RULE",
+                "Поле day_fabric не может быть пустым.",
+            )
+    else:
+        requested_day_fabric = None
     audit.update(
         {
             "model": str(request["model"]).strip(),
@@ -314,6 +448,17 @@ def _calculate(
         }
     )
     if consumption.status != "success":
+        if (
+            product_type == "roman"
+            and consumption.reason_code == "ROMAN_TOO_HIGH"
+            and _is_day_night(configuration)
+        ):
+            reason = _panel_height_reason(fabric["name"], day=False)
+            return _unavailable(
+                "ROMAN_TOO_HIGH",
+                reason,
+                message=reason,
+            )
         return _unavailable(
             consumption.reason_code or "MISSING_RULE",
             consumption.reason or "Не удалось определить расход ткани.",
@@ -361,8 +506,101 @@ def _calculate(
             },
         )
 
+    resolved_operation_ids = configuration_resolution.operation_ids
+    is_day_night = any(
+        operation_id in DAY_NIGHT_MECHANISM_IDS
+        for operation_id in resolved_operation_ids
+    )
+    if requested_day_fabric and not is_day_night:
+        reason = (
+            "Дневная ткань указана без механизма «день-ночь». "
+            "Уточните механизм: «День-ночь Эконом» или «День-ночь Стандарт»."
+        )
+        return _unavailable(
+            "CONFIGURATION_NOT_SUPPORTED",
+            reason,
+            message=reason,
+            details={
+                "field": "day_fabric",
+                "requested_value": requested_day_fabric,
+                "model": model["model"],
+                "product_type": product_type,
+                "available_options": [
+                    "День-ночь Эконом",
+                    "День-ночь Стандарт",
+                ],
+            },
+        )
+
+    day_fabric = None
+    day_consumption = None
+    if is_day_night:
+        day_fabric, day_fabric_error = _resolve_day_fabric(requested_day_fabric)
+        if day_fabric_error:
+            return day_fabric_error
+        day_consumption = calculate_fabric_consumption(
+            product_type=product_type,
+            width_cm=width_cm,
+            height_cm=height_cm,
+            quantity=quantity,
+            fabric_width_cm=Decimal(str(day_fabric["width_cm"])),
+        )
+        if day_consumption.status != "success":
+            if day_consumption.reason_code == "ROMAN_TOO_HIGH":
+                reason = _panel_height_reason(day_fabric["name"], day=True)
+                return _unavailable(
+                    "ROMAN_TOO_HIGH",
+                    reason,
+                    message=reason,
+                    details={
+                        "field": "day_fabric",
+                        "requested_value": day_fabric["name"],
+                    },
+                )
+            return _unavailable(
+                day_consumption.reason_code or "MISSING_RULE",
+                day_consumption.reason
+                or "Не удалось определить расход дневной ткани.",
+                message=(
+                    day_consumption.reason
+                    or "Не удалось определить расход дневной ткани."
+                ),
+                details={
+                    "field": "day_fabric",
+                    "requested_value": day_fabric["name"],
+                },
+            )
+        audit.update(
+            {
+                "day_fabric": day_fabric["name"],
+                "day_fabric_width_cm": day_fabric["width_cm"],
+                "day_fabric_price": day_fabric["rrc_price_rub_per_m"],
+                "day_fabric_layout": day_consumption.layout,
+                "day_fabric_consumption_m": float(
+                    day_consumption.consumption_m
+                ),
+            }
+        )
+
     base_lines: list[dict[str, Any]] = []
-    for operation_id in configuration_resolution.operation_ids:
+    if is_day_night:
+        expanded_lines, failed_operation_id = _expand_day_night_operations(
+            resolved_operation_ids,
+            operations_by_id,
+            width_m=width_m,
+            height_m=height_m,
+            quantity=quantity,
+        )
+        if expanded_lines is None:
+            return _unavailable(
+                "MISSING_RULE",
+                f"Нельзя применить тариф операции {failed_operation_id!r}.",
+            )
+        base_lines.extend(expanded_lines)
+        audit.setdefault("operations", []).extend(expanded_lines)
+    for operation_id in (
+        [] if is_day_night else resolved_operation_ids
+    ):
         operation = operations_by_id.get(operation_id)
         if operation is None:
             return _unavailable(
@@ -434,10 +672,17 @@ def _calculate(
         extra_lines.append(line)
         audit.setdefault("extras", []).append(line)
 
-    fabric_cost = (
+    main_fabric_cost = (
         consumption.consumption_m
         * Decimal(str(fabric["rrc_price_rub_per_m"]))
     )
+    day_fabric_cost = (
+        day_consumption.consumption_m
+        * Decimal(str(day_fabric["rrc_price_rub_per_m"]))
+        if day_fabric is not None and day_consumption is not None
+        else Decimal("0")
+    )
+    fabric_cost = main_fabric_cost + day_fabric_cost
     operation_cost = sum(
         (Decimal(str(line["cost_rub"])) for line in base_lines),
         Decimal("0"),
@@ -453,17 +698,29 @@ def _calculate(
         }
     )
 
+    request_payload = {
+        "product_type": product_type,
+        "model": model["model"],
+        "width_cm": float(width_cm),
+        "height_cm": float(height_cm),
+        "quantity": quantity,
+        "configuration": configuration,
+        "extra_operations": requested_extra_operations,
+    }
+    if day_fabric is not None:
+        request_payload["day_fabric"] = day_fabric["name"]
+    explanation = consumption.explanation
+    if day_fabric is not None and day_consumption is not None:
+        explanation = (
+            f"Основное полотно: {consumption.explanation} "
+            f"Дневное полотно «{day_fabric['name']}»: "
+            f"{day_consumption.explanation}"
+        )
+        audit["day_fabric_cost"] = money(day_fabric_cost)
+    audit["explanation"] = explanation
     return {
         "status": "success",
-        "request": {
-            "product_type": product_type,
-            "model": model["model"],
-            "width_cm": float(width_cm),
-            "height_cm": float(height_cm),
-            "quantity": quantity,
-            "configuration": configuration,
-            "extra_operations": requested_extra_operations,
-        },
+        "request": request_payload,
         "model": {
             "name": model["model"],
             "status": model["status"],
@@ -476,8 +733,26 @@ def _calculate(
             "price_type": "RRC",
             "price_rub_per_m": fabric["rrc_price_rub_per_m"],
             "status": fabric["status"],
+            "cost_rub": money(main_fabric_cost),
         },
-        "consumption": consumption.to_dict(),
+        "day_fabric": (
+            {
+                "name": day_fabric["name"],
+                "article": day_fabric["base_article"],
+                "width_cm": day_fabric["width_cm"],
+                "price_type": "RRC",
+                "price_rub_per_m": day_fabric["rrc_price_rub_per_m"],
+                "status": day_fabric["status"],
+                "cost_rub": money(day_fabric_cost),
+                "consumption": day_consumption.to_dict(),
+            }
+            if day_fabric is not None and day_consumption is not None
+            else None
+        ),
+        "consumption": {
+            **consumption.to_dict(),
+            "explanation": explanation,
+        },
         "operations": {
             "base": base_lines,
             "additional": extra_lines,

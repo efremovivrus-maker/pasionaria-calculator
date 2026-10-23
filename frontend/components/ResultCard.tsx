@@ -21,9 +21,14 @@ function productName(type?: string) {
 
 export function ResultCard({ result, onReset }: ResultCardProps) {
   const components = result.components ?? [];
+  const fabricComponents = components.filter(
+    (component) => component.category === "fabric",
+  );
   const operationComponents = components.filter(
     (component) => component.category !== "fabric",
   );
+  const compositionComponents =
+    fabricComponents.length > 1 ? components : operationComponents;
   const groupedBreakdown = components.reduce(
     (groups, component) => {
       const label =
@@ -72,13 +77,21 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
                 .filter(Boolean)
                 .join(" · ")}
             </p>
-            {result.fabricName && (
-              <p className="mt-4 text-sm text-stone-600">
-                Ткань: {result.fabricName}
-                {result.fabricConsumptionM !== undefined
-                  ? ` · ${decimal.format(result.fabricConsumptionM)} м`
-                  : ""}
-              </p>
+            {fabricComponents.length > 1 ? (
+              <div className="mt-4 space-y-1 text-sm text-stone-600">
+                {fabricComponents.map((component) => (
+                  <p key={component.name}>{component.name}</p>
+                ))}
+              </div>
+            ) : (
+              result.fabricName && (
+                <p className="mt-4 text-sm text-stone-600">
+                  Ткань: {result.fabricName}
+                  {result.fabricConsumptionM !== undefined
+                    ? ` · ${decimal.format(result.fabricConsumptionM)} м`
+                    : ""}
+                </p>
+              )
             )}
           </div>
         </div>
@@ -98,13 +111,13 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
             ))}
           </dl>
 
-          {operationComponents.length > 0 && (
+          {compositionComponents.length > 0 && (
             <div className="mt-7 border-t border-stone-400/50 pt-5">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
                 Состав расчёта
               </p>
               <ul className="mt-4 space-y-3 text-xs leading-5 text-stone-600">
-                {operationComponents.map(
+                {compositionComponents.map(
                   (component, index) => (
                     <li
                       key={

@@ -826,5 +826,252 @@ class CalculationApiTests(unittest.TestCase):
         self.assertEqual(problematic_count, 7)
 
 
+class DayNightRomanTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.client = TestClient(app)
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.log_path_patcher = patch.object(
+            audit_log,
+            "CALCULATION_LOG_PATH",
+            Path(self.temporary_directory.name) / "calculations.jsonl",
+        )
+        self.log_path_patcher.start()
+
+    def tearDown(self) -> None:
+        self.log_path_patcher.stop()
+        self.temporary_directory.cleanup()
+
+    def assert_components_match_retail(self, payload: dict) -> None:
+        component_total = sum(
+            component["cost"] for component in payload["components"]
+        )
+        self.assertAlmostEqual(
+            component_total,
+            payload["retail_price"],
+            places=2,
+        )
+
+    def post_roman(self, **overrides: object) -> dict:
+        payload = {
+            "product_type": "roman",
+            "model": "Вандер",
+            "width_cm": 120,
+            "height_cm": 200,
+            "quantity": 1,
+            "configuration": {"mechanism": "День-ночь Эконом"},
+        }
+        payload.update(overrides)
+        response = self.client.post("/api/calculate", json=payload)
+        self.assertEqual(response.status_code, 200)
+        return response.json()
+
+    def operation_ids(self, payload: dict, operation_id: str) -> list[dict]:
+        return [
+            component
+            for component in payload["components"]
+            if component.get("operation_id") == operation_id
+        ]
+
+    def test_vita_is_unique_and_usable(self) -> None:
+        records = json.loads(
+            (
+                Path(__file__).resolve().parents[1]
+                / "backend"
+                / "app"
+                / "data"
+                / "fabrics.json"
+            ).read_text(encoding="utf-8")
+        )["records"]
+        vita = [record for record in records if record["name"] == "Вита"]
+        articles = [record["base_article"] for record in records]
+        identifiers = [record["id"] for record in records if "id" in record]
+
+        self.assertEqual(len(vita), 1)
+        self.assertEqual(vita[0]["id"], "FABRIC_VITA")
+        self.assertEqual(vita[0]["base_article"], "FABRIC_VITA")
+        self.assertEqual(vita[0]["width_cm"], 280)
+        self.assertEqual(vita[0]["rrc_price_rub_per_m"], 700)
+        self.assertEqual(articles.count("FABRIC_VITA"), 1)
+        self.assertEqual(len(identifiers), len(set(identifiers)))
+
+    def test_day_night_uses_vita_by_default_for_both_levels(self) -> None:
+        cases = (
+            ("День-ночь Эконом", "OP_126", 7656.25, 9187.5, 15630.5),
+            ("День-ночь Стандарт", "OP_127", 10937.5, 13125.0, 19568.0),
+        )
+        for mechanism, operation_id, tariff, mechanism_cost, retail in cases:
+            with self.subTest(mechanism=mechanism):
+                payload = self.post_roman(
+                    configuration={"mechanism": mechanism},
+                )
+                mechanisms = self.operation_ids(payload, operation_id)
+                sewing = self.operation_ids(payload, "OP_106")
+                rings = self.operation_ids(payload, "OP_115")
+                mounting = self.operation_ids(payload, "OP_117")
+
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(
+                    payload["normalized_request"]["day_fabric"],
+                    "Вита",
+                )
+                self.assertEqual(payload["fabric"]["consumption_m"], 1.3)
+                self.assertEqual(payload["fabric"]["cost"], 1365.0)
+                self.assertEqual(payload["day_fabric"]["name"], "Вита")
+                self.assertEqual(payload["day_fabric"]["width_cm"], 280)
+                self.assertEqual(payload["day_fabric"]["price_per_m"], 700)
+                self.assertEqual(payload["day_fabric"]["consumption_m"], 1.3)
+                self.assertEqual(payload["day_fabric"]["cost"], 910.0)
+                self.assertEqual(len(sewing), 2)
+                self.assertEqual(len(rings), 2)
+                self.assertTrue(
+                    all(component["cost"] == 512.0 for component in sewing)
+                )
+                self.assertTrue(
+                    all(component["cost"] == 1416.0 for component in rings)
+                )
+                self.assertEqual(
+                    [component["name"] for component in sewing],
+                    [
+                        "Пошив римской шторы — Стандартная сборка, основное полотно",
+                        "Пошив римской шторы — Стандартная сборка, дневное полотно",
+                    ],
+                )
+                self.assertEqual(len(mechanisms), 1)
+                self.assertEqual(mechanisms[0]["tariff"], tariff)
+                self.assertEqual(mechanisms[0]["cost"], mechanism_cost)
+                self.assertNotAlmostEqual(
+                    mechanisms[0]["cost"],
+                    round(tariff * 1.75 * 1.2, 2),
+                    places=2,
+                )
+                self.assertEqual(len(mounting), 1)
+                self.assertEqual(mounting[0]["cost"], 312.0)
+                self.assertEqual(payload["retail_price"], retail)
+                self.assert_components_match_retail(payload)
+
+    def test_explicit_day_fabric_replaces_vita(self) -> None:
+        payload = self.post_roman(day_fabric="Вудсток")
+
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(payload["normalized_request"]["day_fabric"], "Вудсток")
+        self.assertEqual(payload["day_fabric"]["name"], "Вудсток")
+        self.assertEqual(payload["day_fabric"]["consumption_m"], 1.3)
+        self.assertEqual(payload["day_fabric"]["cost"], 1001.0)
+        self.assertEqual(payload["fabric"]["consumption_m"], 1.3)
+        self.assertEqual(payload["retail_price"], 15721.5)
+        self.assert_components_match_retail(payload)
+
+    def test_two_finished_blinds_scale_shared_operations_once_per_item(self) -> None:
+        payload = self.post_roman(quantity=2)
+        sewing = self.operation_ids(payload, "OP_106")
+        rings = self.operation_ids(payload, "OP_115")
+        mechanisms = self.operation_ids(payload, "OP_126")
+        mounting = self.operation_ids(payload, "OP_117")
+
+        self.assertEqual(payload["fabric"]["consumption_m"], 2.6)
+        self.assertEqual(payload["day_fabric"]["consumption_m"], 2.6)
+        self.assertEqual(len(sewing), 2)
+        self.assertEqual(len(rings), 2)
+        self.assertTrue(all(component["cost"] == 1024.0 for component in sewing))
+        self.assertTrue(all(component["cost"] == 2832.0 for component in rings))
+        self.assertEqual(len(mechanisms), 1)
+        self.assertEqual(mechanisms[0]["quantity"], 2.4)
+        self.assertEqual(mechanisms[0]["cost"], 18375.0)
+        self.assertEqual(len(mounting), 1)
+        self.assertEqual(mounting[0]["cost"], 624.0)
+        self.assertEqual(payload["retail_price"], 31261.0)
+        self.assert_components_match_retail(payload)
+
+    def test_unknown_day_fabric_has_no_invented_price(self) -> None:
+        payload = self.post_roman(day_fabric="Нет такой ткани")
+
+        self.assertEqual(payload["status"], "unavailable")
+        self.assertEqual(payload["reason_code"], "FABRIC_NOT_FOUND")
+        self.assertIn("Нет такой ткани", payload["message"])
+        self.assertNotIn("retail_price", payload)
+
+    def test_day_fabric_height_limit_names_the_fabric(self) -> None:
+        payload = self.post_roman(day_fabric="Алан")
+
+        self.assertEqual(payload["status"], "unavailable")
+        self.assertEqual(payload["reason_code"], "ROMAN_TOO_HIGH")
+        self.assertIn("Дневная ткань «Алан»", payload["message"])
+        self.assertNotIn("retail_price", payload)
+
+    def test_main_fabric_height_limit_names_the_main_fabric(self) -> None:
+        payload = self.post_roman(height_cm=281)
+
+        self.assertEqual(payload["status"], "unavailable")
+        self.assertEqual(payload["reason_code"], "ROMAN_TOO_HIGH")
+        self.assertIn("Основная ткань «Вандер»", payload["message"])
+
+    def test_day_fabric_without_day_night_mechanism_asks_for_clarification(self) -> None:
+        payload = self.post_roman(
+            configuration={"mechanism": "Эконом"},
+            day_fabric="Вита",
+        )
+
+        self.assertEqual(payload["status"], "unavailable")
+        self.assertEqual(payload["reason_code"], "CONFIGURATION_NOT_SUPPORTED")
+        self.assertIn("День-ночь Эконом", payload["message"])
+        self.assertNotIn("retail_price", payload)
+
+    def test_ordinary_roman_price_is_unchanged(self) -> None:
+        economy = self.client.post(
+            "/api/calculate",
+            json={
+                "product_type": "roman",
+                "model": "Вандер",
+                "width_cm": 120,
+                "height_cm": 200,
+                "quantity": 1,
+                "configuration": {"mechanism": "Эконом"},
+            },
+        ).json()
+        default = self.client.post(
+            "/api/calculate",
+            json={
+                "product_type": "roman",
+                "model": "Вандер",
+                "width_cm": 120,
+                "height_cm": 200,
+                "quantity": 1,
+            },
+        ).json()
+
+        self.assertEqual(economy["status"], "success")
+        self.assertNotIn("day_fabric", economy)
+        self.assertEqual(len(self.operation_ids(economy, "OP_106")), 1)
+        self.assertEqual(len(self.operation_ids(economy, "OP_115")), 1)
+        self.assertEqual(len(self.operation_ids(economy, "OP_110")), 1)
+        self.assertEqual(self.operation_ids(economy, "OP_110")[0]["cost"], 5250.0)
+        self.assertEqual(economy["retail_price"], 8855.0)
+        self.assertEqual(default["retail_price"], 11105.0)
+        self.assert_components_match_retail(economy)
+        self.assert_components_match_retail(default)
+
+    def test_lining_and_embroidery_are_not_duplicated(self) -> None:
+        payload = self.post_roman(
+            configuration={
+                "mechanism": "День-ночь Эконом",
+                "lining": "Подкладка",
+            },
+            extra_operations=["Прайм"],
+        )
+        lining = [
+            component
+            for component in payload["components"]
+            if component["name"] == "Подкладка"
+        ]
+        embroidery = self.operation_ids(payload, "OP_067")
+
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(len(lining), 1)
+        self.assertEqual(len(embroidery), 1)
+        self.assertEqual(len(self.operation_ids(payload, "OP_126")), 1)
+        self.assertEqual(len(self.operation_ids(payload, "OP_117")), 1)
+        self.assert_components_match_retail(payload)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -62,6 +62,53 @@ describe("ResultCard", () => {
     expect(screen.queryByText("Ткань «Вандер»")).toBeNull();
   });
 
+  it("shows both Roman day-night fabrics in the composition", () => {
+    const result: CalculationResult = {
+      status: "success",
+      retailPrice: 15630.5,
+      model: "Вандер",
+      productType: "roman",
+      widthCm: 120,
+      heightCm: 200,
+      quantity: 1,
+      fabricName: "Вандер",
+      operations: [],
+      extras: [],
+      components: [
+        {
+          category: "fabric",
+          name: "Ткань «Вандер» — основное полотно",
+          cost: 1365,
+        },
+        {
+          category: "fabric",
+          name: "Ткань «Вита» — дневное полотно",
+          cost: 910,
+        },
+        {
+          category: "production",
+          name: "Пошив римской шторы — Стандартная сборка, основное полотно",
+          cost: 512,
+        },
+        {
+          category: "hardware",
+          name: "Механизм — День-ночь Эконом",
+          cost: 9187.5,
+        },
+      ],
+    };
+
+    render(<ResultCard result={result} onReset={vi.fn()} />);
+
+    expect(
+      screen.getAllByText("Ткань «Вандер» — основное полотно").length,
+    ).toBe(2);
+    expect(screen.getAllByText("Ткань «Вита» — дневное полотно").length).toBe(
+      2,
+    );
+    expect(screen.getByText("Механизм — День-ночь Эконом")).toBeTruthy();
+  });
+
   it("renders adapter fallback and omits zero-value groups", () => {
     const response = adaptWebhookResponse({
       status: "success",

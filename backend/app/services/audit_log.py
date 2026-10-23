@@ -20,6 +20,13 @@ def _audit_operation(line: dict[str, Any]) -> dict[str, Any]:
             value
             for value in (line.get("group"), line.get("variant"))
             if value
+        )
+        + (
+            ", основное полотно"
+            if line.get("panel") == "main"
+            else ", дневное полотно"
+            if line.get("panel") == "day"
+            else ""
         ),
         "calculation_basis": line.get("calculation_basis"),
         "quantity": line.get("basis_value"),
@@ -77,6 +84,16 @@ def build_calculation_audit(
         "reason": result.get("reason"),
         "explanation": context.get("explanation"),
     }
+    if context.get("day_fabric"):
+        record["normalized_request"]["day_fabric"] = context.get("day_fabric")
+        record["day_fabric"] = context.get("day_fabric")
+        record["day_fabric_width_cm"] = context.get("day_fabric_width_cm")
+        record["day_fabric_price"] = context.get("day_fabric_price")
+        record["day_fabric_layout"] = context.get("day_fabric_layout")
+        record["day_fabric_consumption_m"] = context.get(
+            "day_fabric_consumption_m"
+        )
+        record["day_fabric_cost"] = context.get("day_fabric_cost")
     if raw_request is not None:
         record["raw_request"] = raw_request
     return record

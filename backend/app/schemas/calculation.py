@@ -33,8 +33,19 @@ class CalculationRequest(BaseModel):
     configuration: CalculationConfiguration = Field(
         default_factory=CalculationConfiguration
     )
+    day_fabric: Optional[str] = None
     extra_operations: list[str] = Field(default_factory=list)
     raw_request: Optional[str] = None
+
+    @field_validator("day_fabric")
+    @classmethod
+    def strip_day_fabric(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Day fabric cannot be empty")
+        return stripped
 
     @field_validator("extra_operations")
     @classmethod
@@ -45,7 +56,7 @@ class CalculationRequest(BaseModel):
         return normalized
 
     def calculator_payload(self) -> dict[str, Any]:
-        return {
+        payload = {
             "product_type": self.product_type,
             "model": self.model,
             "width_cm": self.width_cm,
@@ -54,6 +65,9 @@ class CalculationRequest(BaseModel):
             "configuration": self.configuration.model_dump(),
             "extra_operations": self.extra_operations,
         }
+        if self.day_fabric is not None:
+            payload["day_fabric"] = self.day_fabric
+        return payload
 
 
 class NormalizedRequest(BaseModel):
@@ -63,6 +77,7 @@ class NormalizedRequest(BaseModel):
     height_cm: float
     quantity: int
     configuration: CalculationConfiguration
+    day_fabric: Optional[str] = None
     extra_operations: list[str]
 
 
@@ -100,6 +115,7 @@ class SuccessResponse(BaseModel):
     calculation_id: str
     normalized_request: NormalizedRequest
     fabric: FabricResponse
+    day_fabric: Optional[FabricResponse] = None
     operations: list[OperationResponse]
     extras: list[OperationResponse]
     components: list[CostComponentResponse]

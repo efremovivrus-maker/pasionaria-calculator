@@ -84,6 +84,24 @@ def _not_supported(
     )
 
 
+def find_exact_mechanism(
+    mechanism: str | None,
+    operations: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Return a mechanism only when the requested name matches one variant."""
+    if not mechanism:
+        return None
+    normalized = _normalize_option(mechanism)
+    return next(
+        (
+            operation
+            for operation in _group_variants(operations, "Механизм")
+            if _normalize_option(str(operation["variant"])) == normalized
+        ),
+        None,
+    )
+
+
 def _replace_group(
     operation_ids: list[str],
     operations_by_id: dict[str, dict[str, Any]],
