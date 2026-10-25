@@ -1,0 +1,3355 @@
+{
+  "status": "draft",
+  "source": "Покрывала и пледы_от_25-10-26.pdf",
+  "source_date": "2026-10-25",
+  "connected_to_calculator": false,
+  "rules": [
+    "Считаются только покрывала, без декоративных наволочек.",
+    "Клиент может заменить лицевую ткань, но перечень допустимых тканей в документах не задан.",
+    "Ткань каталога с подтверждённым именем используется по умолчанию.",
+    "Размеры могут быть нестандартными; припуски и ограничения размеров в документах не заданы.",
+    "Обязательные элементы конструкции и вышивка сохраняются при замене ткани.",
+    "Розничная и оптовая цена комплекта не является ценой покрывала без наволочек."
+  ],
+  "model_count": 45,
+  "excluded_count": 11,
+  "excluded": [
+    {
+      "name": "Азимут",
+      "article": "02-00",
+      "kind": "основа под подушку",
+      "source_page": 2
+    },
+    {
+      "name": "Данфорд",
+      "article": "02-1013-BC",
+      "kind": "плед",
+      "source_page": 3
+    },
+    {
+      "name": "Ниэль",
+      "article": "02-320-BC",
+      "kind": "плед",
+      "source_page": 17
+    },
+    {
+      "name": "Лео",
+      "article": "02-324-BC",
+      "kind": "плед",
+      "source_page": 18
+    },
+    {
+      "name": "Хейли",
+      "article": "02-326-BC",
+      "kind": "плед",
+      "source_page": 19
+    },
+    {
+      "name": "Паудер",
+      "article": "02-327-BC",
+      "kind": "плед",
+      "source_page": 20
+    },
+    {
+      "name": "Сэмми",
+      "article": "02-334-BC",
+      "kind": "плед",
+      "source_page": 21
+    },
+    {
+      "name": "Китти",
+      "article": "02-335-BC",
+      "kind": "плед",
+      "source_page": 21
+    },
+    {
+      "name": "Ричи",
+      "article": "02-339-BC",
+      "kind": "плед",
+      "source_page": 22
+    },
+    {
+      "name": "Тай",
+      "article": "02-353-BC",
+      "kind": "плед",
+      "source_page": 23
+    },
+    {
+      "name": "Мерлин",
+      "article": "PILMOL189",
+      "kind": "отдельная наволочка",
+      "source_page": 29
+    }
+  ],
+  "records": [
+    {
+      "model": "Инициалы",
+      "article": "00-00007897",
+      "source_page": 2,
+      "title": "Покрывало с наволочками «Инициалы»",
+      "description": "Стеганое покрывало на подкладке с декоративной репсовой лентой из ткани «Софт». В комплект входят 2 декоративные наволочки с именной вышивкой и 2 декоративные наволочки с репсовой лентой.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Белый",
+        "02 Светло-серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "240х240 см",
+          "first_cm": 240,
+          "second_cm": 240,
+          "wholesale_rub": 11250,
+          "retail_rub": 18000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "mentioned_fabric_not_named",
+        "planks": false,
+        "decorative_ribbon": "репсовая лента",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "именная вышивка на двух наволочках",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "подкладка",
+        "репсовая лента"
+      ],
+      "open_questions": [
+        "Ткань подкладки не названа.",
+        "Рисунок стежки и плотность синтепона не указаны.",
+        "Вид обработки края не указан.",
+        "Цена комплекта включает четыре наволочки и не является ценой покрывала."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Софт",
+      "article": "02-021",
+      "source_page": 3,
+      "title": "Покрывало с наволочками «Софт»",
+      "description": "Стеганое покрывало с планками из плотной декоративной ткани «Софт». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Синий",
+        "03 Голубой",
+        "04 Серый",
+        "06 Сливочный",
+        "08 Белый",
+        "09 Бордовый",
+        "10 Розовый",
+        "11 Темно-бежевый",
+        "12 Светло-розовый",
+        "13 Бирюзовый",
+        "14 Венге",
+        "15 Бежевый",
+        "16 Изумрудный",
+        "18 Серо-бежевый",
+        "19 Темно-серый",
+        "20 Черный",
+        "21 Желтый",
+        "22 Серебристый",
+        "23 Лавандовый",
+        "26 Фиолетовый",
+        "27 Горчичный",
+        "28 Светло-зеленый",
+        "29 Фуксия",
+        "30 Коралловый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 4360,
+          "retail_rub": 6980,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "250х270 см",
+          "first_cm": 250,
+          "second_cm": 270,
+          "wholesale_rub": 6330,
+          "retail_rub": 10130,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Подкладка не упомянута: нельзя выбрать тариф пошива с подкладкой или без неё.",
+        "Расположение планок не указано: в прайсе есть три разных тарифа.",
+        "Рисунок стежки и синтепон не указаны.",
+        "Число и размер наволочек не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Ибица",
+      "article": "02-217",
+      "source_page": 4,
+      "title": "Покрывало с наволочками «Ибица»",
+      "description": "Стеганое покрывало с планками из плотной декоративной ткани. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Терракотовый",
+        "02 Бирюзовый",
+        "03 Зеленый",
+        "04 Горчичный",
+        "05 Серый",
+        "06 Темно-серый",
+        "07 Бежево-серый",
+        "08 Розовый",
+        "10 Фиолетовый",
+        "11 Бежево-коричневый",
+        "12 Кремовый",
+        "13 Шоколадный",
+        "14 Голубой",
+        "15 Винный",
+        "16 Синий"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6570,
+          "retail_rub": 10500,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 10320,
+          "retail_rub": 16499,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Описание не повторяет имя ткани, совпадение только по названию модели и ткани каталога.",
+        "Подкладка, рисунок стежки, синтепон, край и схема планок не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Каспиан",
+      "article": "02-220",
+      "source_page": 4,
+      "title": "Покрывало с наволочками «Каспиан»",
+      "description": "Стеганое покрывало из декоративной ткани. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Молочный",
+        "02 Бежевый",
+        "03 Коричневый",
+        "04 Розовый",
+        "05 Капучино",
+        "06 Синий",
+        "07 Зеленый",
+        "08 Серый",
+        "09 Голубой"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 5570,
+          "retail_rub": 8900,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 8070,
+          "retail_rub": 12900,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": {
+          "catalog_name": "Каспиан/Довер",
+          "catalog_width_cm": 280,
+          "catalog_rrc_rub_per_m": 1470,
+          "why_not_exact": "Ткани с именем «Каспиан» нет. Есть «Каспиан/Довер»: комментарий каталога говорит использовать её для моделей с тканью «Каспиан». Карточка покрывала ткань не называет."
+        }
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка"
+      ],
+      "open_questions": [
+        "Лицевая ткань в карточке не названа.",
+        "Подкладка, стежка, синтепон и край не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Прайм",
+      "article": "02-245",
+      "source_page": 5,
+      "title": "Покрывало с наволочками «Прайм»",
+      "description": "Стеганое покрывало из декоративной ткани «Ибица» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Серо-бежевый",
+        "02 Розовый",
+        "03 Кремовый",
+        "04 Бирюзовый",
+        "05 Бежево-коричневый",
+        "06 Шоколадный",
+        "07 Бронзовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 7690,
+          "retail_rub": 12300,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 11130,
+          "retail_rub": 17800,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_067",
+          "variant": "Прайм",
+          "tariff_rub": 370,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Место вышивки в карточке не указано, хотя тариф «Прайм» существует только для всей площади.",
+        "Подкладка, рисунок стежки и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Флэш",
+      "article": "02-246",
+      "source_page": 5,
+      "title": "Покрывало с наволочками «Флэш»",
+      "description": "Стеганое покрывало из декоративной ткани «Ибица» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Мокрый асфальт",
+        "02 Бирюзовый",
+        "03 Серый",
+        "04 Зеленый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6880,
+          "retail_rub": 11000,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9690,
+          "retail_rub": 15500,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_074",
+          "variant": "Флэш",
+          "tariff_rub": 305,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Место вышивки в карточке не указано.",
+        "Подкладка, рисунок стежки и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Либерти",
+      "article": "02-264",
+      "source_page": 6,
+      "title": "Покрывало с наволочками «Либерти»",
+      "description": "Стеганое покрывало из декоративной ткани «Софт» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Серый",
+        "02 Сливочный",
+        "04 Темно-бежевый",
+        "05 Голубой",
+        "06 Светло-серый",
+        "07 Темно-серый",
+        "08 Белый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 5630,
+          "retail_rub": 8999,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 8440,
+          "retail_rub": 13500,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_069",
+          "variant": "Либерти",
+          "tariff_rub": 660,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Место вышивки в карточке не указано.",
+        "Подкладка, рисунок стежки и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Лилас",
+      "article": "02-265",
+      "source_page": 6,
+      "title": "Покрывало с наволочками «Лилас»",
+      "description": "Стеганое покрывало из декоративной ткани «Довер» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Белый",
+        "02 Капучино",
+        "03 Серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6820,
+          "retail_rub": 10900,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9690,
+          "retail_rub": 15500,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Довер",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": {
+          "catalog_name": "Каспиан/Довер",
+          "catalog_width_cm": 280,
+          "catalog_rrc_rub_per_m": 1470,
+          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
+        }
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_070",
+          "variant": "Лилас",
+          "tariff_rub": 360,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Ткань «Довер» не совпадает с именем в каталоге.",
+        "Место вышивки, подкладка, рисунок стежки и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Джерри",
+      "article": "02-274",
+      "source_page": 7,
+      "title": "Покрывало с наволочками «Джерри»",
+      "description": "Стеганое покрывало с планками из плотной мягкой ткани, имитирующей натуральную. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Белый",
+        "02 Сливочный",
+        "03 Бежевый",
+        "04 Серо-бежевый",
+        "05 Серый",
+        "06 Капучино",
+        "07 Зеленый",
+        "08 Голубой",
+        "09 Синий",
+        "10 Пудровый",
+        "11 Винный",
+        "12 Коричневый",
+        "13 Мокрый асфальт"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 7440,
+          "retail_rub": 11900,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 11250,
+          "retail_rub": 18000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Джерри",
+        "match": "exact",
+        "catalog_name": "Джерри",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 3465,
+        "catalog_base_rub_per_m": 2165,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Описание не повторяет имя ткани.",
+        "Схема планок, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Конни",
+      "article": "02-275",
+      "source_page": 7,
+      "title": "Покрывало с наволочками «Конни»",
+      "description": "Стеганое покрывало с планками из плотной мягкой ткани, имитирующей натуральную. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Белый",
+        "02 Бежевый",
+        "03 Коричневый",
+        "04 Серый",
+        "05 Темно-серый",
+        "06 Черный",
+        "07 Розовый",
+        "08 Голубой"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6880,
+          "retail_rub": 11000,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9940,
+          "retail_rub": 15900,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Конни",
+        "match": "exact",
+        "catalog_name": "Конни",
+        "catalog_width_cm": 310,
+        "catalog_rrc_rub_per_m": 3385,
+        "catalog_base_rub_per_m": 2115,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Описание не повторяет имя ткани.",
+        "Схема планок, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Кьюб",
+      "article": "02-281",
+      "source_page": 8,
+      "title": "Покрывало с наволочками «Кьюб»",
+      "description": "Покрывало пледового типа из плотной, многослойной декоративной ткани с рисунком. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "02 Розовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 3620,
+          "retail_rub": 5790,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 4810,
+          "retail_rub": 7690,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": false,
+        "lining": "not_mentioned",
+        "planks": false,
+        "construction_type": "пледового типа",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [],
+      "open_questions": [
+        "Лицевая ткань не названа, в каталоге ткани «Кьюб» нет.",
+        "Раздел прайса «Покрывало пледового типа» совпадает по названию, но карточка не связывает артикул с тарифом пошива без подкладки.",
+        "Стежка не упомянута."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Мика",
+      "article": "02-286",
+      "source_page": 8,
+      "title": "Покрывало с наволочками «Мика»",
+      "description": "Стеганое покрывало из декоративной ткани «Конни» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Серый",
+        "02 Розовый",
+        "03 Голубой",
+        "04 Бежевый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 7250,
+          "retail_rub": 11610,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9850,
+          "retail_rub": 15750,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Конни",
+        "match": "exact",
+        "catalog_name": "Конни",
+        "catalog_width_cm": 310,
+        "catalog_rrc_rub_per_m": 3385,
+        "catalog_base_rub_per_m": 2115,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_078",
+          "variant": "Мика",
+          "tariff_rub": 640,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Шторная модель «Мика» шьётся из ткани «Бадди». Для покрывала документ называет «Конни»; «Бадди» не подставлять.",
+        "Место вышивки, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Довер",
+      "article": "02-288",
+      "source_page": 9,
+      "title": "Покрывало с наволочками «Довер»",
+      "description": "Стеганое покрывало из плотной декоративной ткани. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Молочный",
+        "02 Бежевый",
+        "03 Коричневый",
+        "05 Капучино",
+        "06 Синий",
+        "07 Зеленый",
+        "08 Серый",
+        "09 Голубой"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 7820,
+          "retail_rub": 12500,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": {
+          "catalog_name": "Каспиан/Довер",
+          "catalog_width_cm": 280,
+          "catalog_rrc_rub_per_m": 1470,
+          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
+        }
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка"
+      ],
+      "open_questions": [
+        "Ткань в карточке не названа, отдельной ткани «Довер» в каталоге нет.",
+        "Подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Джим",
+      "article": "02-290",
+      "source_page": 9,
+      "title": "Покрывало с наволочками «Джим»",
+      "description": "Стеганое покрывало с фигурной вышивкой из мягкой декоративной ткани-софт «Довер». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Молочный",
+        "02 Бежевый",
+        "03 Синий",
+        "04 Зеленый",
+        "05 Серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 7290,
+          "retail_rub": 11660,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Довер",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": {
+          "catalog_name": "Каспиан/Довер",
+          "catalog_width_cm": 280,
+          "catalog_rrc_rub_per_m": 1470,
+          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
+        }
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "фигурная вышивка",
+        "candidate": {
+          "operation_id": "OP_080",
+          "variant": "Джим",
+          "tariff_rub": 670,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Ткань названа «Довер» и одновременно «ткань-софт»; точного имени в каталоге нет.",
+        "«Фигурная вышивка» не названа рисунком из прайса стежки. Совпадение с вышивкой «Джим» только по имени модели."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Ким",
+      "article": "02-291",
+      "source_page": 10,
+      "title": "Покрывало с наволочками «Ким»",
+      "description": "Стеганое покрывало с планками из мягкой бархатистой ткани. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Айвори",
+        "02 Бежевый",
+        "03 Капучино",
+        "04 Коричневый",
+        "05 Венге",
+        "06 Светло-серый",
+        "07 Темно-серый",
+        "08 Мокрый асфальт",
+        "09 Горчичный",
+        "10 Лимонный",
+        "11 Травяной",
+        "12 Изумрудный",
+        "13 Серо-голубой",
+        "14 Бирюзовый",
+        "15 Синий",
+        "17 Пудровый",
+        "18 Винный",
+        "20 Черный"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6570,
+          "retail_rub": 10500,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 8320,
+          "retail_rub": 13300,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ким",
+        "match": "exact",
+        "catalog_name": "Ким",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2315,
+        "catalog_base_rub_per_m": 1445,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Описание говорит «бархатистая ткань», но не подтверждает, что это каталожная «Ким».",
+        "Коэффициент «Бархат» 1,5 в прайсе есть, но не сказано, к каким операциям он применяется и ограничивает ли выбор ткани.",
+        "Схема планок, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Лука",
+      "article": "02-292",
+      "source_page": 10,
+      "title": "Покрывало с наволочками «Лука»",
+      "description": "Стеганое покрывало из декоративной ткани «Джерри» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Белый",
+        "02 Бежевый",
+        "03 Серый",
+        "04 Капучино",
+        "05 Голубой",
+        "06 Пудровый",
+        "07 Мокрый асфальт"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 9320,
+          "retail_rub": 14900,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 11750,
+          "retail_rub": 18800,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Джерри",
+        "match": "exact",
+        "catalog_name": "Джерри",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 3465,
+        "catalog_base_rub_per_m": 2165,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_075",
+          "variant": "Лука",
+          "tariff_rub": 470,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Место вышивки, подкладка, рисунок стежки и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Бэлли",
+      "article": "02-294",
+      "source_page": 11,
+      "title": "Покрывало с наволочками «Бэлли»",
+      "description": "Стеганое покрывало с вышивкой из плотной декоративной ткани «Софт». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "02 Синий",
+        "03 Серый",
+        "04 Изумрудный",
+        "05 Голубой",
+        "06 Розовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6820,
+          "retail_rub": 10900,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 8750,
+          "retail_rub": 14000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_072",
+          "variant": "Бэлли",
+          "tariff_rub": 510,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "В карточке написано «БЭЛЛИ», в тарифе вышивки — «Бэлли». Это одно написание в разном регистре.",
+        "Место вышивки, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Аника",
+      "article": "02-295",
+      "source_page": 11,
+      "title": "Покрывало с наволочками «Аника»",
+      "description": "Стеганое покрывало с вышивкой из плотной декоративной ткани «Ибица». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Кремовый",
+        "02 Бежевый",
+        "03 Серый",
+        "04 Мокрый асфальт"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 12440,
+          "retail_rub": 19900,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_071",
+          "variant": "Аника",
+          "tariff_rub": 910,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Место вышивки, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Элис",
+      "article": "02-297",
+      "source_page": 12,
+      "title": "Покрывало с наволочками «Элис»",
+      "description": "Стеганое покрывало с вышивкой из плотной декоративной ткани «Ким». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Айвори",
+        "02 Темно-серый",
+        "03 Травяной",
+        "04 Пудровый",
+        "05 Коричневый",
+        "06 Серо-голубой"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х220 см",
+          "first_cm": 160,
+          "second_cm": 220,
+          "wholesale_rub": 6470,
+          "retail_rub": 10350,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9060,
+          "retail_rub": 14490,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ким",
+        "match": "exact",
+        "catalog_name": "Ким",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2315,
+        "catalog_base_rub_per_m": 1445,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_073",
+          "variant": "Элис",
+          "tariff_rub": 1080,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Шторная модель «Элис» без ткани и помечена проблемной. Для покрывала документ называет ткань «Ким».",
+        "Место вышивки, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Вайн",
+      "article": "02-299",
+      "source_page": 12,
+      "title": "Покрывало с наволочками «Вайн»",
+      "description": "Стеганое покрывало с вышивкой из плотной декоративной ткани «Ибица». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Кремовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 14380,
+          "retail_rub": 23000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_077",
+          "variant": "Вайн",
+          "tariff_rub": 1240,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Место вышивки, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Хьюго",
+      "article": "02-304",
+      "source_page": 13,
+      "title": "Покрывало с наволочками «Хьюго»",
+      "description": "Стеганое покрывало с вышивкой из плотной декоративной ткани «Ким». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Горчичный",
+        "02 Коричневый",
+        "03 Лимонный",
+        "04 Пудровый",
+        "05 Светло-серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 11250,
+          "retail_rub": 18000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ким",
+        "match": "exact",
+        "catalog_name": "Ким",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2315,
+        "catalog_base_rub_per_m": 1445,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Вышивка названа, но варианта «Хьюго» в прайсе услуг нет. Тариф не переносить с другой вышивки."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Бриджит",
+      "article": "02-306",
+      "source_page": 13,
+      "title": "Покрывало с наволочками «Бриджит»",
+      "description": "Стеганое покрывало с вышивкой из плотной декоративной ткани «Софт». В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Серый",
+        "02 Белый",
+        "03 Синий",
+        "04 Голубой",
+        "05 Коричневый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9500,
+          "retail_rub": 15200,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": {
+          "operation_id": "OP_083",
+          "variant": "Бриджит",
+          "tariff_rub": 500,
+          "unit": "МП",
+          "formula": "height",
+          "group": "Вышивка с одной стороны",
+          "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Тариф «Бриджит» есть только как вышивка с одной стороны, 500 ₽ за погонный метр высоты. Карточка сторону не указывает."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Лаура",
+      "article": "02-309",
+      "source_page": 14,
+      "title": "Покрывало с наволочками «Лаура»",
+      "description": "Стеганое покрывало из фактурной декоративной ткани, имитирующей пальтовую. В комплект входят декоративные наволочки с контрастными кантами.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "09 Бордовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 7430,
+          "retail_rub": 11880,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Лаура",
+        "match": "exact",
+        "catalog_name": "Лаура",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1670,
+        "catalog_base_rub_per_m": 728,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null,
+        "piping": "контрастный кант у наволочек"
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка"
+      ],
+      "open_questions": [
+        "Кант указан у наволочек, не у покрывала.",
+        "Описание не подтверждает словами, что лицевая ткань — каталожная «Лаура».",
+        "Подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Диана",
+      "article": "02-312",
+      "source_page": 14,
+      "title": "Покрывало с наволочками «Диана»",
+      "description": "Классическое покрывало с стежкой на подкладке с декоративной вышивкой-шнуром. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Бежево-серый",
+        "02 Бежевый",
+        "03 Голубой"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 11875,
+          "retail_rub": 19000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "mentioned_fabric_not_named",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "декоративная вышивка-шнур",
+        "candidate": {
+          "operation_id": "OP_090",
+          "variant": "Диана",
+          "tariff_rub": 1090,
+          "unit": "МП",
+          "formula": "height",
+          "group": "Вышивка с одной стороны",
+          "reason": "В прайсе услуг «Диана» есть только как вышивка с одной стороны. Карточка покрывала называет декоративную вышивку-шнур и не указывает сторону."
+        },
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "подкладка",
+        "вышивка-шнур"
+      ],
+      "open_questions": [
+        "Лицевая ткань не названа, ткани «Диана» в каталоге нет.",
+        "Подкладка не сопоставлена с «Анной», «Сканди» или стёганым полотном.",
+        "Вышивка-шнур не равна автоматически тарифу вышивки «Диана» с одной стороны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Даллас",
+      "article": "02-313",
+      "source_page": 15,
+      "title": "Покрывало с наволочками «Даллас»",
+      "description": "Стеганое покрывало на подкладке с декоративной вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Коричневый",
+        "02 Бежевый",
+        "03 Серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 10000,
+          "retail_rub": 16000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "mentioned_fabric_not_named",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "декоративная вышивка",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "подкладка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Нет ткани «Даллас» и нет вышивки «Даллас».",
+        "Рисунок вышивки, подкладка и стежка не названы."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Тара",
+      "article": "02-314",
+      "source_page": 15,
+      "title": "Покрывало с наволочками «Тара»",
+      "description": "Стеганое покрывало на подкладке с декоративной вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Бежевый",
+        "02 Серый",
+        "03 Зеленый",
+        "04 Розовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 7440,
+          "retail_rub": 11900,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "mentioned_fabric_not_named",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "декоративная вышивка",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "подкладка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Нет ткани «Тара» и нет вышивки «Тара».",
+        "Рисунок вышивки, подкладка и стежка не названы."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Бруно",
+      "article": "02-315",
+      "source_page": 16,
+      "title": "Вязаное покрывало «Бруно»",
+      "description": "Вязаный плед-покрывало «Бруно» с геометрическим узором и декоративными помпонами по периметру. Готовое вязаное изделие, не описание пошива из каталожной ткани.",
+      "composition": null,
+      "colors": [
+        "01 Бежевый",
+        "02 Зеленый",
+        "03 Коричневый",
+        "04 Розовый",
+        "05 Серый",
+        "06 Лавандовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "200х220 см",
+          "first_cm": 200,
+          "second_cm": 220,
+          "wholesale_rub": 3749,
+          "retail_rub": 5999,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": false,
+        "lining": "not_mentioned",
+        "planks": false,
+        "construction_type": "вязаное готовое изделие",
+        "pom_poms": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [],
+      "open_questions": [
+        "Карточка одновременно называет изделие покрывалом и пледом. Это готовая вязка, а не пошив по прайсу покрывал.",
+        "Состав ткани не указан. Замена лицевой ткани для этого артикула документом не описана."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Мэри",
+      "article": "02-319",
+      "source_page": 16,
+      "title": "Покрывало с наволочками «Мэри»",
+      "description": "Стеганое покрывало из плотной декоративной ткани «Ибица» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Кремовый",
+        "02 Бежево-коричневый",
+        "03 Бежево-серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 10990,
+          "retail_rub": 17500,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "В прайсе услуг от 25.10.2026 вышивки «Мэри» нет. Шторный OP_128 скопирован с «Аника» и для покрывала не подтверждён."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Ронда",
+      "article": "02-322",
+      "source_page": 17,
+      "title": "Покрывало с наволочками «Ронда»",
+      "description": "Стеганое флористичным узором покрывало на подкладке из мягкой бархатистой ткани «Софт». В комплект входят декоративные наволочки с вышивкой шнуром.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Сливочный",
+        "02 Бежевый",
+        "03 Светло розовый",
+        "04 Желтый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 7500,
+          "retail_rub": 11999,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "mentioned_fabric_not_named",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": "флористичный узор"
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "вышивка шнуром на наволочках",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка флористичным узором",
+        "подкладка"
+      ],
+      "open_questions": [
+        "Флористичного узора нет среди тарифов стежки.",
+        "Ткань подкладки не названа.",
+        "Вышивка шнуром относится к наволочкам, не к покрывалу."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Лео",
+      "article": "02-324-01-BC",
+      "source_page": 18,
+      "title": "Покрывало «Лео»",
+      "description": "Вязаное покрывало с узором «косичка» из хлопкового полотна пике. Это отдельный артикул от пледа «Лео» 02-324-BC.",
+      "composition": "100% хлопок",
+      "colors": [
+        "01 Белый",
+        "02 Серый",
+        "03 Зеленый",
+        "04 Горчичный"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "220х240 см",
+          "first_cm": 220,
+          "second_cm": 240,
+          "wholesale_rub": 4300,
+          "retail_rub": 6890,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": "пике",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": false,
+        "lining": "not_mentioned",
+        "planks": false,
+        "construction_type": "вязаное готовое изделие",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "узор косичка"
+      ],
+      "open_questions": [
+        "Готовое вязаное изделие. Пошив по тарифам покрывала документом не назначен.",
+        "Ткани «Лео» или «пике» в каталоге нет."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Лао",
+      "article": "02-325",
+      "source_page": 19,
+      "title": "Покрывало с наволочками «Лао»",
+      "description": "Стеганое покрывало из декоративной ткани «Луара» с вышивкой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Сливочный",
+        "02 Бежево-коричневый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 9500,
+          "retail_rub": 15199,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Луара",
+        "match": "exact",
+        "catalog_name": "Луара",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2800,
+        "catalog_base_rub_per_m": null,
+        "note": "В каталоге нет базовой цены, есть ширина и RRC.",
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": true,
+        "on_bedspread": true,
+        "on_pillowcases": false,
+        "described_as": "с вышивкой",
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "вышивка"
+      ],
+      "open_questions": [
+        "Вышивки «Лао» в прайсе услуг нет.",
+        "У ткани «Луара» в каталоге нет базовой цены, только RRC 2800 ₽/м."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Шифу",
+      "article": "02-333-BC",
+      "source_page": 20,
+      "title": "Покрывало «Шифу»",
+      "description": "Покрывало из муслина с декоративными элементами.",
+      "composition": "100% хлопок",
+      "colors": [
+        "01 Горчичный",
+        "02 Голубой",
+        "03 Бежевый",
+        "04 Темно-синий",
+        "05 Терракотовый",
+        "06 Зеленый",
+        "07 Сливочный",
+        "08 Светло-серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "220х240 см",
+          "first_cm": 220,
+          "second_cm": 240,
+          "wholesale_rub": 5320,
+          "retail_rub": 8499,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": "муслин",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": false,
+        "lining": "not_mentioned",
+        "planks": false,
+        "construction_type": "муслин с декоративными элементами",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "декоративные элементы"
+      ],
+      "open_questions": [
+        "Декоративные элементы не названы, их тарифа нет.",
+        "Муслина нет в каталоге тканей.",
+        "Не сказано, шьётся ли изделие по тарифу покрывала."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Бойл",
+      "article": "02-35",
+      "source_page": 22,
+      "title": "Покрывало-одеяло «Бойл»",
+      "description": "Летнее стеганое одеяло из вареного хлопка. Может использоваться как одеяло или как декоративное покрывало.",
+      "composition": "100% хлопок",
+      "colors": [
+        "101 Серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "210х230 см",
+          "first_cm": 210,
+          "second_cm": 230,
+          "wholesale_rub": 4935,
+          "retail_rub": 7899,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": "вареный хлопок",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "construction_type": "покрывало-одеяло",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка"
+      ],
+      "open_questions": [
+        "Это одновременно одеяло и покрывало. Наполнитель, подкладка и рисунок стежки не названы.",
+        "Вареного хлопка нет в каталоге."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Киа",
+      "article": "02-36",
+      "source_page": 23,
+      "title": "Покрывало с наволочками «Киа»",
+      "description": "Стеганое покрывало с контрастным кантом из ткани тенсель. В комплект входят декоративные наволочки.",
+      "composition": "60% тенсель / 40% хлопок",
+      "colors": [
+        "10 Серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 6875,
+          "retail_rub": 10999,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "тенсель",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "piping": "контрастный кант покрывала",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "контрастный кант"
+      ],
+      "open_questions": [
+        "Тенселя нет в каталоге.",
+        "Обработка кантом в прайсе не включает стоимость фурнитуры. Цена самого канта не указана.",
+        "Стороны, по которым идёт кант, не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Нигма",
+      "article": "02-370",
+      "source_page": 24,
+      "title": "Покрывало с наволочками «Нигма»",
+      "description": "Классическое покрывало из жаккардовой ткани с растительным орнаментом. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Серый",
+        "02 Бежевый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 5800,
+          "retail_rub": 9299,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Нигма",
+        "match": "exact",
+        "catalog_name": "Нигма",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 2995,
+        "catalog_base_rub_per_m": 1870,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": false,
+        "lining": "not_mentioned",
+        "planks": false,
+        "construction_type": "жаккард",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "растительный орнамент ткани"
+      ],
+      "open_questions": [
+        "Стежка и подкладка не упомянуты, поэтому тариф стеганого покрывала не назначается.",
+        "Описание не повторяет имя ткани «Нигма», оно совпадает с названием модели."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Голди",
+      "article": "02-400",
+      "source_page": 24,
+      "title": "Покрывало с наволочками «Голди»",
+      "description": "Стеганое покрывало с планками из ткани шенилл. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Бежевый",
+        "02 Коричневый",
+        "03 Серый",
+        "04 Зеленый",
+        "05 Синий"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "250х270 см",
+          "first_cm": 250,
+          "second_cm": 270,
+          "wholesale_rub": 15100,
+          "retail_rub": 24000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Голди",
+        "match": "exact",
+        "catalog_name": "Голди",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 3159,
+        "catalog_base_rub_per_m": 1979,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "material_words": "шенилл",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Описание называет шенилл, а не подтверждает каталожную ткань «Голди».",
+        "Схема планок, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Деко",
+      "article": "02-401",
+      "source_page": 25,
+      "title": "Покрывало с наволочками «Деко»",
+      "description": "Стеганое покрывало с планками из ткани шенилл. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Светло-серый",
+        "02 Бежевый",
+        "03 Бирюзовый",
+        "04 Темно серый",
+        "05 Зеленый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 8435,
+          "retail_rub": 13499,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Деко",
+        "match": "exact",
+        "catalog_name": "Деко",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1199,
+        "catalog_base_rub_per_m": 750,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "material_words": "шенилл",
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Описание называет шенилл, а не подтверждает каталожную ткань «Деко».",
+        "Схема планок, подкладка, стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Зоуи",
+      "article": "02-403",
+      "source_page": 25,
+      "title": "Покрывало с наволочками «Зоуи»",
+      "description": "Стеганое покрывало из плотной декоративной ткани «Софт». Подклад выполнен из сатин-твила с флористическим рисунком. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Бежевый",
+        "02 Светло-зеленый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "220х240 см",
+          "first_cm": 220,
+          "second_cm": 240,
+          "wholesale_rub": 2310,
+          "retail_rub": 3690,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "сатин-твил с флористическим рисунком",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "подклад сатин-твил"
+      ],
+      "open_questions": [
+        "Сатин-твила нет среди подкладок «Анна», «Сканди» и «Стёганое полотно». Его цену нельзя заменить одним из этих тарифов."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Узорье",
+      "article": "02-407",
+      "source_page": 26,
+      "title": "Покрывало с наволочками «Узорье»",
+      "description": "Стеганое покрывало из плотной декоративной ткани бархат. Однотонная основа украшена авторской стежкой, вдохновленной хохломой. В комплект входят декоративные наволочки.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Айвори",
+        "02 Бежевый",
+        "03 Зеленый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 7570,
+          "retail_rub": 12150,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "бархат",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": "авторская стежка, хохлома"
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "авторская стежка"
+      ],
+      "open_questions": [
+        "Авторской стежки нет в списке тарифов стежки.",
+        "Бархат описан как тип ткани, а не как имя ткани каталога. Коэффициент 1,5 не заменяет цену ткани и не доказывает совместимость."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Кьют",
+      "article": "02-457",
+      "source_page": 26,
+      "title": "Покрывало «Кьют»",
+      "description": "Стеганое покрывало с планками из плотной декоративной ткани. Наволочки в описании не упомянуты.",
+      "composition": "100% полиэстер",
+      "colors": [
+        "01 Кремовый",
+        "02 Розовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 8125,
+          "retail_rub": 12999,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": true,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "планки"
+      ],
+      "open_questions": [
+        "Лицевая ткань не названа, ткани «Кьют» нет.",
+        "Отсутствие наволочек в тексте не выделено отдельно: перед использованием розничной цены это нужно подтвердить.",
+        "Схема планок, подкладка, стежка и синтепон не указаны."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Астер",
+      "article": "02-460-BC",
+      "source_page": 27,
+      "title": "Покрывало с наволочками «Астер»",
+      "description": "Стеганое покрывало из плотной уютной декоративной ткани на подкладке из 100% хлопка. В комплект входят декоративные наволочки.",
+      "composition": null,
+      "colors": [
+        "01 Айвори",
+        "02 Бежевый",
+        "03 Серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "220х240 см",
+          "first_cm": 220,
+          "second_cm": 240,
+          "wholesale_rub": 11845,
+          "retail_rub": 19000,
+          "price_role": "reference_only"
+        }
+      ],
+      "face_fabric": {
+        "stated_name": "Астер",
+        "match": "exact",
+        "catalog_name": "Астер",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 3000,
+        "catalog_base_rub_per_m": 1875,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "100% хлопок, имя не указано",
+        "planks": false,
+        "filler": null,
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "хлопковая подкладка"
+      ],
+      "open_questions": [
+        "Хлопковая подкладка не названа «Анной» или «Сканди».",
+        "Состав лицевой ткани отдельной строкой не указан.",
+        "Стежка и синтепон не указаны."
+      ],
+      "pillowcases_in_listed_price": true,
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Эмма",
+      "article": "02-53",
+      "source_page": 27,
+      "title": "Покрывало «Эмма»",
+      "description": "Стеганое универсальное покрывало-одеяло с наполнителем из мягкой бархатистой ткани. Верх — 100% полиэстер, изнаночная сторона — 100% хлопок. Наволочки не упомянуты.",
+      "composition": "верх 100% полиэстер, изнанка 100% хлопок",
+      "colors": [
+        "01 Серый",
+        "02 Темно-серый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "210х230 см",
+          "first_cm": 210,
+          "second_cm": 230,
+          "wholesale_rub": 8125,
+          "retail_rub": 12999,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": "бархатистая ткань",
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "изнанка 100% хлопок",
+        "planks": false,
+        "construction_type": "покрывало-одеяло",
+        "filler": "упомянут, материал и плотность не названы",
+        "stitch_pattern": null
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "наполнитель",
+        "хлопковая изнанка"
+      ],
+      "open_questions": [
+        "Плотность наполнителя не выбрана между 100 и 200 г/м².",
+        "Изнанка не сопоставлена с тарифом подкладки.",
+        "Лицевой ткани с именем «Эмма» нет."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Тина",
+      "article": "BEDMOL691",
+      "source_page": 28,
+      "title": "Покрывало «Тина»",
+      "description": "Стеганое покрывало из мягкой ткани со стёжкой «фигурный ромб». В зависимости от размера в комплект могут входить две декоративные наволочки 45х45. Наполнитель — синтепон.",
+      "composition": null,
+      "colors": [
+        "01 Сливочный",
+        "02 Бежевый",
+        "03 Серо-бежевый",
+        "04 Коричневый",
+        "07 Красный",
+        "08 Серый",
+        "09 Бирюзовый",
+        "10 Черный",
+        "11 Синий",
+        "12 Голубой",
+        "13 Белый",
+        "14 Розовый",
+        "15 Темно-бежевый",
+        "16 Светло-розовый",
+        "17 Венге",
+        "18 Бордовый",
+        "19 Изумрудный",
+        "20 Темно-серый",
+        "22 Желтый",
+        "23 Лавандовый",
+        "24 Серебристый",
+        "27 Горчичный",
+        "28 Светло-зеленый",
+        "29 Фуксия",
+        "30 Коралловый",
+        "31 Фиолетовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "160х230 см",
+          "first_cm": 160,
+          "second_cm": 230,
+          "wholesale_rub": 3336,
+          "retail_rub": 4888,
+          "price_role": "reference_only"
+        },
+        {
+          "printed": "230х250 см",
+          "first_cm": 230,
+          "second_cm": 250,
+          "wholesale_rub": 4086,
+          "retail_rub": 5999,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": "depends_on_size",
+      "face_fabric": {
+        "stated_name": null,
+        "match": "not_found",
+        "catalog_name": null,
+        "confirmed": false,
+        "candidate": null
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": "синтепон, плотность не указана",
+        "stitch_pattern": "фигурный ромб"
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка фигурный ромб",
+        "синтепон"
+      ],
+      "open_questions": [
+        "«Фигурный ромб» не равен тарифам «Ромб 5х5», «10х10» или «20х20».",
+        "Не сказано, в каком из двух размеров наволочки уже входят в цену.",
+        "Ткани «Тина» нет. Подкладка не упомянута."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Бохо",
+      "article": "BEDMOL803",
+      "source_page": 28,
+      "title": "Покрывало «Бохо»",
+      "description": "Стеганое покрывало из ткани рогожки на подкладе. Минималистичная геометрическая стежка. Наволочки не упомянуты.",
+      "composition": null,
+      "colors": [
+        "01 Горчичный",
+        "04 Серо-коричневый",
+        "05 Серый",
+        "06 Бежевый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "215х240 см",
+          "first_cm": 215,
+          "second_cm": 240,
+          "wholesale_rub": 2703,
+          "retail_rub": 4990,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": "Бохо",
+        "match": "exact",
+        "catalog_name": "Бохо",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1085,
+        "catalog_base_rub_per_m": 680,
+        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
+        "source": "model_name_equals_catalog_fabric",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "mentioned_fabric_not_named",
+        "planks": false,
+        "material_words": "рогожка",
+        "filler": null,
+        "stitch_pattern": "минималистичная геометрическая"
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка",
+        "подклад"
+      ],
+      "open_questions": [
+        "Описание называет рогожку. Совпадение с каталожной тканью «Бохо» следует из имени модели, но словами карточка это не подтверждает.",
+        "Геометрическая стежка не выбрана из списка квадратов и ромбов.",
+        "Ткань подклада не названа."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    },
+    {
+      "model": "Перси",
+      "article": "BEDMOL807",
+      "source_page": 29,
+      "title": "Покрывало «Перси»",
+      "description": "Стеганое покрывало из мягкой бархатистой ткани «Софт» со стёжкой «узелок». Наполнитель — синтепон. Наволочки не упомянуты.",
+      "composition": null,
+      "colors": [
+        "01 Сливочный",
+        "02 Бежевый",
+        "03 Светло-серый",
+        "05 Зеленый",
+        "07 Красный",
+        "08 Серый",
+        "09 Бирюзовый",
+        "11 Синий",
+        "12 Голубой",
+        "13 Белый",
+        "14 Розовый",
+        "15 Темно-бежевый",
+        "16 Светло-розовый",
+        "17 Венге",
+        "18 Бордовый",
+        "19 Изумрудный",
+        "20 Темно-серый",
+        "22 Желтый",
+        "23 Лавандовый",
+        "24 Серебристый",
+        "27 Горчичный",
+        "28 Светло-зеленый",
+        "29 Фуксия",
+        "30 Коралловый",
+        "31 Фиолетовый"
+      ],
+      "standard_sizes": [
+        {
+          "printed": "220х240 см",
+          "first_cm": 220,
+          "second_cm": 240,
+          "wholesale_rub": 2820,
+          "retail_rub": 5200,
+          "price_role": "reference_only"
+        }
+      ],
+      "pillowcases_in_listed_price": false,
+      "face_fabric": {
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": null,
+        "source": "product_description",
+        "confirmed": true
+      },
+      "construction": {
+        "quilted": true,
+        "lining": "not_mentioned",
+        "planks": false,
+        "filler": "синтепон, плотность не указана",
+        "stitch_pattern": "узелок"
+      },
+      "embroidery": {
+        "mentioned": false,
+        "on_bedspread": false,
+        "on_pillowcases": false,
+        "described_as": null,
+        "candidate": null,
+        "confirmed": false
+      },
+      "preserved_when_fabric_changes": [
+        "стежка узелок",
+        "синтепон"
+      ],
+      "open_questions": [
+        "Стёжки «узелок» нет в прайсе. «Закрепки» 50 ₽/м² — другая строка, её нельзя подставить.",
+        "Плотность синтепона не выбрана.",
+        "Подкладка не упомянута."
+      ],
+      "listed_price_usable_as_bedspread_only": false,
+      "face_fabric_substitution": {
+        "client_may_change_face_fabric": true,
+        "allowed_assortment_defined": false,
+        "compatibility_restrictions_in_source": false
+      },
+      "calculation_status": "not_ready"
+    }
+  ]
+}

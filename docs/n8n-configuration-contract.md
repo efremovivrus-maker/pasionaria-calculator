@@ -1,7 +1,9 @@
 # n8n: configuration and extra operations
 
 The n8n workflow is not stored in this repository. Apply the changes below
-manually so clarification turns preserve product modifications.
+manually. Clarification turns for curtains and Roman blinds still preserve
+product modifications. A bedspread message is a new calculation and does not
+use the stored session.
 
 ## Data Table fields
 
@@ -17,6 +19,10 @@ Keep the existing session fields and add:
 If the Data Table supports native JSON, `configuration` may instead be stored
 as one object and `extra_operations` as one array. Do not store these values in
 `model`.
+
+Do not add `face_fabric`, `stitch` or `filling` columns. Those values belong
+only to the current bedspread request. Leave the curtain and Roman session
+columns listed above unchanged.
 
 ## YandexGPT parser output
 
@@ -106,6 +112,35 @@ Add these rules to the parser prompt:
     them with `Майкл`, `Мэри` or `Мириам`. Do not invent tulle for `Софт`.
     Do not invent a separate embroidery tariff for `Мэри`: the backend
     includes it.
+19. A request that says `покрывало` or `покрывала` has `product_type:
+    "bedspread"`. Do not turn it into a curtain, even when the model name
+    also exists as a curtain, such as `Софт` or `Ибица`. The word
+    `покрывало` is not part of the model name.
+20. For a bedspread, `width_cm` is the first size and `height_cm` is the
+    second size. Singular `покрывало` without a count infers `quantity: 1`.
+    Plural `покрывала` without a count leaves quantity missing.
+21. `из ткани <название>` goes to `face_fabric`, not to `model` and not to
+    `extra_operations`. A bedspread without another fabric keeps
+    `face_fabric: null`; the backend uses the confirmed default.
+22. A named stitch (`ромб 10×10`, `квадрат 5×5`, `Аура` and the other
+    bedspread stitch names) goes to `stitch`. Do not invent a stitch when
+    the user did not name one. `синтепон 200` or `синтепон 100` goes to
+    `filling`. `подкладка Сканди` or `подкладка Анна` goes to
+    `configuration.lining`. If lining is not named, leave it null: the
+    backend applies `Анна`.
+23. Do not put pillowcases, planks, ribbons or the model embroidery into
+    `extra_operations` for a bedspread. The backend adds confirmed
+    embroidery itself and will stop if an unsupported extra arrives.
+24. If the backend returns `status: "unavailable"`, show `message` to the
+    manager. Do not replace it with a price or choose a stitch, fabric or
+    embroidery on your own.
+25. Parse a bedspread only from the current user message. Do not copy a
+    model, size, quantity, configuration, day fabric, extra operation,
+    face fabric, stitch or filling from earlier messages. If the current
+    message does not name a stitch, `stitch` stays `null`.
+26. A bedspread follow-up such as `ромб 10×10` is not a clarification of the
+    stored curtain or bedspread. It is incomplete on its own. Leave the
+    missing model and size null and do not fill them from the session.
 
 Prompt examples:
 
@@ -167,10 +202,60 @@ Prompt examples:
   returns `EXTRA_OPERATION_NOT_FOUND` and does not calculate a price. Do not
   hide or drop that response. Correct the prompt so the extra is not sent.
 - `шторы Майа`, `шторы Майя` and `штора Мая` → model `Майа`, not `Майкл`.
+- `Покрывало Софт 230×250` → `product_type: "bedspread"`, model `Софт`,
+  width `230`, height `250`, quantity `1` inferred, `face_fabric: null`,
+  `stitch: null`, `filling: null`, `configuration.lining: null`,
+  `extra_operations: []`.
+- `Покрывало Аника 230×250 из ткани Софт` → model `Аника`,
+  `face_fabric: "Софт"`, `stitch: null`.
+- `Покрывало Ибица 200×220, ромб 10×10` → model `Ибица`,
+  `stitch: "Ромб 10×10"`.
+- `Покрывало Прайм 250×270, синтепон 200` → model `Прайм`,
+  `filling: "200"`.
+- `Покрывало Софт 300×270 из ткани шириной 280 см` → model `Софт`,
+  width `300`, height `270`, `face_fabric: null`. The width remark does
+  not create a new fabric. Do not add a stitch.
 
 ## Session merge
 
-Merge the current parser output into the stored session field by field:
+The field-by-field merge below applies only when the current message is a
+curtain or a Roman blind. A bedspread skips this merge.
+
+When the current message says `покрывало` or `покрывала`, or the parser
+returns `product_type: "bedspread"`:
+
+1. Build `POST /api/calculate` from that message alone.
+2. Do not copy stored `model`, `width_cm`, `height_cm`, `quantity`,
+   `configuration`, `day_fabric` or `extra_operations` into the bedspread
+   payload.
+3. Do not write the bedspread request back into the Data Table. The stored
+   curtain or Roman session stays as it was.
+4. Do not create or fill `face_fabric`, `stitch` or `filling` in the Data
+   Table. Pass them only in the current API payload, and omit each one when
+   it is null.
+5. If the current message has a model and both sizes, send it as-is. A
+   missing stitch stays null. Show the backend `message` unchanged. That
+   message already asks for a new complete request.
+6. If the current message has no model, no both sizes, or a plural form
+   without a quantity, do not call the API with stored values. Reply with
+   one complete example and leave the session unchanged:
+   - no size: `Для расчёта покрывала укажите размер в новом полном запросе. Например: Покрывало Софт 230×250, ромб 10×10`
+   - no model: `Для расчёта покрывала укажите модель в новом полном запросе. Например: Покрывало Софт 230×250, ромб 10×10`
+   - plural without a count: `Для расчёта покрывала укажите количество в новом полном запросе. Например: Покрывало Софт 230×250, ромб 10×10`
+
+```text
+stored: curtain, model=Вандер, mechanism=Эконом, width=140, height=270, quantity=2
+message: Покрывало Софт 230×250
+sent: product_type=bedspread, model=Софт, width=230, height=250, quantity=1, stitch=null
+not sent: mechanism=Эконом, width=140, height=270, quantity=2
+session after the reply: still Вандер, Эконом, 140×270, quantity=2
+
+message: Покрывало Софт 230×250, ромб 10×10
+sent: that bedspread only, stitch=ромб 10×10
+```
+
+For a curtain or Roman message, merge the current parser output into the
+stored session field by field:
 
 1. For scalar product fields, overwrite stored values only when the field is in
    `fields_present` and the new value is not null.
@@ -238,3 +323,35 @@ If the backend says the day fabric was provided without a day-night mechanism,
 ask the user to choose `День-ночь Эконом` or `День-ночь Стандарт`. If it says
 the day fabric is missing from the catalog or does not fit the height, show
 that message and do not substitute another fabric or price.
+
+Bedspread fields travel in the current API payload only. Do not store them
+in the Data Table. Omit a field when it is null:
+
+- `face_fabric` — a fabric named in this message, or omitted when the
+  message does not name one
+- `stitch` — a stitch named in this message, or omitted when it is absent
+- `filling` — `100` or `200` when this message names the density, or omitted
+- `configuration.lining` — `Анна` or `Сканди` when this message names it, or
+  omitted so the backend applies `Анна`
+
+```json
+{
+  "product_type": "bedspread",
+  "model": "Софт",
+  "width_cm": 230,
+  "height_cm": 250,
+  "quantity": 1,
+  "configuration": {
+    "heading": null,
+    "mechanism": null,
+    "lining": null,
+    "mounting": null
+  },
+  "day_fabric": null,
+  "face_fabric": null,
+  "stitch": "Ромб 10×10",
+  "filling": null,
+  "extra_operations": [],
+  "raw_request": "Покрывало Софт 230×250, ромб 10×10"
+}
+```

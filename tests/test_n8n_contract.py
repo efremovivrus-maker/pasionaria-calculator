@@ -8,6 +8,11 @@ CONTRACT_PATH = (
     / "docs"
     / "n8n-parser-examples.json"
 )
+GUIDE_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "docs"
+    / "n8n-configuration-contract.md"
+)
 
 
 class N8nParserContractTests(unittest.TestCase):
@@ -49,6 +54,30 @@ class N8nParserContractTests(unittest.TestCase):
                 self.assertEqual(expected["quantity"], quantity)
                 self.assertEqual(expected["quantity_source"], "explicit")
                 self.assertFalse(expected["quantity_missing"])
+
+
+class BedspreadSessionContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.guide = GUIDE_PATH.read_text(encoding="utf-8")
+
+    def test_bedspread_requests_are_not_merged_into_the_session(self) -> None:
+        self.assertIn("A bedspread skips this merge.", self.guide)
+        self.assertIn("from that message alone", self.guide)
+        self.assertIn("session after the reply: still Вандер", self.guide)
+        self.assertIn(
+            "Do not add `face_fabric`, `stitch` or `filling` columns.",
+            self.guide,
+        )
+        self.assertIn("Leave the curtain and Roman session", self.guide)
+
+    def test_curtain_merge_rules_remain(self) -> None:
+        self.assertIn(
+            "applies only when the current message is a",
+            self.guide,
+        )
+        self.assertIn("`day_fabric` is in `fields_present`", self.guide)
+        self.assertIn("configuration_mechanism", self.guide)
 
 
 if __name__ == "__main__":

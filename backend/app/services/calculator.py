@@ -29,6 +29,9 @@ PRODUCT_ALIASES = {
     "roman_blind": "roman",
     "римская штора": "roman",
     "римские шторы": "roman",
+    "bedspread": "bedspread",
+    "покрывало": "bedspread",
+    "покрывала": "bedspread",
 }
 REQUIRED_FIELDS = ("product_type", "model", "width_cm", "height_cm", "quantity")
 BLACKOUT_FABRIC_DESCRIPTORS = {"блекаут"}
@@ -393,6 +396,18 @@ def _calculate(
             "quantity": quantity,
         }
     )
+    if product_type == "bedspread":
+        from .bedspread import calculate_bedspread
+
+        return calculate_bedspread(
+            request,
+            audit,
+            width_cm=width_cm,
+            height_cm=height_cm,
+            quantity=quantity,
+            configuration=configuration,
+            extra_operations=requested_extra_operations,
+        )
 
     master = _read_catalog("master.json", "records")
     requested_model = _requested_model_name(str(request["model"]))

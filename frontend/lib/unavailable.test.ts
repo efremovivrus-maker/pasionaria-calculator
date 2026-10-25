@@ -61,6 +61,18 @@ describe("formatUnavailableMessage", () => {
     );
   });
 
+  it("shows the bedspread clarification instead of a fallback", () => {
+    expect(
+      formatUnavailableMessage({
+        status: "unavailable",
+        reason_code: "BEDSPREAD_STITCH_REQUIRED",
+        message: "Для расчёта покрывала укажите рисунок стёжки. Например: Покрывало Софт 230×250, ромб 10×10",
+      }),
+    ).toBe(
+      "Для расчёта покрывала укажите рисунок стёжки. Например: Покрывало Софт 230×250, ромб 10×10",
+    );
+  });
+
   it("uses the safe fallback for an unknown reason code", () => {
     expect(
       formatUnavailableMessage({

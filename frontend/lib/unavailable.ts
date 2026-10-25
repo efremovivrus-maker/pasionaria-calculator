@@ -79,9 +79,22 @@ export function formatUnavailableMessage(value: unknown): string {
     reasonCode === "FABRIC_NOT_FOUND" ||
     reasonCode === "FABRIC_PRICE_UNKNOWN" ||
     reasonCode === "UNSUPPORTED_PRODUCT" ||
-    reasonCode === "MISSING_RULE"
+    reasonCode === "MISSING_RULE" ||
+    reasonCode === "BEDSPREAD_MODEL_NOT_FOUND" ||
+    reasonCode === "BEDSPREAD_CONSTRUCTION_UNSUPPORTED" ||
+    reasonCode === "BEDSPREAD_EMBROIDERY_UNCONFIRMED" ||
+    reasonCode === "BEDSPREAD_LINING_UNCONFIRMED" ||
+    reasonCode === "BEDSPREAD_FABRIC_UNCONFIRMED" ||
+    reasonCode === "BEDSPREAD_FABRIC_DATA_MISSING" ||
+    reasonCode === "BEDSPREAD_STITCH_REQUIRED" ||
+    reasonCode === "BEDSPREAD_STITCH_NOT_FOUND" ||
+    reasonCode === "BEDSPREAD_FILLING_NOT_FOUND" ||
+    reasonCode === "BEDSPREAD_LINING_NOT_FOUND" ||
+    reasonCode === "BEDSPREAD_EXTRA_NOT_SUPPORTED" ||
+    reasonCode === "BEDSPREAD_FABRIC_TOO_NARROW"
   ) {
     return (
+      asString(payload.message) ??
       reason ??
       (reasonCode === "ROMAN_TOO_HIGH"
         ? "Не можем рассчитать римскую штору такого размера: высота изделия превышает допустимую ширину ткани."

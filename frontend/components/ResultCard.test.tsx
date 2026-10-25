@@ -1,10 +1,10 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { adaptWebhookResponse } from "@/lib/api";
 import type { CalculationResult } from "@/lib/types";
 
-import { ResultCard } from "./ResultCard";
+import { calculationCopyText, ResultCard } from "./ResultCard";
 
 afterEach(cleanup);
 
@@ -143,5 +143,37 @@ describe("ResultCard", () => {
     render(<ResultCard result={result} onReset={vi.fn()} />);
 
     expect(screen.queryByText("Состав расчёта")).toBeNull();
+  });
+
+  it("copies the bedspread total and operation lines", async () => {
+    const result: CalculationResult = {
+      status: "success",
+      retailPrice: 8703,
+      model: "Софт",
+      productType: "bedspread",
+      widthCm: 230,
+      heightCm: 250,
+      fabricName: "Софт",
+      fabricConsumptionM: 2.7,
+      operations: [],
+      extras: [],
+      components: [
+        { category: "fabric", name: "Ткань «Софт»", cost: 2673 },
+        { category: "production", name: "Стежка покрывала — Ромб 10х10 см", cost: 862.5 },
+      ],
+    };
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText },
+    });
+
+    render(<ResultCard result={result} onReset={vi.fn()} />);
+
+    expect(screen.getByText("Покрывало «Софт»")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Скопировать расчёт" }));
+    await screen.findByRole("button", { name: "Скопировано" });
+    expect(writeText).toHaveBeenCalledWith(calculationCopyText(result));
+    expect(writeText.mock.calls[0][0]).toContain("Стежка покрывала — Ромб 10х10 см");
   });
 });

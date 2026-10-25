@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import type { CalculationResult } from "@/lib/types";
 
 type ResultCardProps = {
@@ -8,7 +10,8 @@ type ResultCardProps = {
 const rubles = new Intl.NumberFormat("ru-RU", {
   style: "currency",
   currency: "RUB",
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
 });
 
 const decimal = new Intl.NumberFormat("ru-RU", {
@@ -16,10 +19,53 @@ const decimal = new Intl.NumberFormat("ru-RU", {
 });
 
 function productName(type?: string) {
-  return type === "roman" ? "Римская штора" : "Шторы";
+  if (type === "roman") {
+    return "Римская штора";
+  }
+  if (type === "bedspread") {
+    return "Покрывало";
+  }
+  return "Шторы";
+}
+
+export function calculationCopyText(result: CalculationResult): string {
+  const lines = [
+    `${productName(result.productType)}${result.model ? ` «${result.model}»` : ""}`,
+  ];
+  if (result.widthCm !== undefined && result.heightCm !== undefined) {
+    lines.push(
+      `${decimal.format(result.widthCm)} × ${decimal.format(result.heightCm)} см`,
+    );
+  }
+  if (result.fabricName) {
+    lines.push(
+      `Ткань: ${result.fabricName}${
+        result.fabricConsumptionM !== undefined
+          ? `, ${decimal.format(result.fabricConsumptionM)} м`
+          : ""
+      }`,
+    );
+  }
+  lines.push(`Итого: ${rubles.format(result.retailPrice)}`);
+  for (const component of result.components ?? []) {
+    lines.push(`${component.name}: ${rubles.format(component.cost)}`);
+  }
+  return lines.join("\n");
 }
 
 export function ResultCard({ result, onReset }: ResultCardProps) {
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
+    "idle",
+  );
+
+  async function copyResult() {
+    try {
+      await navigator.clipboard.writeText(calculationCopyText(result));
+      setCopyState("copied");
+    } catch {
+      setCopyState("failed");
+    }
+  }
   const components = result.components ?? [];
   const fabricComponents = components.filter(
     (component) => component.category === "fabric",
@@ -148,13 +194,26 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
             Стоимость рассчитана по текущим параметрам изделия.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onReset}
-          className="min-h-11 w-full border border-stone-800 px-5 text-sm font-medium text-stone-900 transition-colors duration-200 hover:bg-stone-900 hover:text-stone-50 sm:w-auto"
-        >
-          Новый расчёт
-        </button>
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <button
+            type="button"
+            onClick={() => void copyResult()}
+            className="min-h-11 w-full border border-stone-800 px-5 text-sm font-medium text-stone-900 transition-colors duration-200 hover:bg-stone-900 hover:text-stone-50 sm:w-auto"
+          >
+            {copyState === "copied"
+              ? "Скопировано"
+              : copyState === "failed"
+                ? "Не удалось скопировать"
+                : "Скопировать расчёт"}
+          </button>
+          <button
+            type="button"
+            onClick={onReset}
+            className="min-h-11 w-full border border-stone-800 px-5 text-sm font-medium text-stone-900 transition-colors duration-200 hover:bg-stone-900 hover:text-stone-50 sm:w-auto"
+          >
+            Новый расчёт
+          </button>
+        </div>
       </div>
     </section>
   );

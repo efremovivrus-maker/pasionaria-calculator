@@ -1,0 +1,2406 @@
+{
+  "status": "draft",
+  "source": "Услуги_производства_25-10-26.pdf",
+  "source_date": "2026-10-25",
+  "connected_to_calculator": false,
+  "excluded_sections": [
+    "Декоративная подушка: пошив наволочки, наполнитель, ушки, планки и фурнитура наволочки.",
+    "Постельные наволочки.",
+    "Операции штор и римских штор, даже если они напечатаны в том же файле."
+  ],
+  "record_count": 101,
+  "records": [
+    {
+      "draft_id": "BSD-SEW-001",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Прямые края",
+      "variant": "Настрочная планка на изнанке",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        20
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-002",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Прямые края",
+      "variant": "Настрочная планка на лице",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        20
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-003",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Прямые края",
+      "variant": "Обработка кантом",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        20
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-004",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Прямые края",
+      "variant": "Выворотное покрывало",
+      "unit": "МП",
+      "tariff_rub": 250,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        20,
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-005",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Закругленные с одной стороны",
+      "variant": "Настрочная планка на лице",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-006",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Закругленные с одной стороны",
+      "variant": "Обработка кантом",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-007",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Закругленные с одной стороны",
+      "variant": "Выворотное покрывало",
+      "unit": "МП",
+      "tariff_rub": 250,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-008",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Закругленные с двух сторон",
+      "variant": "Настрочная планка на лице",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-009",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Закругленные с двух сторон",
+      "variant": "Обработка кантом",
+      "unit": "МП",
+      "tariff_rub": 200,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-010",
+      "section": "Покрывало на подкладке",
+      "group": "Пошив покрывала с подкладкой",
+      "edge_shape": "Закругленные с двух сторон",
+      "variant": "Выворотное покрывало",
+      "unit": "МП",
+      "tariff_rub": 270,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Формула периметра уже есть в движке. Припуск на шов документ не задаёт и в формулу не добавлен.",
+      "included": [
+        "обработка края без фурнитуры"
+      ],
+      "excluded": [
+        "подкладка",
+        "синтепон",
+        "стежка",
+        "фурнитура"
+      ],
+      "limitations": "В стоимость входит обработка края без фурнитуры. Не входят подкладка, синтепон и стежка. База: погонный метр периметра готового изделия. Радиус скругления для закруглённых вариантов документ просит указать, но число и влияние на периметр не заданы.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-FILL-100 г/м2 (Легкое)",
+      "section": "Покрывало на подкладке",
+      "group": "Толщина покрывала",
+      "variant": "100 г/м2 (Легкое)",
+      "unit": "М2",
+      "tariff_rub": 80,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "синтепон соответствующей плотности"
+      ],
+      "excluded": [],
+      "limitations": "Для «Без пласта» цена в прайсе не напечатана. Ноль не подставлен.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-FILL-200 г/м2 (Среднее)",
+      "section": "Покрывало на подкладке",
+      "group": "Толщина покрывала",
+      "variant": "200 г/м2 (Среднее)",
+      "unit": "М2",
+      "tariff_rub": 150,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "синтепон соответствующей плотности"
+      ],
+      "excluded": [],
+      "limitations": "Для «Без пласта» цена в прайсе не напечатана. Ноль не подставлен.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-FILL-Без пласта",
+      "section": "Покрывало на подкладке",
+      "group": "Толщина покрывала",
+      "variant": "Без пласта",
+      "unit": "М2",
+      "tariff_rub": null,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для «Без пласта» цена в прайсе не напечатана. Ноль не подставлен.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "missing_in_source",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-LIN-Подкладка «Анна»",
+      "section": "Покрывало на подкладке",
+      "group": "Подкладка покрывала",
+      "variant": "Подкладка «Анна»",
+      "unit": "М2",
+      "tariff_rub": 450,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "соответствующая ткань"
+      ],
+      "excluded": [
+        "синтепон",
+        "стежка"
+      ],
+      "limitations": "Ткань «Анна» есть в каталоге, 280 см, RRC 835 ₽/м. Тариф операции уже включает соответствующую ткань, повторно цену ткани не добавлять.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-LIN-Стёганое полотно",
+      "section": "Покрывало на подкладке",
+      "group": "Подкладка покрывала",
+      "variant": "Стёганое полотно",
+      "unit": "М2",
+      "tariff_rub": 420,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "соответствующая ткань"
+      ],
+      "excluded": [
+        "синтепон",
+        "стежка"
+      ],
+      "limitations": "Отдельной ткани с таким именем в каталоге нет.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-LIN-Давальческая подкладка",
+      "section": "Покрывало на подкладке",
+      "group": "Подкладка покрывала",
+      "variant": "Давальческая подкладка",
+      "unit": "М2",
+      "tariff_rub": null,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "стежка"
+      ],
+      "limitations": "Цена в прайсе не напечатана.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "missing_in_source",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-LIN-Подкладка «Сканди»",
+      "section": "Покрывало на подкладке",
+      "group": "Подкладка покрывала",
+      "variant": "Подкладка «Сканди»",
+      "unit": "М2",
+      "tariff_rub": 350,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "соответствующая ткань"
+      ],
+      "excluded": [
+        "синтепон",
+        "стежка"
+      ],
+      "limitations": "Ткань «Сканди» есть в каталоге, 280 см, RRC 590 ₽/м. Тариф операции уже включает соответствующую ткань, повторно цену ткани не добавлять.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Квадрат 5х5 см",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Квадрат 5х5 см",
+      "unit": "М2",
+      "tariff_rub": 180,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Ромб 20х20 см",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Ромб 20х20 см",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Квадрат 20х20 см",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Квадрат 20х20 см",
+      "unit": "М2",
+      "tariff_rub": 80,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Квадрат 10х10 см",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Квадрат 10х10 см",
+      "unit": "М2",
+      "tariff_rub": 130,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Ромб 10х10 см",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Ромб 10х10 см",
+      "unit": "М2",
+      "tariff_rub": 150,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        21
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Ромб 5х5 см",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Ромб 5х5 см",
+      "unit": "М2",
+      "tariff_rub": 220,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP188",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP188",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP193",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP193",
+      "unit": "М2",
+      "tariff_rub": 80,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP191",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP191",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP218",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP218",
+      "unit": "М2",
+      "tariff_rub": 80,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP155",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP155",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP109",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP109",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP122",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP122",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP101",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP101",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-ZBP202",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "ZBP202",
+      "unit": "М2",
+      "tariff_rub": 100,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Аура",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Аура",
+      "unit": "М2",
+      "tariff_rub": 150,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Терри",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Терри",
+      "unit": "М2",
+      "tariff_rub": 200,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Стоун",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": "Стежка по всей площади",
+      "variant": "Стоун",
+      "unit": "М2",
+      "tariff_rub": 250,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Коды ZBP в товарном прайсе с моделями не связаны.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-STITCH-Закрепки",
+      "section": "Покрывало на подкладке",
+      "group": "Стежка покрывала",
+      "subgroup": null,
+      "variant": "Закрепки",
+      "unit": "М2",
+      "tariff_rub": 50,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [],
+      "excluded": [
+        "синтепон",
+        "подкладка"
+      ],
+      "limitations": "Закрепки стоят отдельной строкой после рисунков. Документ не говорит, что это рисунок стежки конкретной модели.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Прайм",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Прайм",
+      "unit": "М2",
+      "tariff_rub": 370,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_067",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Фито (мушки)",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Фито (мушки)",
+      "unit": "М2",
+      "tariff_rub": 300,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_068",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Либерти",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Либерти",
+      "unit": "М2",
+      "tariff_rub": 660,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_069",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Лилас",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Лилас",
+      "unit": "М2",
+      "tariff_rub": 360,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_070",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Аника",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Аника",
+      "unit": "М2",
+      "tariff_rub": 910,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_071",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Бэлли",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Бэлли",
+      "unit": "М2",
+      "tariff_rub": 510,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_072",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Элис",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Элис",
+      "unit": "М2",
+      "tariff_rub": 1080,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_073",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Флэш",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Флэш",
+      "unit": "М2",
+      "tariff_rub": 305,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_074",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Лука",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Лука",
+      "unit": "М2",
+      "tariff_rub": 470,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_075",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Мира",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Мира",
+      "unit": "М2",
+      "tariff_rub": 265,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_076",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Вайн",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Вайн",
+      "unit": "М2",
+      "tariff_rub": 1240,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_077",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Мика",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Мика",
+      "unit": "М2",
+      "tariff_rub": 640,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_078",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Амми",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Амми",
+      "unit": "М2",
+      "tariff_rub": 310,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_079",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-AREA-Джим",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По всей площади",
+      "variant": "Джим",
+      "unit": "М2",
+      "tariff_rub": 670,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_080",
+      "limitations": "Новая операция не создаётся: тариф и имя уже есть в operations.json.",
+      "source_pages": [
+        22
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Дюпон",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Дюпон",
+      "unit": "МП",
+      "tariff_rub": 560,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_081",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Фито (листья)",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Фито (листья)",
+      "unit": "МП",
+      "tariff_rub": 420,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_082",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Бриджит",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Бриджит",
+      "unit": "МП",
+      "tariff_rub": 500,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_083",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Лея",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Лея",
+      "unit": "МП",
+      "tariff_rub": 910,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_084",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Шарлиз",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Шарлиз",
+      "unit": "МП",
+      "tariff_rub": 660,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_085",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Метрика",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Метрика",
+      "unit": "МП",
+      "tariff_rub": 315,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_086",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Гео",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Гео",
+      "unit": "МП",
+      "tariff_rub": 510,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_087",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Эмануэль",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Эмануэль",
+      "unit": "МП",
+      "tariff_rub": 400,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_088",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Орион",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Орион",
+      "unit": "МП",
+      "tariff_rub": 470,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_089",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Диана",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Диана",
+      "unit": "МП",
+      "tariff_rub": 1090,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_090",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Дина",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Дина",
+      "unit": "МП",
+      "tariff_rub": 620,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_091",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Валери",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Валери",
+      "unit": "МП",
+      "tariff_rub": 815,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_092",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Пасадена",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Пасадена",
+      "unit": "МП",
+      "tariff_rub": 245,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_093",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Роузи",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Роузи",
+      "unit": "МП",
+      "tariff_rub": 880,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_094",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Роуз",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Роуз",
+      "unit": "МП",
+      "tariff_rub": 650,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_095",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Гретта",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Гретта",
+      "unit": "МП",
+      "tariff_rub": 350,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_096",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Клео",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Клео",
+      "unit": "МП",
+      "tariff_rub": 320,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_097",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Шейн",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Шейн",
+      "unit": "МП",
+      "tariff_rub": 440,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_098",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Эшли",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Эшли",
+      "unit": "МП",
+      "tariff_rub": 430,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_099",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Скарлет",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Скарлет",
+      "unit": "МП",
+      "tariff_rub": 1120,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_100",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Лион",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Лион",
+      "unit": "МП",
+      "tariff_rub": 420,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_101",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Хоуп",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Хоуп",
+      "unit": "МП",
+      "tariff_rub": 345,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_102",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Мальдивы",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Мальдивы",
+      "unit": "МП",
+      "tariff_rub": 940,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_103",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Алонсо",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Алонсо",
+      "unit": "МП",
+      "tariff_rub": 425,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_104",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-SIDE-Марсель",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С одной стороны",
+      "variant": "Марсель",
+      "unit": "МП",
+      "tariff_rub": 600,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_105",
+      "limitations": "Новая операция не создаётся.",
+      "source_pages": [
+        22,
+        23
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-EMB-BOTH-SIDES",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "С двух сторон",
+      "variant": null,
+      "unit": "МП",
+      "tariff_rub": null,
+      "calculation_basis": "высота изделия × 2",
+      "existing_formula": null,
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "limitations": "Прайс пишет «см. выше» и не повторяет тарифы. Отдельной формулы height×2 для вышивки в движке нет. Числа одной стороны не скопированы.",
+      "source_pages": [
+        23
+      ],
+      "tariff_status": "missing_in_source",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-EMB-BOTTOM",
+      "section": "Покрывало на подкладке",
+      "group": "Вышивка",
+      "subgroup": "По низу",
+      "variant": null,
+      "unit": "МП",
+      "tariff_rub": null,
+      "calculation_basis": "ширина изделия",
+      "existing_formula": null,
+      "included": [
+        "нитки"
+      ],
+      "excluded": [
+        "доработка вышивки при изменении размера или вида"
+      ],
+      "limitations": "Прайс пишет «см. выше» и не повторяет тарифы. Какой список вариантов имеется в виду, отдельной строкой не закреплён.",
+      "source_pages": [
+        23
+      ],
+      "tariff_status": "missing_in_source",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-BAND-С двух краев",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Планки и сшивные элементы",
+      "variant": "С двух краев",
+      "unit": "МП",
+      "tariff_rub": 60,
+      "calculation_basis": "высота изделия × 2",
+      "existing_formula": "height*2",
+      "formula_note": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Одинаковые тарифы напечатаны в обоих разделах покрывал. Какая схема планок у конкретной модели, документ не говорит.",
+      "source_pages": [
+        23,
+        26
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-BAND-По периметру",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Планки и сшивные элементы",
+      "variant": "По периметру",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "периметр готового изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Одинаковые тарифы напечатаны в обоих разделах покрывал. Какая схема планок у конкретной модели, документ не говорит.",
+      "source_pages": [
+        24,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-BAND-С боку и снизу",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Планки и сшивные элементы",
+      "variant": "С боку и снизу",
+      "unit": "МП",
+      "tariff_rub": 70,
+      "calculation_basis": "высота + ширина готового изделия",
+      "existing_formula": null,
+      "formula_note": "В движке нет формулы «высота + ширина». Новая формула не добавлена.",
+      "included": [],
+      "excluded": [],
+      "limitations": "Одинаковые тарифы напечатаны в обоих разделах покрывал. Какая схема планок у конкретной модели, документ не говорит.",
+      "source_pages": [
+        24,
+        26
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-TRIM-С двух сторон",
+      "section": "Покрывало на подкладке",
+      "group": "Фурнитура (бахрома, канты и тп.)",
+      "variant": "С двух сторон",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "высота изделия × 2",
+      "existing_formula": "height*2",
+      "formula_note": null,
+      "included": [],
+      "excluded": [
+        "фурнитура: канты, бахрома и подобные материалы"
+      ],
+      "limitations": "Тариф — только работа. Стоимость канта или бахромы в прайсе не указана.",
+      "source_pages": [
+        24
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-TRIM-По низу",
+      "section": "Покрывало на подкладке",
+      "group": "Фурнитура (бахрома, канты и тп.)",
+      "variant": "По низу",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "ширина изделия",
+      "existing_formula": "width",
+      "formula_note": null,
+      "included": [],
+      "excluded": [
+        "фурнитура: канты, бахрома и подобные материалы"
+      ],
+      "limitations": "Тариф — только работа. Стоимость канта или бахромы в прайсе не указана.",
+      "source_pages": [
+        24
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-TRIM-Снизу и сбоку",
+      "section": "Покрывало на подкладке",
+      "group": "Фурнитура (бахрома, канты и тп.)",
+      "variant": "Снизу и сбоку",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "высота + ширина",
+      "existing_formula": null,
+      "formula_note": "Составной базы в движке нет. Новая формула не добавлена.",
+      "included": [],
+      "excluded": [
+        "фурнитура: канты, бахрома и подобные материалы"
+      ],
+      "limitations": "Тариф — только работа. Стоимость канта или бахромы в прайсе не указана.",
+      "source_pages": [
+        24
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-TRIM-По периметру",
+      "section": "Покрывало на подкладке",
+      "group": "Фурнитура (бахрома, канты и тп.)",
+      "variant": "По периметру",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "периметр изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": null,
+      "included": [],
+      "excluded": [
+        "фурнитура: канты, бахрома и подобные материалы"
+      ],
+      "limitations": "Тариф — только работа. Стоимость канта или бахромы в прайсе не указана.",
+      "source_pages": [
+        24
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-TRIM-С боков и снизу",
+      "section": "Покрывало на подкладке",
+      "group": "Фурнитура (бахрома, канты и тп.)",
+      "variant": "С боков и снизу",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "высота × 2 + ширина",
+      "existing_formula": null,
+      "formula_note": "Составной базы в движке нет. Новая формула не добавлена.",
+      "included": [],
+      "excluded": [
+        "фурнитура: канты, бахрома и подобные материалы"
+      ],
+      "limitations": "Тариф — только работа. Стоимость канта или бахромы в прайсе не указана.",
+      "source_pages": [
+        24
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-TRIM-Сбоку с одной стороны",
+      "section": "Покрывало на подкладке",
+      "group": "Фурнитура (бахрома, канты и тп.)",
+      "variant": "Сбоку с одной стороны",
+      "unit": "МП",
+      "tariff_rub": 80,
+      "calculation_basis": "высота изделия",
+      "existing_formula": "height",
+      "formula_note": null,
+      "included": [],
+      "excluded": [
+        "фурнитура: канты, бахрома и подобные материалы"
+      ],
+      "limitations": "Тариф — только работа. Стоимость канта или бахромы в прайсе не указана.",
+      "source_pages": [
+        24
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-С двух краев-2",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "С двух краев",
+      "gathering_coefficient": 2,
+      "unit": "МП",
+      "tariff_rub": 250,
+      "calculation_basis": "как у одноимённых планок; отдельная база для юбки не повторена",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для периметра коэффициенты идут 2 → 250, 2,5 → 350, 3 → 300. Порядок не исправлялся. База юбки отдельным предложением не задана, поэтому формула движка не проставлена.",
+      "source_pages": [
+        24,
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-С двух краев-2.5",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "С двух краев",
+      "gathering_coefficient": 2.5,
+      "unit": "МП",
+      "tariff_rub": 300,
+      "calculation_basis": "как у одноимённых планок; отдельная база для юбки не повторена",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для периметра коэффициенты идут 2 → 250, 2,5 → 350, 3 → 300. Порядок не исправлялся. База юбки отдельным предложением не задана, поэтому формула движка не проставлена.",
+      "source_pages": [
+        24,
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-С двух краев-3",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "С двух краев",
+      "gathering_coefficient": 3,
+      "unit": "МП",
+      "tariff_rub": 350,
+      "calculation_basis": "как у одноимённых планок; отдельная база для юбки не повторена",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для периметра коэффициенты идут 2 → 250, 2,5 → 350, 3 → 300. Порядок не исправлялся. База юбки отдельным предложением не задана, поэтому формула движка не проставлена.",
+      "source_pages": [
+        24,
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-По периметру-2",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "По периметру",
+      "gathering_coefficient": 2,
+      "unit": "МП",
+      "tariff_rub": 250,
+      "calculation_basis": "как у одноимённых планок; отдельная база для юбки не повторена",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для периметра коэффициенты идут 2 → 250, 2,5 → 350, 3 → 300. Порядок не исправлялся. База юбки отдельным предложением не задана, поэтому формула движка не проставлена.",
+      "source_pages": [
+        24,
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-По периметру-2.5",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "По периметру",
+      "gathering_coefficient": 2.5,
+      "unit": "МП",
+      "tariff_rub": 350,
+      "calculation_basis": "как у одноимённых планок; отдельная база для юбки не повторена",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для периметра коэффициенты идут 2 → 250, 2,5 → 350, 3 → 300. Порядок не исправлялся. База юбки отдельным предложением не задана, поэтому формула движка не проставлена.",
+      "source_pages": [
+        24,
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-По периметру-3",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "По периметру",
+      "gathering_coefficient": 3,
+      "unit": "МП",
+      "tariff_rub": 300,
+      "calculation_basis": "как у одноимённых планок; отдельная база для юбки не повторена",
+      "existing_formula": null,
+      "included": [],
+      "excluded": [],
+      "limitations": "Для периметра коэффициенты идут 2 → 250, 2,5 → 350, 3 → 300. Порядок не исправлялся. База юбки отдельным предложением не задана, поэтому формула движка не проставлена.",
+      "source_pages": [
+        24,
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-С 1 края и низу",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "С 1 края и низу",
+      "unit": "МП",
+      "tariff_rub": null,
+      "calculation_basis": null,
+      "existing_formula": null,
+      "limitations": "В прайсе стоит «см. выше». Тариф соседней строки не скопирован.",
+      "source_pages": [
+        25,
+        27
+      ],
+      "tariff_status": "missing_in_source",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SKIRT-С 2-х краев и низу",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Юбка",
+      "variant": "С 2-х краев и низу",
+      "unit": "МП",
+      "tariff_rub": null,
+      "calculation_basis": null,
+      "existing_formula": null,
+      "limitations": "В прайсе стоит «см. выше». Тариф соседней строки не скопирован.",
+      "source_pages": [
+        25,
+        27
+      ],
+      "tariff_status": "missing_in_source",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-PACK",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Упаковка покрывала",
+      "variant": "Чехол из ПВХ или спандбонда",
+      "unit": "ШТ",
+      "tariff_rub": 200,
+      "calculation_basis": "за изделие",
+      "existing_formula": "quantity",
+      "included": [
+        "чехол из ПВХ или спандбонда"
+      ],
+      "excluded": [],
+      "limitations": "Картон, который входит в упаковку портьеры, здесь не упомянут. Тариф дважды напечатан одинаково, строка одна.",
+      "source_pages": [
+        25,
+        27
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-SEW-PLAIN",
+      "section": "Покрывало пледового типа",
+      "group": "Пошив покрывала без подкладки",
+      "variant": null,
+      "unit": "МП",
+      "tariff_rub": 70,
+      "calculation_basis": "периметр изделия",
+      "existing_formula": "2*(width+height)",
+      "formula_note": "Припуск документ не задаёт.",
+      "included": [],
+      "excluded": [],
+      "limitations": "Вариант в прайсе обозначен прочерком. Не сказано, включает ли цена обработку края.",
+      "source_pages": [
+        26
+      ],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false
+    },
+    {
+      "draft_id": "BSD-COEF-Портьерная ткань",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Тип ткани",
+      "variant": "Портьерная ткань",
+      "unit": "КОЭФ",
+      "tariff_rub": 1,
+      "calculation_basis": "коэффициент; к каким операциям он применяется, прайс не говорит",
+      "existing_formula": null,
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_121",
+      "included": [],
+      "excluded": [],
+      "limitations": "Это не список тканей, разрешённых для покрывала. В калькуляторе штор та же группа исключена, потому что база коэффициента не подтверждена. Для покрывал она тоже не применяется.",
+      "source_pages": [
+        25,
+        27,
+        28
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-COEF-Вуаль и органза",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Тип ткани",
+      "variant": "Вуаль и органза",
+      "unit": "КОЭФ",
+      "tariff_rub": 1.3,
+      "calculation_basis": "коэффициент; к каким операциям он применяется, прайс не говорит",
+      "existing_formula": null,
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_122",
+      "included": [],
+      "excluded": [],
+      "limitations": "Это не список тканей, разрешённых для покрывала. В калькуляторе штор та же группа исключена, потому что база коэффициента не подтверждена. Для покрывал она тоже не применяется.",
+      "source_pages": [
+        25,
+        27,
+        28
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-COEF-Блэкаут",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Тип ткани",
+      "variant": "Блэкаут",
+      "unit": "КОЭФ",
+      "tariff_rub": 1.2,
+      "calculation_basis": "коэффициент; к каким операциям он применяется, прайс не говорит",
+      "existing_formula": null,
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_123",
+      "included": [],
+      "excluded": [],
+      "limitations": "Это не список тканей, разрешённых для покрывала. В калькуляторе штор та же группа исключена, потому что база коэффициента не подтверждена. Для покрывал она тоже не применяется.",
+      "source_pages": [
+        25,
+        27,
+        28
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-COEF-Бархат",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Тип ткани",
+      "variant": "Бархат",
+      "unit": "КОЭФ",
+      "tariff_rub": 1.5,
+      "calculation_basis": "коэффициент; к каким операциям он применяется, прайс не говорит",
+      "existing_formula": null,
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_124",
+      "included": [],
+      "excluded": [],
+      "limitations": "Это не список тканей, разрешённых для покрывала. В калькуляторе штор та же группа исключена, потому что база коэффициента не подтверждена. Для покрывал она тоже не применяется.",
+      "source_pages": [
+        25,
+        27,
+        28
+      ],
+      "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-COEF-Хлопок и лен",
+      "section": "Покрывало на подкладке и покрывало пледового типа",
+      "group": "Тип ткани",
+      "variant": "Хлопок и лен",
+      "unit": "КОЭФ",
+      "tariff_rub": 1.2,
+      "calculation_basis": "коэффициент; к каким операциям он применяется, прайс не говорит",
+      "existing_formula": null,
+      "duplicate_of_existing_catalog": true,
+      "existing_catalog_operation_id": "OP_125",
+      "included": [],
+      "excluded": [],
+      "limitations": "Это не список тканей, разрешённых для покрывала. В калькуляторе штор та же группа исключена, потому что база коэффициента не подтверждена. Для покрывал она тоже не применяется.",
+      "source_pages": [
+        25,
+        27,
+        28
+      ],
+      "tariff_status": "confirmed"
+    }
+  ]
+}

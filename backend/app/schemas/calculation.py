@@ -25,7 +25,7 @@ class CalculationConfiguration(BaseModel):
 
 
 class CalculationRequest(BaseModel):
-    product_type: Literal["curtain", "roman"]
+    product_type: Literal["curtain", "roman", "bedspread"]
     model: str = Field(min_length=1)
     width_cm: float = Field(gt=0)
     height_cm: float = Field(gt=0)
@@ -34,17 +34,20 @@ class CalculationRequest(BaseModel):
         default_factory=CalculationConfiguration
     )
     day_fabric: Optional[str] = None
+    face_fabric: Optional[str] = None
+    stitch: Optional[str] = None
+    filling: Optional[str] = None
     extra_operations: list[str] = Field(default_factory=list)
     raw_request: Optional[str] = None
 
-    @field_validator("day_fabric")
+    @field_validator("day_fabric", "face_fabric", "stitch", "filling")
     @classmethod
-    def strip_day_fabric(cls, value: Optional[str]) -> Optional[str]:
+    def strip_optional_text(cls, value: Optional[str]) -> Optional[str]:
         if value is None:
             return None
         stripped = value.strip()
         if not stripped:
-            raise ValueError("Day fabric cannot be empty")
+            raise ValueError("Optional text field cannot be empty")
         return stripped
 
     @field_validator("extra_operations")
@@ -67,17 +70,26 @@ class CalculationRequest(BaseModel):
         }
         if self.day_fabric is not None:
             payload["day_fabric"] = self.day_fabric
+        if self.face_fabric is not None:
+            payload["face_fabric"] = self.face_fabric
+        if self.stitch is not None:
+            payload["stitch"] = self.stitch
+        if self.filling is not None:
+            payload["filling"] = self.filling
         return payload
 
 
 class NormalizedRequest(BaseModel):
-    product_type: Literal["curtain", "roman"]
+    product_type: Literal["curtain", "roman", "bedspread"]
     model: str
     width_cm: float
     height_cm: float
     quantity: int
     configuration: CalculationConfiguration
     day_fabric: Optional[str] = None
+    face_fabric: Optional[str] = None
+    stitch: Optional[str] = None
+    filling: Optional[str] = None
     extra_operations: list[str]
 
 

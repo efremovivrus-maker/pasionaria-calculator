@@ -109,6 +109,71 @@ def calculate_roman_consumption(
     )
 
 
+def calculate_bedspread_consumption(
+    *,
+    width_cm: Decimal,
+    height_cm: Decimal,
+    quantity: int,
+    fabric_width_cm: Decimal,
+) -> FabricConsumptionResult:
+    """Cut one bedspread from a single width, with a mandatory 20 cm allowance.
+
+    Both orientations are checked. The allowance is added to the side that
+    runs along the roll. When the bedspread width fits into the fabric, that
+    orientation is used and the allowance is added to the length. Rotation is
+    used only when the width does not fit and the length does. Joining is
+    not allowed.
+    """
+    allowance_cm = Decimal("20")
+    standard_fits = width_cm <= fabric_width_cm
+    rotated_fits = height_cm <= fabric_width_cm
+    standard_consumption = (height_cm + allowance_cm) * quantity / Decimal("100")
+    rotated_consumption = (width_cm + allowance_cm) * quantity / Decimal("100")
+    if standard_fits:
+        rotated_note = (
+            f" Поворот тоже возможен и дал бы {rotated_consumption} м, "
+            "но ширина уже помещается в ткань, поэтому он не выбран."
+            if rotated_fits
+            else " Поворот невозможен: длина не помещается в ширину ткани."
+        )
+        return FabricConsumptionResult(
+            status="success",
+            consumption_m=standard_consumption,
+            layout="standard",
+            cuts=quantity,
+            items_per_cut=1,
+            explanation=(
+                "Проверены обе ориентации. Припуск 20 см добавлен к длине. "
+                f"Раскрой по ширине: {standard_consumption} м."
+                f"{rotated_note}"
+            ),
+        )
+    if rotated_fits:
+        return FabricConsumptionResult(
+            status="success",
+            consumption_m=rotated_consumption,
+            layout="rotated",
+            cuts=quantity,
+            items_per_cut=1,
+            explanation=(
+                "Проверены обе ориентации. Ширина покрывала не помещается "
+                f"в ткань {fabric_width_cm} см. Поворот помещает длину в ширину "
+                f"ткани; припуск 20 см добавлен к стороне вдоль рулона: "
+                f"{rotated_consumption} м."
+            ),
+        )
+    return FabricConsumptionResult(
+        status="unavailable",
+        layout="unavailable",
+        reason_code="BEDSPREAD_FABRIC_TOO_NARROW",
+        reason=(
+            "Покрывало не помещается в ширину ткани ни в одной ориентации. "
+            f"Нужна цельная сторона {width_cm} или {height_cm} см, "
+            f"ширина ткани {fabric_width_cm} см. Стачивание полотен не разрешено."
+        ),
+    )
+
+
 def calculate_fabric_consumption(
     *,
     product_type: str,
