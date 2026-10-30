@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "PASIONARIA — расчёт стоимости штор",
+  title: "PASIONARIA — Калькулятор текстиля",
   description:
-    "Предварительный расчёт стоимости штор и римских штор по индивидуальным размерам.",
+    "Предварительный расчёт стоимости штор, римских штор и текстиля по индивидуальным размерам.",
 };
 
 export default function RootLayout({

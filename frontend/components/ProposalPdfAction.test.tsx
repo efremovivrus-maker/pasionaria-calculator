@@ -60,7 +60,7 @@ describe("proposal pdf action", () => {
   it("downloads the current proposal", async () => {
     render(<AppShell />);
     fireEvent.click(
-      await screen.findByRole("button", { name: "Коммерческое предложение, 1" }),
+      await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }),
     );
     fireEvent.click(screen.getByRole("button", { name: "Сформировать PDF" }));
 
@@ -79,7 +79,7 @@ describe("proposal pdf action", () => {
     downloadProposalPdf.mockRejectedValue(new Error("pdf failed"));
     render(<AppShell />);
     fireEvent.click(
-      await screen.findByRole("button", { name: "Коммерческое предложение, 1" }),
+      await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }),
     );
     fireEvent.click(screen.getByRole("button", { name: "Сформировать PDF" }));
 

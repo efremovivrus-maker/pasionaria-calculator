@@ -69,7 +69,7 @@ describe("cover message editor", () => {
     });
 
     const view = render(<AppShell />);
-    fireEvent.click(await screen.findByRole("button", { name: "Коммерческое предложение, 1" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }));
     fireEvent.click(screen.getByRole("button", { name: "Создать сопроводительное сообщение" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Рассчитать стоимость монтажа и вывеса штор." }));
     fireEvent.change(screen.getByLabelText("Пожелания к сообщению"), {
@@ -102,7 +102,7 @@ describe("cover message editor", () => {
     view.unmount();
     sessionStorage.setItem(PROPOSAL_STORAGE_KEY, JSON.stringify(saved));
     render(<AppShell />);
-    fireEvent.click(await screen.findByRole("button", { name: "Коммерческое предложение, 1" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }));
     expect(
       ((await screen.findByLabelText("Текст сообщения")) as HTMLTextAreaElement).value,
     ).toBe("Анна, отправили предложение.");

@@ -223,12 +223,9 @@ describe("ResultCard", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
-    fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
 
-    expect(onAddToProposal).toHaveBeenCalledTimes(2);
-    expect(
-      screen.getByText("Добавлено в коммерческое предложение."),
-    ).toBeTruthy();
+    expect(onAddToProposal).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Добавлено ✓" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Новый расчёт" })).toBeTruthy();
   });
 });

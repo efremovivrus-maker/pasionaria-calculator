@@ -58,7 +58,7 @@ export function CalculatorChat() {
   const [failedAttempt, setFailedAttempt] =
     useState<FailedAttempt | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  const { addItem } = useProposal();
+  const { addItemFromCalculation } = useProposal();
 
   const hasConversation =
     messages.length > 0 || isLoading || completed !== null;
@@ -268,7 +268,7 @@ export function CalculatorChat() {
                 result={completed.result}
                 onReset={resetCalculation}
                 onAddToProposal={() =>
-                  addItem(
+                  addItemFromCalculation(
                     createProposalItem(
                       completed.result,
                       completed.feedback.result,

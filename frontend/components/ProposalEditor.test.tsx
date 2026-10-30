@@ -110,7 +110,7 @@ describe("proposal editor", () => {
   it("edits the document, rooms, prices and keeps the result after reload", async () => {
     const view = render(<AppShell />);
     fireEvent.click(
-      await screen.findByRole("button", { name: "Коммерческое предложение, 3" }),
+      await screen.findByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     );
 
     expect((radio("100") as HTMLInputElement).checked).toBe(true);
@@ -229,7 +229,7 @@ describe("proposal editor", () => {
     view.unmount();
     render(<AppShell />);
     fireEvent.click(
-      await screen.findByRole("button", { name: "Коммерческое предложение, 4" }),
+      await screen.findByRole("button", { name: "Коммерческое предложение, 4 позиции" }),
     );
     expect(screen.getByLabelText("Адресат КП")).toHaveProperty("value", "Клиент");
     expect(screen.getByLabelText("Автор КП")).toHaveProperty("value", "Мария");

@@ -133,17 +133,20 @@ describe("commercial proposal", () => {
     await submitCalculation("Две шторы Вандер 130 × 280");
     expect(await screen.findByText("Шторы «Вандер»")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
+    expect((await screen.findByRole("status")).textContent).toContain(
+      "Изделие добавлено в КП",
+    );
     expect(
-      await screen.findByText("Добавлено в коммерческое предложение."),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: "Коммерческое предложение, 1" }),
+      screen.getByRole("button", { name: "Коммерческое предложение, 1 позиция" }),
     ).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Новый расчёт" }));
     await submitCalculation("Покрывало Софт 230 × 250, ромб 10×10");
     expect(await screen.findByText("Покрывало «Софт»")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Добавить в КП" })).toBeTruthy();
+    });
     fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
 
     await waitFor(() => {
@@ -169,27 +172,27 @@ describe("commercial proposal", () => {
     });
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Коммерческое предложение, 3" }),
+      screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     );
     expect(
       within(screen.getByRole("list")).getAllByDisplayValue("Покрывало «Софт»"),
     ).toHaveLength(2);
     fireEvent.click(screen.getByRole("button", { name: "Вернуться к расчётам" }));
     expect(
-      screen.getByText("Добавлено в коммерческое предложение."),
+      screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     ).toBeTruthy();
 
     first.unmount();
     render(<AppShell />);
     await waitFor(() => {
       expect(
-        screen.getByRole("button", { name: "Коммерческое предложение, 3" }),
+        screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
       ).toBeTruthy();
     });
     expect(storedItems().items).toHaveLength(3);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Коммерческое предложение, 3" }),
+      screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     );
     expect(screen.getByDisplayValue("Шторы «Вандер»")).toBeTruthy();
     expect(text(screen.getByText("Итого").parentElement?.textContent)).toContain(
@@ -211,7 +214,7 @@ describe("commercial proposal", () => {
     expect(await screen.findByText("Римская штора «Вандер»")).toBeTruthy();
     expect(text(screen.getByText(/4\s*555/).textContent)).toContain("4 555");
     expect(
-      screen.getByRole("button", { name: "Коммерческое предложение, 2" }),
+      screen.getByRole("button", { name: "Коммерческое предложение, 2 позиции" }),
     ).toBeTruthy();
     expect(storedItems().items).toHaveLength(2);
   });
@@ -227,7 +230,7 @@ describe("commercial proposal", () => {
     expect(await screen.findByText("Уточните ширину.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Добавить в КП" })).toBeNull();
     expect(
-      screen.getByRole("button", { name: "Коммерческое предложение, 0" }),
+      screen.getByRole("button", { name: "Коммерческое предложение, 0 позиций" }),
     ).toBeTruthy();
   });
 
@@ -273,7 +276,7 @@ describe("commercial proposal", () => {
 
     render(<AppShell />);
     const open = await screen.findByRole("button", {
-      name: "Коммерческое предложение, 1",
+      name: "Коммерческое предложение, 1 позиция",
     });
     fireEvent.click(open);
     fireEvent.click(screen.getByRole("button", { name: "Очистить КП" }));
@@ -286,7 +289,7 @@ describe("commercial proposal", () => {
       screen.getByText("В коммерческом предложении пока нет позиций."),
     ).toBeTruthy();
     expect(
-      screen.getByRole("button", { name: "Коммерческое предложение, 0" }),
+      screen.getByRole("button", { name: "Коммерческое предложение, 0 позиций" }),
     ).toBeTruthy();
     await waitFor(() => {
       expect(storedItems().items).toEqual([]);

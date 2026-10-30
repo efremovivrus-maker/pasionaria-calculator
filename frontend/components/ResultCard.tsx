@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { CalculationResult } from "@/lib/types";
 
@@ -65,16 +65,33 @@ export function ResultCard({
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
-  const [addedToProposal, setAddedToProposal] = useState(false);
+  const [addButtonState, setAddButtonState] = useState<"idle" | "added">("idle");
+  const addResetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const canAddToProposal =
     Boolean(onAddToProposal) && Number.isFinite(result.retailPrice);
+
+  useEffect(
+    () => () => {
+      if (addResetTimerRef.current) {
+        clearTimeout(addResetTimerRef.current);
+      }
+    },
+    [],
+  );
 
   function addToProposal() {
     if (!onAddToProposal || !Number.isFinite(result.retailPrice)) {
       return;
     }
     onAddToProposal();
-    setAddedToProposal(true);
+    setAddButtonState("added");
+    if (addResetTimerRef.current) {
+      clearTimeout(addResetTimerRef.current);
+    }
+    addResetTimerRef.current = setTimeout(() => {
+      setAddButtonState("idle");
+      addResetTimerRef.current = null;
+    }, 350);
   }
 
   async function copyResult() {
@@ -217,20 +234,18 @@ export function ResultCard({
           <p className="mt-1 text-xs leading-5 text-stone-500">
             Стоимость рассчитана по текущим параметрам изделия.
           </p>
-          {addedToProposal && (
-            <p role="status" className="mt-3 text-sm text-stone-800">
-              Добавлено в коммерческое предложение.
-            </p>
-          )}
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           {canAddToProposal && (
             <button
               type="button"
               onClick={addToProposal}
-              className="min-h-11 w-full bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors duration-200 hover:bg-[#6d7565] sm:w-auto"
+              aria-live="polite"
+              className={`min-h-11 w-full bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors duration-200 hover:bg-[#6d7565] sm:w-auto ${
+                addButtonState === "added" ? "kp-button-added" : ""
+              }`}
             >
-              Добавить в КП
+              {addButtonState === "added" ? "Добавлено ✓" : "Добавить в КП"}
             </button>
           )}
           <button

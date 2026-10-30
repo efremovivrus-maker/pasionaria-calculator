@@ -2,9 +2,11 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -54,6 +56,11 @@ type ProposalContextValue = {
   updateDiscount: (patch: Partial<ProposalDiscountState>) => void;
   removeItem: (id: string) => void;
   clearItems: () => void;
+  addItemFromCalculation: (item: ProposalItem) => void;
+  goToCalculator: () => void;
+  kpCountPulse: number;
+  kpToastOpen: boolean;
+  dismissKpToast: () => void;
 };
 
 const ProposalContext = createContext<ProposalContextValue | null>(null);
@@ -62,6 +69,36 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
   const [proposal, setProposal] = useState<CommercialProposal>(emptyProposal);
   const [hydrated, setHydrated] = useState(false);
   const [view, setView] = useState<ProposalView>("calculator");
+  const [kpCountPulse, setKpCountPulse] = useState(0);
+  const [kpToastOpen, setKpToastOpen] = useState(false);
+  const kpToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const dismissKpToast = useCallback(() => {
+    setKpToastOpen(false);
+    if (kpToastTimerRef.current) {
+      clearTimeout(kpToastTimerRef.current);
+      kpToastTimerRef.current = null;
+    }
+  }, []);
+
+  const showKpAddedToast = useCallback(() => {
+    setKpCountPulse((count) => count + 1);
+    setKpToastOpen(true);
+    if (kpToastTimerRef.current) {
+      clearTimeout(kpToastTimerRef.current);
+    }
+    kpToastTimerRef.current = setTimeout(() => {
+      setKpToastOpen(false);
+      kpToastTimerRef.current = null;
+    }, 5000);
+  }, []);
+
+  const goToCalculator = useCallback(() => {
+    setView("calculator");
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, []);
 
   useEffect(() => {
     setProposal(loadProposal());
@@ -75,17 +112,37 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
     saveProposal(proposal);
   }, [hydrated, proposal]);
 
+  useEffect(
+    () => () => {
+      if (kpToastTimerRef.current) {
+        clearTimeout(kpToastTimerRef.current);
+      }
+    },
+    [],
+  );
+
   const value = useMemo<ProposalContextValue>(
     () => ({
       proposal,
       view,
+      kpCountPulse,
+      kpToastOpen,
+      dismissKpToast,
+      goToCalculator,
       openProposal: () => setView("proposal"),
-      closeProposal: () => setView("calculator"),
+      closeProposal: goToCalculator,
       addItem: (item) => {
         setProposal((current) => ({
           ...current,
           items: [...current.items, item],
         }));
+      },
+      addItemFromCalculation: (item) => {
+        setProposal((current) => ({
+          ...current,
+          items: [...current.items, item],
+        }));
+        showKpAddedToast();
       },
       updateDocument: (patch) => {
         setProposal((current) => ({
@@ -192,7 +249,7 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
         }));
       },
     }),
-    [proposal, view],
+    [proposal, view, kpCountPulse, kpToastOpen, dismissKpToast, goToCalculator, showKpAddedToast],
   );
 
   return (
