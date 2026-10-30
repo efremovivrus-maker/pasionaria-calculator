@@ -143,6 +143,13 @@ class CostComponentResponse(BaseModel):
     unit: Optional[str] = None
 
 
+class StitchCalculationResponse(BaseModel):
+    requested: str
+    applied_operation_id: str
+    applied_variant: str
+    applied_tariff_rub: float
+
+
 class SuccessResponse(BaseModel):
     status: Literal["success"]
     calculation_id: str
@@ -156,6 +163,9 @@ class SuccessResponse(BaseModel):
     retail_price: float
     retail_price_status: Literal["CALCULATED"]
     explanation: str
+    stitch_tariff_assumed: Optional[bool] = None
+    stitch_warning: Optional[str] = None
+    stitch_calculation: Optional[StitchCalculationResponse] = None
 
 
 class UnavailableResponse(BaseModel):

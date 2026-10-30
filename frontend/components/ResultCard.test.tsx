@@ -176,4 +176,28 @@ describe("ResultCard", () => {
     expect(writeText).toHaveBeenCalledWith(calculationCopyText(result));
     expect(writeText.mock.calls[0][0]).toContain("Стежка покрывала — Ромб 10х10 см");
   });
+
+  it("shows the assumed stitch tariff separately from the requested pattern", () => {
+    const warning =
+      "Тариф стёжки „Хьюго“ отсутствует в справочнике. Стоимость рассчитана по базовому тарифу 180 ₽/м² и требует подтверждения";
+    const result: CalculationResult = {
+      status: "success",
+      retailPrice: 11875,
+      model: "Ибица",
+      productType: "bedspread",
+      operations: [],
+      extras: [],
+      components: [
+        { category: "production", name: "Стежка покрывала — Хьюго", cost: 864 },
+      ],
+      stitchTariffAssumed: true,
+      stitchWarning: warning,
+    };
+
+    render(<ResultCard result={result} onReset={vi.fn()} />);
+
+    expect(screen.getByText(warning)).toBeTruthy();
+    expect(screen.getByText("Стежка покрывала — Хьюго")).toBeTruthy();
+    expect(calculationCopyText(result)).toContain(warning);
+  });
 });

@@ -209,6 +209,73 @@ def _stitch_by_name(name: str, *, allow_bare_square: bool = True) -> dict[str, A
     return None
 
 
+_ABSENT_STITCH_NAMES = {
+    "нет",
+    "без",
+    "без стежки",
+    "без рисунка",
+    "отсутствует",
+    "не нужна",
+    "не требуется",
+}
+
+
+def _stitch_explicitly_absent(name: str) -> bool:
+    text = _normalize_token(name)
+    return text in _ABSENT_STITCH_NAMES or text.startswith("без стежк")
+
+
+def _stitch_tariff_warning(requested_name: str) -> str:
+    return (
+        f"Тариф стёжки „{requested_name}“ отсутствует в справочнике. "
+        "Стоимость рассчитана по базовому тарифу 180 ₽/м² и требует подтверждения"
+    )
+
+
+def _assumed_square_stitch(requested_name: str) -> dict[str, Any] | None:
+    base = _standard_square_stitch()
+    if base is None:
+        return None
+    return {
+        **base,
+        "variant": requested_name,
+        "requested_variant": requested_name,
+        "applied_variant": "Квадрат 5×5",
+        "tariff_assumed": True,
+    }
+
+
+def _resolve_explicit_stitch(
+    name: str,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Known stitch tariff, or the 180 ₽/m² square when the tariff is unknown."""
+    if _stitch_explicitly_absent(name):
+        message = (
+            "Стёжка в запросе явно исключена. "
+            "Базовый тариф 180 ₽/м² вместо неё не подставляется."
+        )
+        return None, _unavailable(
+            "BEDSPREAD_STITCH_EXCLUDED",
+            message,
+            details={"field": "stitch", "requested_value": name},
+        )
+    found = _stitch_by_name(name)
+    if found is not None and found.get("tariff_rub") not in (None, ""):
+        return found, None
+    assumed = _assumed_square_stitch(name)
+    if assumed is None:
+        message = (
+            "Стандартная стёжка «Квадрат 5х5 см» с тарифом 180 ₽/м² "
+            "не найдена в прайсе."
+        )
+        return None, _unavailable(
+            "BEDSPREAD_STITCH_NOT_FOUND",
+            message,
+            details={"field": "stitch", "requested_value": name},
+        )
+    return assumed, None
+
+
 def _filling_options() -> list[dict[str, Any]]:
     return [
         record
@@ -988,8 +1055,15 @@ def _finish_quilted(
             f" Использована подтверждённая стёжка модели «{stitch['variant']}», "
             f"{stitch['tariff_rub']} ₽/м². Вторая стёжка не начислена."
         )
-    elif stitch_binding == "explicit":
+    elif stitch_binding == "explicit" and not stitch.get("tariff_assumed"):
         explanation += " Использована стёжка, названная в запросе. Вторая стёжка не начислена."
+    if stitch.get("tariff_assumed"):
+        requested_stitch = str(stitch.get("requested_variant") or stitch["variant"])
+        explanation += (
+            f" Запрошенный рисунок стёжки: «{requested_stitch}». "
+            "Применённый расчётный тариф: «Квадрат 5×5», 180 ₽/м². "
+            + _stitch_tariff_warning(requested_stitch)
+        )
     if bare_square:
         explanation += (
             " Стёжка «5×5» без геометрии принята как «Квадрат 5х5 см», 180 ₽/м²."
@@ -1047,7 +1121,17 @@ def _finish_quilted(
             operation_cost=operation_cost,
             extras_cost=Decimal("0"),
         ),
+        "stitch_tariff_assumed": bool(stitch.get("tariff_assumed")),
     }
+    if stitch.get("tariff_assumed"):
+        requested_stitch = str(stitch.get("requested_variant") or stitch["variant"])
+        result["stitch_warning"] = _stitch_tariff_warning(requested_stitch)
+        result["stitch_calculation"] = {
+            "requested": requested_stitch,
+            "applied_operation_id": str(stitch["draft_id"]),
+            "applied_variant": "Квадрат 5×5",
+            "applied_tariff_rub": 180,
+        }
     if model_name is not None:
         result["model"] = {
             "name": model_name,
@@ -1123,20 +1207,15 @@ def _price_modeless_bedspread(
         stitch_binding = "modeless_default"
         applied_defaults.append("стёжка «Квадрат 5х5 см», 180 ₽/м²")
     else:
-        stitch = _stitch_by_name(stitch_name)
+        stitch, stitch_error = _resolve_explicit_stitch(stitch_name)
         stitch_binding = "explicit"
+        if stitch_error is not None:
+            return stitch_error
     if stitch is None:
-        if stitch_name is None:
-            message = (
-                "Стандартная стёжка «Квадрат 5х5 см» с тарифом 180 ₽/м² "
-                "не найдена в прайсе."
-            )
-        else:
-            message = _known_option_message(
-                "Стёжка",
-                stitch_name,
-                "Другой рисунок вместо неё не подставляется.",
-            )
+        message = (
+            "Стандартная стёжка «Квадрат 5х5 см» с тарифом 180 ₽/м² "
+            "не найдена в прайсе."
+        )
         return _unavailable(
             "BEDSPREAD_STITCH_NOT_FOUND",
             message,
@@ -1497,20 +1576,20 @@ def calculate_bedspread(
             )
         stitch_binding = str((model.get("default_stitch") or {}).get("binding"))
     else:
-        stitch = _stitch_by_name(stitch_name)
+        stitch, stitch_error = _resolve_explicit_stitch(stitch_name)
+        if stitch_error is not None:
+            return stitch_error
     if stitch is None:
-        options = [str(record["variant"]) for record in _stitch_options()]
         return _unavailable(
             "BEDSPREAD_STITCH_NOT_FOUND",
             (
-                f"Стёжка «{stitch_name}» не найдена в прайсе покрывал. "
-                + _new_request_message("рисунок стёжки из прайса")
+                "Стандартная стёжка «Квадрат 5х5 см» с тарифом 180 ₽/м² "
+                "не найдена в прайсе."
             ),
             details={
                 "model": model["model"],
                 "field": "stitch",
                 "requested_value": stitch_name,
-                "available_options": options,
             },
         )
 

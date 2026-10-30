@@ -46,6 +46,9 @@ export function calculationCopyText(result: CalculationResult): string {
       }`,
     );
   }
+  if (result.stitchTariffAssumed && result.stitchWarning) {
+    lines.push(result.stitchWarning);
+  }
   lines.push(`Итого: ${rubles.format(result.retailPrice)}`);
   for (const component of result.components ?? []) {
     lines.push(`${component.name}: ${rubles.format(component.cost)}`);
@@ -123,6 +126,11 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
                 .filter(Boolean)
                 .join(" · ")}
             </p>
+            {result.stitchTariffAssumed && result.stitchWarning && (
+              <p className="mt-4 text-sm leading-6 text-stone-800">
+                {result.stitchWarning}
+              </p>
+            )}
             {fabricComponents.length > 1 ? (
               <div className="mt-4 space-y-1 text-sm text-stone-600">
                 {fabricComponents.map((component) => (

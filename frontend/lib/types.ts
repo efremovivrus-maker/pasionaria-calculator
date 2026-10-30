@@ -47,6 +47,8 @@ export type CalculationResult = {
   operationCost?: number;
   extrasCost?: number;
   explanation?: string;
+  stitchTariffAssumed?: boolean;
+  stitchWarning?: string;
   operations: OperationLine[];
   extras: OperationLine[];
   components: CostComponent[];

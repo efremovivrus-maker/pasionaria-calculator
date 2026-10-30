@@ -195,6 +195,12 @@ def adapt_calculation_result(
         "retail_price_status": pricing["retail_price_status"],
         "explanation": consumption["explanation"],
     }
+    if "stitch_tariff_assumed" in result:
+        response["stitch_tariff_assumed"] = bool(result["stitch_tariff_assumed"])
+    if result.get("stitch_warning"):
+        response["stitch_warning"] = result["stitch_warning"]
+    if result.get("stitch_calculation"):
+        response["stitch_calculation"] = result["stitch_calculation"]
     if day_fabric:
         day_consumption = day_fabric["consumption"]
         response["day_fabric"] = {

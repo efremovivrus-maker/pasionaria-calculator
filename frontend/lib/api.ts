@@ -276,6 +276,8 @@ function adaptResult(payload: JsonObject): CalculationResult | undefined {
     explanation:
       asString(payload.explanation) ??
       asString(consumption.explanation),
+    stitchTariffAssumed: payload.stitch_tariff_assumed === true,
+    stitchWarning: asString(payload.stitch_warning),
     operations,
     extras,
     components,

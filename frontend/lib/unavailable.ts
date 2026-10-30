@@ -93,6 +93,7 @@ export function formatUnavailableMessage(value: unknown): string {
     reasonCode === "BEDSPREAD_STITCH_UNMATCHED" ||
     reasonCode === "BEDSPREAD_CUSTOMIZATION_LOCKED" ||
     reasonCode === "BEDSPREAD_STITCH_NOT_FOUND" ||
+    reasonCode === "BEDSPREAD_STITCH_EXCLUDED" ||
     reasonCode === "BEDSPREAD_FILLING_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_LINING_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_EXTRA_NOT_SUPPORTED" ||

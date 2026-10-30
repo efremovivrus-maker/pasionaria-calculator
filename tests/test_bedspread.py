@@ -561,14 +561,6 @@ class BedspreadCalculationTests(unittest.TestCase):
             height_cm=250,
             quantity=1,
         )
-        unknown_stitch = self.calculate(
-            product_type="bedspread",
-            model="Софт",
-            width_cm=230,
-            height_cm=250,
-            quantity=1,
-            stitch="узелок",
-        )
         unknown_filling = self.soft(filling="400")
         unknown_lining = self.soft(configuration={"lining": "сатин"})
 
@@ -578,13 +570,11 @@ class BedspreadCalculationTests(unittest.TestCase):
         self.assertEqual(fabric["fabric"]["price_per_m"], 1310)
         self.assertEqual(fabric["fabric"]["consumption_m"], 2.7)
         self.assertEqual(fabric["retail_price"], 9452)
-        self.assertIn("новом полном запросе", unknown_stitch["message"])
-        self.assertIn("узелок", unknown_stitch["message"])
         self.assertEqual(unknown_filling["reason_code"], "BEDSPREAD_FILLING_NOT_FOUND")
         self.assertIn("синтепон 200", unknown_filling["message"])
         self.assertEqual(unknown_lining["reason_code"], "BEDSPREAD_LINING_NOT_FOUND")
         self.assertIn("подкладка Сканди", unknown_lining["message"])
-        for payload in (unknown_stitch, unknown_filling, unknown_lining):
+        for payload in (unknown_filling, unknown_lining):
             self.assertNotIn("retail_price", payload)
 
     def test_confirmed_mapping_fabric_is_used_without_a_named_override(self) -> None:
@@ -1054,6 +1044,175 @@ class BedspreadCalculationTests(unittest.TestCase):
             200,
         )
         self.assertEqual(explicit["retail_price"], 5026)
+
+    def test_unknown_stitch_uses_square_tariff_without_renaming_it(self) -> None:
+        hugo = self.calculate(
+            product_type="bedspread",
+            model="Ибица",
+            width_cm=200,
+            height_cm=240,
+            quantity=1,
+            stitch="Хьюго",
+            filling="200",
+            configuration={"lining": "Бойл"},
+        )
+        square = self.calculate(
+            product_type="bedspread",
+            model="Ибица",
+            width_cm=200,
+            height_cm=240,
+            quantity=1,
+            stitch="Квадрат 5×5",
+            filling="200",
+            configuration={"lining": "Бойл"},
+        )
+        rhombus = self.soft()
+        individual = self.calculate(
+            product_type="bedspread",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="Софт",
+            stitch="узелок",
+        )
+        absent = self.calculate(
+            product_type="bedspread",
+            model="Софт",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            stitch="без стёжки",
+        )
+        plaid = self.calculate(
+            product_type="bedspread",
+            model="Нигма",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            stitch="Хьюго",
+        )
+        plain_plaid = self.calculate(
+            product_type="bedspread",
+            model="Нигма",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+        )
+        excluded = self.calculate(
+            product_type="bedspread",
+            model="Зоуи",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            stitch="Хьюго",
+            face_fabric="Софт",
+        )
+        unknown_fabric = self.calculate(
+            product_type="bedspread",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="НетТакой",
+            stitch="Хьюго",
+        )
+        warning = (
+            "Тариф стёжки „Хьюго“ отсутствует в справочнике. "
+            "Стоимость рассчитана по базовому тарифу 180 ₽/м² и требует подтверждения"
+        )
+        hugo_stitches = [
+            component
+            for component in hugo["components"]
+            if "Стежка" in component["name"]
+        ]
+
+        self.assertEqual(hugo["status"], "success")
+        self.assertEqual(hugo["normalized_request"]["model"], "Ибица")
+        self.assertEqual(hugo["normalized_request"]["stitch"], "Хьюго")
+        self.assertTrue(hugo["stitch_tariff_assumed"])
+        self.assertEqual(hugo["stitch_warning"], warning)
+        self.assertEqual(hugo["stitch_calculation"]["requested"], "Хьюго")
+        self.assertEqual(hugo["stitch_calculation"]["applied_variant"], "Квадрат 5×5")
+        self.assertEqual(hugo["stitch_calculation"]["applied_tariff_rub"], 180)
+        self.assertEqual(
+            hugo["stitch_calculation"]["applied_operation_id"],
+            "BSD-STITCH-Квадрат 5х5 см",
+        )
+        self.assertIn(warning, hugo["explanation"])
+        self.assertNotIn("default_stitch_assumed", hugo["explanation"])
+        self.assertEqual(len(hugo_stitches), 1)
+        self.assertEqual(hugo_stitches[0]["name"], "Стежка покрывала — Хьюго")
+        self.assertEqual(hugo_stitches[0]["tariff"], 180)
+        self.assertEqual(hugo_stitches[0]["cost"], 864)
+        self.assertEqual(hugo["retail_price"], 11875)
+        self.assertEqual(
+            self.component(hugo, "BSD-FILL-200 г/м2 (Среднее)")["tariff"],
+            150,
+        )
+        self.assertEqual(
+            self.component(hugo, "BSD-LIN-Подкладка «Бойл»")["tariff"],
+            200,
+        )
+
+        self.assertEqual(square["status"], "success")
+        self.assertFalse(square["stitch_tariff_assumed"])
+        self.assertNotIn("stitch_warning", square)
+        self.assertEqual(
+            self.component(square, "BSD-STITCH-Квадрат 5х5 см")["name"],
+            "Стежка покрывала — Квадрат 5х5 см",
+        )
+        self.assertEqual(
+            self.component(square, "BSD-STITCH-Квадрат 5х5 см")["tariff"],
+            180,
+        )
+        self.assertEqual(square["retail_price"], hugo["retail_price"])
+        self.assertEqual(
+            len([
+                component
+                for component in square["components"]
+                if "Стежка" in component["name"]
+            ]),
+            1,
+        )
+
+        self.assertFalse(rhombus["stitch_tariff_assumed"])
+        self.assertEqual(
+            self.component(rhombus, "BSD-STITCH-Ромб 10х10 см")["tariff"],
+            150,
+        )
+        self.assertEqual(rhombus["retail_price"], 8703)
+
+        self.assertEqual(individual["status"], "success")
+        self.assertNotIn("model", individual["normalized_request"])
+        self.assertEqual(individual["fabric"]["name"], "Софт")
+        self.assertTrue(individual["stitch_tariff_assumed"])
+        self.assertEqual(individual["normalized_request"]["stitch"], "узелок")
+        self.assertEqual(
+            self.component(individual, "BSD-STITCH-Квадрат 5х5 см")["name"],
+            "Стежка покрывала — узелок",
+        )
+        self.assertEqual(
+            self.component(individual, "BSD-STITCH-Квадрат 5х5 см")["tariff"],
+            180,
+        )
+        self.assertEqual(individual["retail_price"], 8875.5)
+        self.assertEqual(
+            len([
+                component
+                for component in individual["components"]
+                if "Стежка" in component["name"]
+            ]),
+            1,
+        )
+
+        self.assertEqual(absent["reason_code"], "BEDSPREAD_STITCH_EXCLUDED")
+        self.assertNotIn("retail_price", absent)
+        self.assertEqual(plaid["status"], "success")
+        self.assertNotIn("Стежка", " ".join(component["name"] for component in plaid["components"]))
+        self.assertEqual(plaid["retail_price"], plain_plaid["retail_price"])
+        self.assertNotIn("stitch_tariff_assumed", plaid)
+        self.assertEqual(excluded["reason_code"], "BEDSPREAD_INDIVIDUAL_CALCULATION_EXCLUDED")
+        self.assertEqual(unknown_fabric["reason_code"], "FABRIC_NOT_FOUND")
+        self.assertNotIn("retail_price", unknown_fabric)
 
     def test_curtain_request_is_unchanged(self) -> None:
         payload = self.calculate(
