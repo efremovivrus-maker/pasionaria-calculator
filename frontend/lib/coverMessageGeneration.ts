@@ -67,7 +67,7 @@ export function coverMessageBriefForModel(input: CoverMessageInput): Record<stri
         }
       : null,
     managerNotes: input.notes || null,
-    note: "Фактическая часть сообщения (обращение, сумма, услуги, помещения) уже сформирована сервером. Не повторяй их.",
+    note: "Фактическая часть сообщения (обращение, объект, сумма, услуги) уже сформирована сервером. Помещения используй только внутри формулировок допродаж по instruction; не перечисляй их отдельно и не повторяй фактическую часть.",
   };
 }
 
@@ -123,7 +123,6 @@ export function buildServerFactualBlock(input: CoverMessageInput): string {
   const tone = input.tone;
   const total = formatProposalMoney(proposalTotal(input));
   const services = includedServiceTitles(input);
-  const rooms = roomsWithProducts(input);
   const objectName = input.proposal.objectName?.trim() || null;
   const name = recipientFirstName(input.proposal.recipient);
 
@@ -144,13 +143,6 @@ export function buildServerFactualBlock(input: CoverMessageInput): string {
     lines.push(name ? `${name}, добрый день.` : "Добрый день.");
   }
   lines.push(proposalIntroPhrase(objectName));
-
-  if (rooms.length === 1) {
-    lines.push(`В расчёте — помещение «${rooms[0]}».`);
-  } else if (rooms.length > 1) {
-    lines.push(`В расчёте — помещения: ${rooms.join(", ")}.`);
-  }
-
   lines.push(formatTotalLine(total, services));
 
   if (services.length > 1) {

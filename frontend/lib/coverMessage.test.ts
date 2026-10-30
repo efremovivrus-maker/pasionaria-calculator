@@ -132,25 +132,17 @@ describe("cover message", () => {
     expect(factual).not.toMatch(/помещен/i);
   });
 
-  it("mentions a single room only when one room has products", () => {
-    const proposal = proposalWith([
-      item({ id: "spread", title: "Покрывало", productType: "bedspread", room: "bedroom" }),
-    ]);
-    const input = coverMessageInput(proposal);
-    const factual = buildServerFactualBlock(input);
-    expect(factual).toContain("Спальня");
-    expect(factual).not.toContain("Гостиная");
-    expect(factual).not.toMatch(/помещения:/i);
-  });
-
-  it("lists multiple rooms when products span them", () => {
+  it("never lists rooms in the server factual block", () => {
     const proposal = proposalWith([
       item({ id: "curtains", title: "Шторы", room: "living" }),
       item({ id: "spread", title: "Покрывало", productType: "bedspread", room: "bedroom" }),
     ]);
     const factual = buildServerFactualBlock(coverMessageInput(proposal));
-    expect(factual).toMatch(/Гостиная/);
-    expect(factual).toMatch(/Спальня/);
+    expect(roomsWithProducts(coverMessageInput(proposal))).toEqual(["Гостиная", "Спальня"]);
+    expect(factual).not.toContain("Гостиная");
+    expect(factual).not.toContain("Спальня");
+    expect(factual).not.toMatch(/В расчёте/i);
+    expect(factual).not.toMatch(/помещен/i);
   });
 
   it("uses universal textile intro when object name is empty", () => {
