@@ -58,6 +58,8 @@ export const COVER_OFFER_IDS = [
   "kitchen",
   "bedspread",
   "tulle",
+  "pillows",
+  "curtains",
   "premium",
   "discount",
 ] as const;

@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 
 import { useProposal } from "@/components/ProposalProvider";
 import {
-  COVER_OFFER_GROUPS,
   coverDiscountReady,
   coverMessageInput,
   proposalContentFingerprint,
 } from "@/lib/coverMessage";
+import { COVER_OFFER_GROUPS } from "@/lib/coverMessageCatalog";
 import type { CoverOfferId, CoverTone } from "@/lib/proposal";
 
 const fieldClass =

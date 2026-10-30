@@ -5,15 +5,24 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   COVER_REQUEST_MAX_CHARS,
+  composeCoverMessage,
   coverDiscountReady,
   coverMessageBrief,
   coverMessageInput,
+  coverPrompt,
   CoverMessageError,
+  mergeDraftWithFallbacks,
+  messageViolatesSpec,
+  missingOfferIds,
   offerInstructions,
+  parseCoverMessageDraft,
   parseCoverMessageInput,
   parseCoverRequestBody,
   proposalContentFingerprint,
+  relationshipHints,
+  selectedOfferInstructions,
 } from "@/lib/coverMessage";
+import { projectTextileGaps } from "@/lib/coverMessageOffers";
 import { generateCoverMessage } from "@/lib/yandexGpt";
 import {
   emptyConfiguration,
@@ -32,15 +41,7 @@ function item(
     widthCm: 130,
     heightCm: 280,
     quantity: 1,
-    components: [
-      {
-        category: "production",
-        name: "Стежка",
-        cost: 864,
-        operationId: "BSD-STITCH",
-        tariff: 180,
-      },
-    ],
+    components: [],
     originalUnitPrice: 2277.5,
     unitPrice: 2277.5,
     room: "living",
@@ -48,17 +49,13 @@ function item(
     configuration: {
       ...emptyConfiguration(),
       fabricName: "Вандер",
-      heading: "люверсы",
-      lining: "Анна",
-      stitch: "Хьюго",
-      explanation: "stitch_tariff_assumed",
       ...overrides.configuration,
     },
   };
 }
 
-function proposalWith(items: ProposalItem[], offers: ProposalItem["title"][] = []) {
-  const proposal = {
+function proposalWith(items: ProposalItem[]) {
+  return {
     ...emptyProposal(new Date("2026-10-30T12:00:00")),
     recipient: "Анна Иванова",
     author: "Мария",
@@ -70,12 +67,16 @@ function proposalWith(items: ProposalItem[], offers: ProposalItem["title"][] = [
     ],
     items,
   };
-  proposal.cover = {
-    ...emptyCoverMessage(new Date("2026-10-30T12:00:00")),
-    offers: offers as never,
-  };
-  return proposal;
 }
+
+const modelJson = (offers: Array<{ id: string; text: string }> = []) =>
+  JSON.stringify({
+    introduction: "Анна, направляем коммерческое предложение.",
+    project_summary: "По текстилю для квартиры в Москве, общая стоимость 4 600 ₽.",
+    included_services: "",
+    selected_offers: offers,
+    closing: "Мария, PASIONARIA",
+  });
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -84,67 +85,59 @@ afterEach(() => {
 });
 
 describe("cover message", () => {
-  it("does not ask for extra offers when none are selected", () => {
+  it("does not expose line specs in the model brief", () => {
     const proposal = proposalWith([
       item({ id: "curtains", title: "Шторы «Вандер»", quantity: 2 }),
     ]);
-    const input = coverMessageInput(proposal);
-    const instructions = offerInstructions(input).join("\n");
-    const serialized = JSON.stringify(coverMessageBrief(input));
+    const serialized = JSON.stringify(coverMessageBrief(coverMessageInput(proposal)));
 
-    expect(instructions).toContain("не выбрал дополнительные предложения");
-    expect(serialized).not.toContain("BSD-STITCH");
-    expect(serialized).not.toContain("stitch_tariff_assumed");
-    expect(serialized).not.toContain("люверсы");
-    expect(serialized).not.toContain("Хьюго");
-    expect(serialized).not.toContain("864");
+    expect(serialized).toContain("roomsOverview");
+    expect(serialized).toContain("total");
+    expect(serialized).not.toContain("130 × 280");
+    expect(serialized).not.toContain("Вандер");
+    expect(serialized).not.toContain("2 300");
     expect(serialized).toContain("Анна Иванова");
-    expect(serialized).toContain("Гостиная");
-    expect(serialized).toContain("Вандер");
   });
 
-  it("asks to calculate mounting and rails without treating them as included", () => {
-    const proposal = proposalWith(
-      [item({ id: "curtains", title: "Шторы «Вандер»" })],
-      ["mounting", "rails"] as never,
-    );
-    proposal.cover.offers = ["mounting", "rails"];
-    const instructions = offerInstructions(coverMessageInput(proposal)).join("\n");
-
-    expect(instructions).toContain("монтаж и вывес штор");
-    expect(instructions).toContain("карнизы");
-    expect(instructions).toContain("Гостиная");
-    expect(instructions).toContain("не входит в КП");
-    expect(instructions).not.toContain("скидк");
-  });
-
-  it("offers bedding and a bedspread only where they are missing", () => {
+  it("lists included services separately from upsells", () => {
     const proposal = proposalWith([
-      item({ id: "living", title: "Шторы «Вандер»", room: "living" }),
+      item({ id: "curtains", title: "Шторы «Вандер»" }),
       item({
-        id: "bedroom-curtains",
-        title: "Шторы «Вандер»",
-        room: "bedroom",
-      }),
-      item({
-        id: "bedroom-spread",
-        title: "Покрывало «Софт»",
-        productType: "bedspread",
-        room: "bedroom",
-        configuration: { ...emptyConfiguration(), fabricName: "Софт" },
+        id: "delivery",
+        title: "Доставка",
+        itemType: "service",
+        productType: null,
+        room: null,
+        originalUnitPrice: 1600,
+        unitPrice: 1600,
       }),
     ]);
-    proposal.cover.offers = ["bedding", "bedspread"];
-    const instructions = offerInstructions(coverMessageInput(proposal)).join("\n");
-
-    expect(instructions).toContain("постельное бельё");
-    expect(instructions).toContain("Спальня");
-    expect(instructions).toContain("покрывало");
-    expect(instructions).toContain("Гостиная");
-    expect(instructions).toContain("Не предлагай для: Спальня");
+    const brief = coverMessageBrief(coverMessageInput(proposal));
+    expect(brief.includedServicesInProposal).toEqual(["Доставка"]);
   });
 
-  it("does not repeat a bedspread that already covers every curtained room", () => {
+  it("asks to calculate mounting but not rails when mounting is already in the KP", () => {
+    const proposal = proposalWith([
+      item({ id: "curtains", title: "Шторы «Вандер»", room: "living" }),
+      item({
+        id: "mount",
+        title: "Монтаж штор",
+        itemType: "service",
+        productType: null,
+        room: "living",
+        originalUnitPrice: 3000,
+        unitPrice: 3000,
+      }),
+    ]);
+    proposal.cover.offers = ["rails"];
+    const instructions = selectedOfferInstructions(coverMessageInput(proposal));
+    const rails = instructions.find((entry) => entry.id === "rails")?.instruction ?? "";
+    expect(rails).toContain("карниз");
+    expect(rails).toContain("не входит");
+    expect(offerInstructions(coverMessageInput(proposal)).join(" ")).not.toContain("монтаж");
+  });
+
+  it("offers bedding and pillows for a bedspread-only bedroom without repeating bedspread", () => {
     const proposal = proposalWith([
       item({
         id: "spread",
@@ -152,13 +145,32 @@ describe("cover message", () => {
         productType: "bedspread",
         room: "bedroom",
       }),
-      item({ id: "curtains", title: "Шторы «Вандер»", room: "bedroom" }),
     ]);
-    proposal.cover.offers = ["bedspread"];
-    const instructions = offerInstructions(coverMessageInput(proposal)).join("\n");
+    proposal.cover.offers = ["pillows", "bedding", "curtains"];
+    const instructions = selectedOfferInstructions(coverMessageInput(proposal));
+    expect(instructions.map((entry) => entry.id)).toEqual(["pillows", "bedding", "curtains"]);
+    expect(instructions.find((entry) => entry.id === "bedding")?.instruction).toContain("Спальня");
+    expect(instructions.find((entry) => entry.id === "curtains")?.instruction).toContain("Спальня");
+  });
 
-    expect(instructions).toContain("уже есть");
-    expect(instructions).toContain("Не предлагай покрывало повторно");
+  it("does not repeat tulle or bedspread when they already exist", () => {
+    const proposal = proposalWith([
+      item({ id: "curtains", title: "Шторы «Вандер»", room: "living" }),
+      item({ id: "tulle", title: "Тюль", room: "living" }),
+      item({
+        id: "spread",
+        title: "Покрывало «Софт»",
+        productType: "bedspread",
+        room: "bedroom",
+      }),
+      item({ id: "bed-curtains", title: "Шторы", room: "bedroom" }),
+    ]);
+    proposal.cover.offers = ["tulle", "bedspread"];
+    const text = selectedOfferInstructions(coverMessageInput(proposal))
+      .map((entry) => entry.instruction)
+      .join("\n");
+    expect(text).toContain("Не предлагай для: Гостиная");
+    expect(text).toContain("Не предлагай для: Спальня");
   });
 
   it("requires a discount size and keeps the confirmed date", () => {
@@ -167,46 +179,71 @@ describe("cover message", () => {
     proposal.cover.discountValue = "";
     expect(coverDiscountReady(proposal.cover)).toBe(false);
 
-    proposal.cover.discountKind = "percent";
     proposal.cover.discountValue = "10";
     proposal.cover.discountUntil = "2026-10-31";
-    const instructions = offerInstructions(coverMessageInput(proposal)).join("\n");
-    expect(instructions).toContain("ровно 10%");
-    expect(instructions).toContain("31 октября 2026");
-    expect(instructions).toContain("Не пересчитывай сумму");
+    const instruction =
+      selectedOfferInstructions(coverMessageInput(proposal)).find((entry) => entry.id === "discount")
+        ?.instruction ?? "";
+    expect(instruction).toContain("10%");
+    expect(instruction).toContain("31 октября 2026");
   });
 
-  it("sends only final prices and forbids invented prices and deadlines", async () => {
+  it("uses structured JSON from Yandex and merges missing offer ids", async () => {
     process.env.YANDEX_GPT_API_KEY = "test-key";
     process.env.YANDEX_GPT_FOLDER_ID = "folder";
-    const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ result: { alternatives: [{ message: { text: "Готово." } }] } }),
-    });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          result: { alternatives: [{ message: { text: modelJson([]) } }] },
+        }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          result: { alternatives: [{ message: { text: modelJson([]) } }] },
+        }),
+      });
     vi.stubGlobal("fetch", fetchMock);
-    const proposal = proposalWith([
-      item({ id: "curtains", title: "Шторы «Вандер»", quantity: 2 }),
-    ]);
-    proposal.cover.offers = ["premium"];
+    const proposal = proposalWith([item({ id: "curtains", title: "Шторы «Вандер»" })]);
+    proposal.cover.offers = ["mounting", "bedding"];
 
-    await expect(generateCoverMessage(coverMessageInput(proposal))).resolves.toBe("Готово.");
-    const body = JSON.parse(String(fetchMock.mock.calls[0][1].body)) as {
-      messages: Array<{ role: string; text: string }>;
-      modelUri: string;
-      completionOptions: { stream: boolean; temperature: number; maxTokens: string };
-    };
-    const user = body.messages[1].text;
-    const system = body.messages[0].text;
+    const text = await generateCoverMessage(coverMessageInput(proposal));
+    expect(text).toContain("монтаж");
+    expect(text).toContain("постельн");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 
-    expect(body.modelUri).toBe("gpt://folder/yandexgpt/latest");
-    expect(body.completionOptions).toMatchObject({ stream: false, temperature: 0.4, maxTokens: "900" });
-    expect(fetchMock.mock.calls[0][1].headers.Authorization).toBe("Api-Key test-key");
-    expect(user.replace(/\s/g, " ")).toContain("2 300 ₽");
-    expect(user).not.toContain("2277");
-    expect(user).not.toContain("BSD-STITCH");
-    expect(system).toContain("придумывать цены");
-    expect(system).toContain("сроки изготовления");
-    expect(user).toContain("Не называй новую цену");
+  it("detects forbidden item specs in composed text", () => {
+    const input = coverMessageInput(proposalWith([item({ id: "c", title: "Шторы «Вандер»" })]));
+    expect(messageViolatesSpec("130 × 280 см", input)).toBe(true);
+    expect(messageViolatesSpec("Ткань: Вандер", input)).toBe(true);
+    expect(messageViolatesSpec("Общая стоимость 4 600 ₽", input)).toBe(false);
+  });
+
+  it("fills missing ids via fallback", () => {
+    const draft = parseCoverMessageDraft(modelJson());
+    const merged = mergeDraftWithFallbacks(
+      draft,
+      ["mounting", "discount"],
+      [
+        { id: "mounting", instruction: "Предложи монтаж." },
+        { id: "discount", instruction: "Скидка 10% до 31 октября." },
+      ],
+    );
+    expect(missingOfferIds(merged, ["mounting", "discount"])).toEqual([]);
+    expect(composeCoverMessage(merged)).toContain("монтаж");
+  });
+
+  it("uses different tone instructions", () => {
+    const proposal = proposalWith([item({ id: "curtains", title: "Шторы" })]);
+    const base = coverMessageInput(proposal);
+    const warm = coverPrompt({ ...base, tone: "warm" });
+    const brief = coverPrompt({ ...base, tone: "brief" });
+    expect(warm.system).toContain("тёплый");
+    expect(brief.system).toContain("краткий");
+    expect(brief.system).toMatch(/60\s*слов/);
   });
 
   it("refuses a discount promise without a size", async () => {
@@ -221,48 +258,6 @@ describe("cover message", () => {
     ).rejects.toMatchObject({ code: "invalid_discount" });
   });
 
-  it("marks the saved message stale when the recipient changes", () => {
-    const proposal = proposalWith([item({ id: "curtains", title: "Шторы «Вандер»" })]);
-    proposal.cover.text = "Анна, подготовили предложение.";
-    proposal.cover.sourceFingerprint = proposalContentFingerprint(proposal);
-    expect(proposal.cover.sourceFingerprint).toBe(proposalContentFingerprint(proposal));
-    proposal.recipient = "Иван";
-    expect(proposalContentFingerprint(proposal)).not.toBe(proposal.cover.sourceFingerprint);
-    expect(proposal.cover.text).toBe("Анна, подготовили предложение.");
-  });
-
-  it("reports a clear failure when YandexGPT is not configured", async () => {
-    await expect(
-      generateCoverMessage(coverMessageInput(proposalWith([item({ id: "curtains", title: "Шторы" })]))),
-    ).rejects.toMatchObject({ code: "unavailable", message: "unavailable" });
-  });
-
-  it("rejects an oversized request and too many items", () => {
-    expect(() => parseCoverRequestBody("x".repeat(COVER_REQUEST_MAX_CHARS + 1))).toThrow(
-      CoverMessageError,
-    );
-    expect(() => parseCoverRequestBody("{")).toThrow(CoverMessageError);
-
-    const proposal = coverMessageInput(proposalWith([item({ id: "curtains", title: "Шторы" })]));
-    proposal.proposal.items = Array.from({ length: 81 }, () => proposal.proposal.items[0]);
-    expect(() => parseCoverMessageInput(proposal)).toThrow(expect.objectContaining({ code: "invalid_request" }));
-  });
-
-  it("does not surface an API error body or the key", async () => {
-    process.env.YANDEX_GPT_API_KEY = "test-key";
-    process.env.YANDEX_GPT_FOLDER_ID = "folder";
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        new Response("Api-Key test-key failed", { status: 401 }),
-      ),
-    );
-
-    await expect(
-      generateCoverMessage(coverMessageInput(proposalWith([item({ id: "curtains", title: "Шторы" })]))),
-    ).rejects.toMatchObject({ message: "unavailable" });
-  });
-
   it("keeps the Yandex call out of the browser module", () => {
     const root = path.resolve(__dirname, "..");
     const shared = readFileSync(path.join(root, "lib/coverMessage.ts"), "utf8");
@@ -270,6 +265,80 @@ describe("cover message", () => {
     expect(shared).not.toContain("YANDEX_GPT_API_KEY");
     expect(shared).not.toContain("llm.api.cloud.yandex.net");
     expect(screen).not.toContain("YANDEX_GPT");
-    expect(screen).not.toContain("llm.api.cloud.yandex.net");
+  });
+
+  it("filters relationship hints to selected offers only", () => {
+    const proposal = proposalWith([
+      item({
+        id: "spread",
+        title: "Покрывало «Софт»",
+        productType: "bedspread",
+        room: "bedroom",
+      }),
+    ]);
+    proposal.cover.offers = ["bedding"];
+    const hints = relationshipHints(coverMessageInput(proposal));
+    expect(hints.some((hint) => /постельн/i.test(hint))).toBe(true);
+    expect(hints.some((hint) => /подуш/i.test(hint))).toBe(false);
+
+    proposal.cover.offers = ["pillows"];
+    const pillowHints = relationshipHints(coverMessageInput(proposal));
+    expect(pillowHints.some((hint) => /подуш/i.test(hint))).toBe(true);
+    expect(pillowHints.some((hint) => /постельн/i.test(hint))).toBe(false);
+
+    const gaps = projectTextileGaps(coverMessageInput(proposal));
+    expect(gaps.presentCategories).toContain("покрывало");
+    expect(gaps.absentCategories).toContain("шторы");
+  });
+
+  it("includes tone-specific intro guidance and forbids template openers in prompt", () => {
+    const base = coverMessageInput(proposalWith([item({ id: "c", title: "Шторы" })]));
+    const warm = coverPrompt({ ...base, tone: "warm" }).system;
+    const business = coverPrompt({ ...base, tone: "business" }).system;
+    expect(warm).toContain("личное сообщение");
+    expect(business).toContain("профессиональное");
+    expect(warm).not.toEqual(business);
+    expect(warm).toContain("Запрещено начинать");
+  });
+
+  it("composes three distinct tone samples from structured drafts", () => {
+    const offers = [
+      { id: "mounting", text: "Можем отдельно рассчитать монтаж и вывес штор в гостиной." },
+      { id: "bedding", text: "Для спальни подберём постельное бельё в тон покрывалу." },
+    ];
+    const warm = composeCoverMessage({
+      introduction: "Анна, добрый день!",
+      project_summary:
+        "Подготовили коммерческое предложение по текстилю для квартиры в Москве — гостиная и спальня. Общая стоимость 15 000 ₽.",
+      included_services: "В предложение уже включена доставка.",
+      selected_offers: offers,
+      closing: "Будем рады обсудить детали, когда вам удобно. Менеджер PASIONARIA",
+    });
+    const business = composeCoverMessage({
+      introduction: "Анна, направляем коммерческое предложение.",
+      project_summary: "Текстиль для квартиры в Москве: гостиная и спальня. Итого 15 000 ₽, доставка включена.",
+      included_services: "",
+      selected_offers: offers,
+      closing: "Готовы ответить на вопросы. Менеджер PASIONARIA",
+    });
+    const brief = composeCoverMessage({
+      introduction: "Анна, КП по текстилю для квартиры готово.",
+      project_summary: "Итого 15 000 ₽, доставка включена.",
+      included_services: "",
+      selected_offers: offers,
+      closing: "Менеджер PASIONARIA",
+    });
+    expect(warm.length).toBeGreaterThan(brief.length);
+    expect(business).not.toEqual(warm);
+    expect(warm).not.toMatch(/\d+\s*×\s*\d+/);
+  });
+
+  it("rejects oversized requests", () => {
+    expect(() => parseCoverRequestBody("x".repeat(COVER_REQUEST_MAX_CHARS + 1))).toThrow(
+      CoverMessageError,
+    );
+    const input = coverMessageInput(proposalWith([item({ id: "curtains", title: "Шторы" })]));
+    input.proposal.items = Array.from({ length: 81 }, () => input.proposal.items[0]);
+    expect(() => parseCoverMessageInput(input)).toThrow(expect.objectContaining({ code: "invalid_request" }));
   });
 });

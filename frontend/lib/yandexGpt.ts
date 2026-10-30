@@ -2,19 +2,53 @@ import "server-only";
 
 import {
   CoverMessageError,
+  composeCoverMessage,
   coverPrompt,
+  mergeDraftWithFallbacks,
+  messageViolatesSpec,
+  missingOfferIds,
+  parseCoverMessageDraft,
   parseCoverMessageInput,
+  repairPromptMissingIds,
 } from "@/lib/coverMessage";
+import { selectedOfferInstructions } from "@/lib/coverMessageOffers";
 
 const COMPLETION_URL = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion";
-
 export async function generateCoverMessage(value: unknown): Promise<string> {
   const input = parseCoverMessageInput(value);
   if (input.offers.includes("discount") && !input.discount) {
     throw new CoverMessageError("invalid_discount");
   }
+  const instructions = selectedOfferInstructions(input);
   const prompt = coverPrompt(input);
-  const text = await completeYandexGpt(prompt.system, prompt.user);
+  let user = prompt.user;
+  let draft = readDraft(await completeYandexGpt(prompt.system, user));
+  let missing = missingOfferIds(draft, input.offers);
+
+  if (missing.length > 0) {
+    user = `${prompt.user}\n\n${repairPromptMissingIds(missing)}`;
+    draft = readDraft(await completeYandexGpt(prompt.system, user));
+    missing = missingOfferIds(draft, input.offers);
+  }
+
+  if (missing.length > 0) {
+    draft = mergeDraftWithFallbacks(draft, missing, instructions);
+  }
+
+  let text = composeCoverMessage(draft);
+  if (messageViolatesSpec(text, input)) {
+    user = `${prompt.user}\n\nНе перечисляй изделия, размеры, ткани и цены позиций. Только общая сумма total. Верни JSON заново.`;
+    draft = readDraft(await completeYandexGpt(prompt.system, user));
+    missing = missingOfferIds(draft, input.offers);
+    if (missing.length > 0) {
+      draft = mergeDraftWithFallbacks(draft, missing, instructions);
+    }
+    text = composeCoverMessage(draft);
+  }
+
+  if (!text.trim()) {
+    throw new CoverMessageError("unavailable");
+  }
   return text.trim();
 }
 
@@ -37,8 +71,8 @@ async function completeYandexGpt(system: string, user: string): Promise<string> 
         modelUri: `gpt://${folderId}/yandexgpt/latest`,
         completionOptions: {
           stream: false,
-          temperature: 0.4,
-          maxTokens: "900",
+          temperature: 0.35,
+          maxTokens: "1200",
         },
         messages: [
           { role: "system", text: system },
@@ -67,4 +101,12 @@ async function completeYandexGpt(system: string, user: string): Promise<string> 
     throw new CoverMessageError("unavailable");
   }
   return text;
+}
+
+function readDraft(raw: string) {
+  try {
+    return parseCoverMessageDraft(raw);
+  } catch {
+    throw new CoverMessageError("unavailable");
+  }
 }
