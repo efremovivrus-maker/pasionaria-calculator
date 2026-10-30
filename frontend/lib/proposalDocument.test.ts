@@ -14,6 +14,7 @@ import {
 import {
   CLIENT_CONFIRMATION_NOTE,
   clientCharacteristics,
+  clientPdfDetailLines,
   formatProposalDate,
   formatProposalMoney,
   itemNeedsConfirmation,
@@ -193,8 +194,19 @@ describe("proposal pdf model", () => {
     expect(model.sections[2].lines[0].dimensions).toBe("130 × 280 см");
     expect(model.sections[2].lines[0].fabric).toBe("Вандер");
     expect(model.sections[0].lines[0].fabric).toBe("Софт");
-    expect(clientCharacteristics(curtains)).toEqual([{ label: "Ткань", value: "Вандер" }]);
-    expect(clientCharacteristics(assumed)).toEqual([{ label: "Ткань", value: "Софт" }]);
+    expect(clientCharacteristics(curtains)).toEqual([
+      { label: "Ткань", value: "Вандер" },
+      { label: "Крепление", value: "люверсы" },
+    ]);
+    expect(clientCharacteristics(assumed)).toEqual([
+      { label: "Ткань", value: "Софт" },
+      { label: "Стёжка", value: "Хьюго" },
+      { label: "Подкладка", value: "Бойл" },
+    ]);
+    expect(clientPdfDetailLines(curtains)).toEqual([
+      "130 × 280 см · Ткань: Вандер",
+      "Крепление: люверсы",
+    ]);
 
     proposal.discount = {
       enabled: true,
@@ -220,21 +232,26 @@ describe("proposal pdf model", () => {
         item({
           id: "lined",
           title: "Покрывало",
+          productType: "bedspread",
           configuration: {
             ...emptyConfiguration(),
-            lining: "Подкладка «Анна»",
+            lining: "Анна",
             stitch: "Ромб 10×10",
             filling: "100 г/м²",
             heading: "люверсы",
           },
         }),
       ),
-    ).toEqual([]);
+    ).toEqual([
+      { label: "Стёжка", value: "Ромб 10×10" },
+      { label: "Подкладка", value: "Анна" },
+    ]);
     expect(
       clientCharacteristics(
         item({
           id: "faced",
           title: "Покрывало",
+          productType: "bedspread",
           configuration: {
             ...emptyConfiguration(),
             fabricName: "Основа",
@@ -299,5 +316,163 @@ describe("proposal pdf model", () => {
     expect(itemNeedsConfirmation(filling)).toBe(true);
     expect(itemNeedsConfirmation(trim)).toBe(true);
     expect(itemNeedsConfirmation(confirmed)).toBe(false);
+  });
+
+  it("builds client-facing pdf detail lines from calculation data", () => {
+    const curtainWithExtras = item({
+      id: "curtain-full",
+      title: "Шторы «Вандер»",
+      productType: "curtain",
+      widthCm: 130,
+      heightCm: 280,
+      configuration: {
+        ...emptyConfiguration(),
+        fabricName: "Вандер",
+        lining: "Бойл",
+        heading: "люверсы",
+      },
+      components: [
+        {
+          category: "production",
+          name: "Вышивка — Диана",
+          cost: 1200,
+        },
+      ],
+    });
+    expect(clientPdfDetailLines(curtainWithExtras)).toEqual([
+      "130 × 280 см · Ткань: Вандер",
+      "Подкладка: Бойл · Крепление: люверсы · Вышивка: Диана",
+    ]);
+
+    const curtainPlain = item({
+      id: "curtain-plain",
+      title: "Шторы",
+      productType: "curtain",
+      widthCm: 200,
+      heightCm: 260,
+      configuration: { ...emptyConfiguration(), fabricName: "Вандер" },
+    });
+    expect(clientPdfDetailLines(curtainPlain)).toEqual([
+      "200 × 260 см · Ткань: Вандер",
+    ]);
+
+    const bedspreadFull = item({
+      id: "bed",
+      title: "Покрывало «Ибица»",
+      productType: "bedspread",
+      widthCm: 230,
+      heightCm: 250,
+      configuration: {
+        ...emptyConfiguration(),
+        fabricName: "Ибица",
+        stitch: "Квадрат 5×5",
+        lining: "Анна",
+      },
+      components: [
+        {
+          category: "production",
+          name: "Вышивка — Мэри",
+          cost: 900,
+        },
+      ],
+    });
+    expect(clientPdfDetailLines(bedspreadFull)).toEqual([
+      "230 × 250 см · Ткань: Ибица",
+      "Стёжка: Квадрат 5×5 · Подкладка: Анна · Вышивка: Мэри",
+    ]);
+
+    const bedspreadAssumed = item({
+      id: "bed-assumed",
+      title: "Покрывало «Софт»",
+      productType: "bedspread",
+      widthCm: 230,
+      heightCm: 250,
+      configuration: {
+        ...emptyConfiguration(),
+        fabricName: "Софт",
+        stitch: "Хьюго",
+        stitchTariffAssumed: true,
+        stitchWarning: technicalWarning,
+      },
+      components: [
+        {
+          category: "production",
+          name: "Стежка покрывала — Хьюго",
+          cost: 864,
+          operationId: "BSD-STITCH-Квадрат 5х5 см",
+          tariff: 180,
+        },
+      ],
+    });
+    expect(clientPdfDetailLines(bedspreadAssumed)[1]).toBe("Стёжка: Хьюго");
+    expect(clientPdfDetailLines(bedspreadAssumed).join(" ")).not.toContain("Квадрат");
+    expect(itemNeedsConfirmation(bedspreadAssumed)).toBe(true);
+
+    const bedspreadModelEmbroidery = item({
+      id: "bed-model-emb",
+      title: "Покрывало «Мэри»",
+      productType: "bedspread",
+      model: "Мэри",
+      widthCm: 220,
+      heightCm: 240,
+      configuration: {
+        ...emptyConfiguration(),
+        fabricName: "Мэри",
+        stitch: "Ромб 10×10",
+      },
+      components: [
+        {
+          category: "production",
+          name: "Вышивка — Мэри",
+          cost: 1200,
+        },
+      ],
+    });
+    expect(clientPdfDetailLines(bedspreadModelEmbroidery)[1]).toContain("Вышивка: Мэри");
+
+    const romanStandard = item({
+      id: "roman",
+      title: "Римская штора",
+      productType: "roman",
+      widthCm: 165,
+      heightCm: 180,
+      configuration: {
+        ...emptyConfiguration(),
+        fabricName: "Вандер",
+        lining: "Бойл",
+        mechanism: "Стандарт",
+      },
+    });
+    expect(clientPdfDetailLines(romanStandard)).toEqual([
+      "165 × 180 см · Ткань: Вандер",
+      "Подкладка: Бойл · Механизм: Стандарт",
+    ]);
+
+    const romanDayNight = item({
+      id: "roman-dn",
+      title: "Римская штора",
+      productType: "roman",
+      widthCm: 165,
+      heightCm: 180,
+      configuration: {
+        ...emptyConfiguration(),
+        fabricName: "Вандер",
+        dayFabric: "Вуаль",
+        mechanism: "День-ночь",
+      },
+    });
+    expect(clientPdfDetailLines(romanDayNight)[1]).toContain("Дневная ткань: Вуаль");
+
+    const modelOnlyEmbroidery = item({
+      id: "miriam",
+      title: "Покрывало «Мириам»",
+      productType: "bedspread",
+      model: "Мириам",
+      configuration: { ...emptyConfiguration(), fabricName: "Мириам" },
+      components: [],
+    });
+    expect(clientCharacteristics(modelOnlyEmbroidery)).toEqual([
+      { label: "Ткань", value: "Мириам" },
+    ]);
   });
 });

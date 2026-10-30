@@ -54,6 +54,7 @@ export type ProposalPdfLine = {
   title: string;
   dimensions: string | null;
   fabric: string | null;
+  detailLines: string[];
   quantity: number;
   quantityLabel: string;
   unitPriceLabel: string;
@@ -112,13 +113,169 @@ export function itemNeedsConfirmation(item: ProposalItem): boolean {
 }
 
 export function clientFabric(item: ProposalItem): string | null {
-  const { faceFabric, fabricName, dayFabric } = item.configuration;
-  return faceFabric || fabricName || dayFabric;
+  return clientFaceFabric(item);
+}
+
+function clientFaceFabric(item: ProposalItem): string | null {
+  const { faceFabric, fabricName } = item.configuration;
+  return cleanClientValue(faceFabric) ?? cleanClientValue(fabricName);
+}
+
+function cleanClientValue(value: string | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function sameClientValue(left: string | null, right: string | null): boolean {
+  if (!left || !right) {
+    return false;
+  }
+  return left.trim().toLocaleLowerCase("ru") === right.trim().toLocaleLowerCase("ru");
+}
+
+function embroideryFromCalculation(item: ProposalItem): string | null {
+  for (const component of item.components) {
+    if (!/вышив/i.test(component.name)) {
+      continue;
+    }
+    const parsed = parseEmbroideryComponentName(component.name);
+    if (parsed) {
+      return parsed;
+    }
+  }
+  for (const operation of item.configuration.extraOperations) {
+    const trimmed = operation.trim();
+    if (!trimmed) {
+      continue;
+    }
+    const matched = item.components.some(
+      (component) =>
+        /вышив/i.test(component.name) &&
+        component.name.toLocaleLowerCase("ru").includes(trimmed.toLocaleLowerCase("ru")),
+    );
+    if (matched) {
+      return trimmed;
+    }
+  }
+  return null;
+}
+
+function parseEmbroideryComponentName(name: string): string | null {
+  const parts = name.split(/[—–-]/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length >= 2 && /вышив/i.test(parts[0])) {
+    return parts.slice(1).join(" — ");
+  }
+  const withoutPrefix = name.replace(/^.*?\bвышив\w*\b\s*[—–-]?\s*/iu, "").trim();
+  return withoutPrefix.length > 0 ? withoutPrefix : null;
+}
+
+function bedspreadStitchLabel(item: ProposalItem): string | null {
+  const stitch = cleanClientValue(item.configuration.stitch);
+  if (!stitch) {
+    return null;
+  }
+  return stitch;
+}
+
+function romanDayFabric(item: ProposalItem): string | null {
+  const dayFabric = cleanClientValue(item.configuration.dayFabric);
+  const face = clientFaceFabric(item);
+  if (!dayFabric || sameClientValue(dayFabric, face)) {
+    return null;
+  }
+  return dayFabric;
+}
+
+function productSpecCharacteristics(item: ProposalItem): ProposalPdfCharacteristic[] {
+  const type = item.productType;
+  const config = item.configuration;
+  const specs: ProposalPdfCharacteristic[] = [];
+
+  if (type === "curtain") {
+    const lining = cleanClientValue(config.lining);
+    if (lining) {
+      specs.push({ label: "Подкладка", value: lining });
+    }
+    const heading = cleanClientValue(config.heading);
+    if (heading) {
+      specs.push({ label: "Крепление", value: heading });
+    }
+  } else if (type === "bedspread") {
+    const stitch = bedspreadStitchLabel(item);
+    if (stitch) {
+      specs.push({ label: "Стёжка", value: stitch });
+    }
+    const lining = cleanClientValue(config.lining);
+    if (lining) {
+      specs.push({ label: "Подкладка", value: lining });
+    }
+  } else if (type === "roman") {
+    const lining = cleanClientValue(config.lining);
+    if (lining) {
+      specs.push({ label: "Подкладка", value: lining });
+    }
+    const mechanism = cleanClientValue(config.mechanism);
+    if (mechanism) {
+      specs.push({ label: "Механизм", value: mechanism });
+    }
+    const dayFabric = romanDayFabric(item);
+    if (dayFabric) {
+      specs.push({ label: "Дневная ткань", value: dayFabric });
+    }
+  }
+
+  const embroidery = embroideryFromCalculation(item);
+  if (embroidery) {
+    specs.push({ label: "Вышивка", value: embroidery });
+  }
+
+  const fabric = clientFaceFabric(item);
+  return specs.filter((entry) => {
+    if (entry.value.length === 0) {
+      return false;
+    }
+    if (entry.label === "Вышивка") {
+      return true;
+    }
+    return !sameClientValue(entry.value, fabric);
+  });
 }
 
 export function clientCharacteristics(item: ProposalItem): ProposalPdfCharacteristic[] {
-  const fabric = clientFabric(item);
-  return fabric ? [{ label: "Ткань", value: fabric }] : [];
+  const fabric = clientFaceFabric(item);
+  const rows: ProposalPdfCharacteristic[] = fabric
+    ? [{ label: "Ткань", value: fabric }]
+    : [];
+  return [...rows, ...productSpecCharacteristics(item)];
+}
+
+export function clientPdfDetailLines(item: ProposalItem): string[] {
+  if (item.itemType === "service") {
+    return [];
+  }
+  const primary: string[] = [];
+  const dimensions = formatDimensions(item.widthCm, item.heightCm);
+  if (dimensions) {
+    primary.push(dimensions);
+  }
+  const fabric = clientFaceFabric(item);
+  if (fabric) {
+    primary.push(`Ткань: ${fabric}`);
+  }
+  const lines: string[] = [];
+  if (primary.length > 0) {
+    lines.push(primary.join(" · "));
+  }
+  const secondary = productSpecCharacteristics(item)
+    .map((entry) => `${entry.label}: ${entry.value}`)
+    .join(" · ");
+  if (secondary) {
+    lines.push(secondary);
+  }
+  return lines;
 }
 
 export function proposalPdfModel(proposal: CommercialProposal): ProposalPdfModel {
@@ -230,6 +387,7 @@ function toLine(
     title: item.title,
     dimensions: formatDimensions(item.widthCm, item.heightCm),
     fabric: item.itemType === "service" ? null : clientFabric(item),
+    detailLines: item.itemType === "service" ? [] : clientPdfDetailLines(item),
     quantity: item.quantity,
     quantityLabel: formatQuantity(item.quantity),
     unitPriceLabel: formatProposalMoney(unitPrice),

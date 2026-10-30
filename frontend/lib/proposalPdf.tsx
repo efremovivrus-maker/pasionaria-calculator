@@ -385,9 +385,11 @@ function lineHeight(section: ProposalPdfSection, line: ProposalPdfLine): number 
   }
   const titleLines = Math.max(1, Math.ceil(line.title.length / 32));
   let height = itemPad * 2 + titleLines * 14;
-  const detail = lineDetail(line);
-  if (detail) {
-    height += 18 * Math.max(1, Math.ceil(detail.length / 48));
+  if (line.detailLines.length > 0) {
+    height += line.detailLines.reduce(
+      (sum, detailLine) => sum + 18 * Math.max(1, Math.ceil(detailLine.length / 48)),
+      0,
+    );
   }
   if (line.confirmation) {
     height += 8 + Math.max(1, Math.ceil(line.confirmation.length / 42)) * 12;
@@ -667,21 +669,16 @@ function ColumnHeader() {
   );
 }
 
-function lineDetail(line: ProposalPdfLine): string | null {
-  const fabric = line.fabric ? `Ткань: ${line.fabric}` : null;
-  if (line.dimensions && fabric) {
-    return `${line.dimensions} · ${fabric}`;
-  }
-  return line.dimensions ?? fabric;
-}
-
 function ItemRow({ line }: { line: ProposalPdfLine }) {
-  const detail = lineDetail(line);
   return (
     <View style={styles.item}>
       <View style={styles.nameColumn}>
         <Text style={styles.itemTitle}>{line.title}</Text>
-        {detail ? <Text style={styles.dimensions}>{detail}</Text> : null}
+        {line.detailLines.map((detailLine, index) => (
+          <Text key={`${line.id}-detail-${index}`} style={styles.dimensions}>
+            {detailLine}
+          </Text>
+        ))}
         {line.confirmation ? (
           <Text style={styles.confirmation}>{line.confirmation}</Text>
         ) : null}

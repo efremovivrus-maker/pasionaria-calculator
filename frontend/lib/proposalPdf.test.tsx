@@ -194,9 +194,8 @@ describe("proposal pdf", () => {
     expect(text).toContain(compact("ЖК Сад, кв. 12"));
     expect(text).toContain(compact("Покрывало «Софт»"));
     expect(text).toContain(compact("Ткань: Софт"));
-    expect(text).not.toContain("Хьюго");
-    expect(text).not.toContain("Бойл");
-    expect(text).not.toContain(compact("Стёжка"));
+    expect(text).toContain(compact("Стёжка: Хьюго"));
+    expect(text).toContain(compact("Подкладка: Бойл"));
     expect(text).not.toContain("люверс");
     expect(text).toContain(compact(CLIENT_CONFIRMATION_NOTE));
     expect(text).toContain(compact(formatProposalMoney(17600)));
@@ -282,6 +281,7 @@ describe("proposal pdf", () => {
         item({
           id: "living-curtains",
           title: "Шторы гостиной",
+          productType: "curtain",
           widthCm: 130,
           heightCm: 280,
           quantity: 2,
@@ -307,17 +307,23 @@ describe("proposal pdf", () => {
         item({
           id: "roman",
           title: "Римская штора",
+          productType: "roman",
           widthCm: 165,
           heightCm: 180,
           quantity: 1,
           originalUnitPrice: 6400,
           unitPrice: 6400,
           room: "living",
-          configuration: { ...emptyConfiguration(), fabricName: "Вандер" },
+          configuration: {
+            ...emptyConfiguration(),
+            fabricName: "Вандер",
+            mechanism: "Стандарт",
+          },
         }),
         item({
           id: "bedspread",
           title: "Покрывало спальни",
+          productType: "bedspread",
           widthCm: 230,
           heightCm: 250,
           quantity: 1,
@@ -335,6 +341,7 @@ describe("proposal pdf", () => {
         item({
           id: "bedroom-curtains",
           title: "Шторы спальни",
+          productType: "curtain",
           widthCm: 180,
           heightCm: 270,
           quantity: 2,
@@ -371,16 +378,140 @@ describe("proposal pdf", () => {
     expect(bedroom).toContain("ИТОГО");
     expect(bedroom).not.toContain("продолжение");
     const documentText = compact(pages.join("\n"));
+    expect(documentText).toContain(compact("Механизм: Стандарт"));
     expect(documentText).toContain(compact("Ткань: Вандер"));
     expect(documentText).toContain(compact("Ткань: Софт"));
-    expect(documentText).not.toContain("люверс");
-    expect(documentText).not.toContain(compact("Подкладка"));
-    expect(documentText).not.toContain("Ромб");
+    expect(documentText).toContain(compact("Крепление: люверсы"));
+    expect(documentText).toContain(compact("Подкладка: Анна"));
+    expect(documentText).toContain(compact("Стёжка: Ромб 10×10 см"));
     expect(documentText).not.toContain("подгиб");
     expect(documentText).not.toContain("лёгкое");
     expect(documentText).not.toContain(compact("потолочный карниз"));
+    expect(documentText).not.toContain("100г");
     expect(documentText).toContain(compact(formatProposalMoney(2300)));
     expect(documentText).toContain(compact(formatProposalMoney(4600)));
     expect(documentText).not.toContain("2277");
+  });
+
+  it("shows Hugo stitch label and confirmation while hiding fallback tariff name", async () => {
+    const proposal = {
+      ...emptyProposal(),
+      recipient: "Клиент",
+      author: "Мария",
+      issuedOn: "2026-10-30",
+      items: [
+        item({
+          id: "hugo",
+          title: "Покрывало «Софт»",
+          productType: "bedspread",
+          widthCm: 230,
+          heightCm: 250,
+          quantity: 1,
+          unitPrice: 8800,
+          originalUnitPrice: 8736,
+          configuration: {
+            ...emptyConfiguration(),
+            fabricName: "Софт",
+            stitch: "Хьюго",
+            stitchTariffAssumed: true,
+            stitchWarning:
+              "Тариф стёжки „Хьюго“ отсутствует в справочнике. Стоимость рассчитана по базовому тарифу 180 ₽/м² и требует подтверждения",
+          },
+          components: [
+            {
+              category: "production",
+              name: "Стежка покрывала — Хьюго",
+              cost: 864,
+              operationId: "BSD-STITCH-Квадрат 5х5 см",
+            },
+          ],
+        }),
+      ],
+    };
+    const pages = pagesOf(await renderToBuffer(<ProposalPdfDocument proposal={proposal} />));
+    const text = compact(pages.join("\n"));
+    expect(text).toContain(compact("Стёжка: Хьюго"));
+    expect(text).not.toContain("Квадрат");
+    expect(text).not.toContain("BSD-STITCH");
+    expect(text).toContain(compact(CLIENT_CONFIRMATION_NOTE));
+  });
+
+  it("writes a local sample pdf with three product types for visual review", async () => {
+    const proposal = {
+      ...emptyProposal(),
+      recipient: "Тестовый клиент",
+      author: "PASIONARIA",
+      objectName: "Образец детализации PDF",
+      issuedOn: "2026-10-30",
+      items: [
+        item({
+          id: "curtain",
+          title: "Шторы «Вандер»",
+          productType: "curtain",
+          widthCm: 130,
+          heightCm: 280,
+          quantity: 2,
+          unitPrice: 4600,
+          originalUnitPrice: 4555,
+          configuration: {
+            ...emptyConfiguration(),
+            fabricName: "Вандер",
+            lining: "Бойл",
+            heading: "люверсы",
+          },
+          components: [
+            { category: "production", name: "Вышивка — Диана", cost: 800 },
+          ],
+        }),
+        item({
+          id: "bedspread",
+          title: "Покрывало «Ибица»",
+          productType: "bedspread",
+          widthCm: 230,
+          heightCm: 250,
+          quantity: 1,
+          unitPrice: 9200,
+          originalUnitPrice: 9150,
+          configuration: {
+            ...emptyConfiguration(),
+            fabricName: "Ибица",
+            stitch: "Квадрат 5×5",
+            lining: "Анна",
+          },
+          components: [
+            { category: "production", name: "Вышивка — Мэри", cost: 650 },
+          ],
+        }),
+        item({
+          id: "roman",
+          title: "Римская штора «Вандер»",
+          productType: "roman",
+          widthCm: 165,
+          heightCm: 180,
+          quantity: 1,
+          unitPrice: 6400,
+          originalUnitPrice: 6400,
+          configuration: {
+            ...emptyConfiguration(),
+            fabricName: "Вандер",
+            dayFabric: "Вуаль",
+            mechanism: "День-ночь",
+            lining: "Бойл",
+          },
+        }),
+      ],
+    };
+
+    const pdf = await renderToBuffer(<ProposalPdfDocument proposal={proposal} />);
+    const output = path.join(root, "drafts/pasionaria-kp-pdf-detail-sample.pdf");
+    writeFileSync(output, pdf);
+    const pages = pagesOf(pdf);
+    const text = compact(pages.join("\n"));
+    expect(text).toContain(compact("Шторы «Вандер»"));
+    expect(text).toContain(compact("Покрывало «Ибица»"));
+    expect(text).toContain(compact("Римская штора «Вандер»"));
+    expect(text).toContain(compact("Стёжка: Квадрат 5×5"));
+    expect(text).toContain(compact("Дневная ткань: Вуаль"));
+    expect(text).toContain(compact("Механизм: День-ночь"));
   });
 });
