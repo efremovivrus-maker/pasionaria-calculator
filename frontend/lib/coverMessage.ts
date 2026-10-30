@@ -1,9 +1,9 @@
 import { clientFabric } from "@/lib/proposalDocument";
 import {
   clientLineAmount,
-  clientProposalTotal,
   clientUnitPrice,
-  parseEditableNumber,
+  computeProposalTotals,
+  proposalDiscountValue,
   type CommercialProposal,
   type CoverOfferId,
   type CoverTone,
@@ -16,9 +16,9 @@ export {
   coverPrompt,
   composeCoverMessage,
   buildServerFactualBlock,
+  buildServerDiscountParagraph,
   proposalIntroPhrase,
   roomsWithProducts,
-  proposalTotal,
   parseCoverMessageDraft,
   missingOfferIds,
   mergeDraftWithFallbacks,
@@ -35,7 +35,7 @@ export {
 } from "@/lib/coverMessageOffers";
 
 import { COVER_OFFER_ID_SET } from "@/lib/coverMessageCatalog";
-import type { CoverMessageInput, PublicItem } from "@/lib/coverMessageTypes";
+import type { CoverMessageInput, CoverMessageProposalDiscount, PublicItem } from "@/lib/coverMessageTypes";
 import { selectedOfferInstructions } from "@/lib/coverMessageOffers";
 
 const TONES = new Set<CoverTone>(["warm", "business", "brief"]);
@@ -55,27 +55,35 @@ export function offerInstructions(input: CoverMessageInput): string[] {
   return selectedOfferInstructions(input).map((entry) => entry.instruction);
 }
 
-export function coverDiscountReady(cover: CommercialProposal["cover"]): boolean {
-  if (!cover.offers.includes("discount")) {
-    return true;
+export function proposalDiscountForMessage(
+  proposal: CommercialProposal,
+): CoverMessageProposalDiscount | null {
+  const totals = computeProposalTotals(proposal);
+  if (totals.discountAmount <= 0 || !proposal.discount.enabled) {
+    return null;
   }
-  const value = parseEditableNumber(cover.discountValue);
-  if (value === null || value <= 0) {
-    return false;
+  const value = proposalDiscountValue(proposal.discount);
+  if (value === null) {
+    return null;
   }
-  if (cover.discountKind === "percent" && value > 100) {
-    return false;
-  }
-  return /^\d{4}-\d{2}-\d{2}$/.test(cover.discountUntil);
+  const until = proposal.discount.until.trim();
+  return {
+    kind: proposal.discount.kind,
+    value,
+    amount: totals.discountAmount,
+    until: /^\d{4}-\d{2}-\d{2}$/.test(until) ? until : null,
+  };
 }
 
 export function proposalContentFingerprint(proposal: CommercialProposal): string {
   const step = proposal.roundingStep;
   const mode = proposal.roundingMode;
+  const totals = computeProposalTotals(proposal);
   return JSON.stringify({
     recipient: proposal.recipient,
     author: proposal.author,
     objectName: proposal.objectName,
+    discount: proposal.discount,
     rooms: proposal.rooms.map((room) => ({ id: room.id, name: room.name })),
     items: proposal.items.map((item) => ({
       id: item.id,
@@ -89,24 +97,18 @@ export function proposalContentFingerprint(proposal: CommercialProposal): string
       unitPrice: clientUnitPrice(item, step, mode),
       amount: clientLineAmount(item, step, mode),
     })),
-    total: clientProposalTotal(proposal.items, step, mode),
+    subtotal: totals.subtotal,
+    finalTotal: totals.finalTotal,
   });
 }
 
 export function coverMessageInput(proposal: CommercialProposal): CoverMessageInput {
-  const discountSelected = proposal.cover.offers.includes("discount");
-  const discountValue = parseEditableNumber(proposal.cover.discountValue);
+  const totals = computeProposalTotals(proposal);
   return {
     tone: proposal.cover.tone,
     offers: proposal.cover.offers.filter((offer) => COVER_OFFER_ID_SET.has(offer)),
-    discount:
-      discountSelected && discountValue !== null && coverDiscountReady(proposal.cover)
-        ? {
-            kind: proposal.cover.discountKind,
-            value: discountValue,
-            until: proposal.cover.discountUntil,
-          }
-        : null,
+    totals: { subtotal: totals.subtotal, finalTotal: totals.finalTotal },
+    proposalDiscount: proposalDiscountForMessage(proposal),
     notes: proposal.cover.notes.trim().slice(0, 1000),
     proposal: {
       recipient: proposal.recipient,
@@ -115,6 +117,7 @@ export function coverMessageInput(proposal: CommercialProposal): CoverMessageInp
       issuedOn: proposal.issuedOn,
       roundingStep: proposal.roundingStep,
       roundingMode: proposal.roundingMode,
+      discount: proposal.discount,
       rooms: proposal.rooms.map((room) => ({ id: room.id, name: room.name })),
       items: proposal.items.map((item) => ({
         title: item.title,
@@ -155,9 +158,13 @@ export function parseCoverMessageInput(value: unknown): CoverMessageInput {
   const document = proposal as Record<string, unknown>;
   const tone = TONES.has(source.tone as CoverTone) ? (source.tone as CoverTone) : "warm";
   const offers = Array.isArray(source.offers)
-    ? source.offers.filter((offer): offer is CoverOfferId => COVER_OFFER_ID_SET.has(offer as CoverOfferId))
+    ? source.offers.filter(
+        (offer): offer is CoverOfferId =>
+          typeof offer === "string" &&
+          offer !== "discount" &&
+          COVER_OFFER_ID_SET.has(offer as CoverOfferId),
+      )
     : [];
-  const discount = parseDiscount(source.discount, offers.includes("discount"));
   const rooms = Array.isArray(document.rooms)
     ? document.rooms.flatMap((room) => {
         if (!room || typeof room !== "object") {
@@ -179,42 +186,97 @@ export function parseCoverMessageInput(value: unknown): CoverMessageInput {
   if (items.length > COVER_MAX_ITEMS) {
     throw new CoverMessageError("invalid_request");
   }
+  const roundingStep =
+    document.roundingStep === 10 || document.roundingStep === 1000 ? document.roundingStep : 100;
+  const roundingMode = document.roundingMode === "up" ? "up" : "nearest";
+  const discountState = parseDiscountState(document.discount);
+  const totals = computeProposalTotals({
+    items: items.map((item) => ({
+      id: "x",
+      title: item.title,
+      itemType: item.itemType,
+      productType: item.productType,
+      model: null,
+      widthCm: item.widthCm,
+      heightCm: item.heightCm,
+      quantity: item.quantity,
+      configuration: {
+        heading: null,
+        mechanism: null,
+        lining: null,
+        mounting: null,
+        dayFabric: null,
+        faceFabric: null,
+        stitch: null,
+        filling: null,
+        extraOperations: [],
+        fabricName: null,
+        fabricConsumptionM: null,
+        stitchTariffAssumed: false,
+        stitchWarning: null,
+        explanation: null,
+      },
+      components: [],
+      originalUnitPrice: item.originalUnitPrice,
+      unitPrice: item.unitPrice,
+      room: item.room,
+    })),
+    roundingStep,
+    roundingMode,
+    discount: discountState,
+  });
+  const proposalDiscount = buildProposalDiscountMessage(discountState, totals);
   return {
     tone,
     offers,
-    discount,
+    totals: { subtotal: totals.subtotal, finalTotal: totals.finalTotal },
+    proposalDiscount,
     notes: typeof source.notes === "string" ? source.notes.trim().slice(0, 1000) : "",
     proposal: {
       recipient: optionalText(document.recipient, 180),
       author: optionalText(document.author, 180),
       objectName: optionalText(document.objectName, 180),
       issuedOn: typeof document.issuedOn === "string" ? document.issuedOn : "",
-      roundingStep: document.roundingStep === 10 || document.roundingStep === 1000 ? document.roundingStep : 100,
-      roundingMode: document.roundingMode === "up" ? "up" : "nearest",
+      roundingStep,
+      roundingMode,
+      discount: discountState,
       rooms,
       items,
     },
   };
 }
 
-function parseDiscount(value: unknown, selected: boolean): CoverMessageInput["discount"] {
-  if (!selected) {
-    return null;
-  }
+function parseDiscountState(value: unknown): CommercialProposal["discount"] {
   if (!value || typeof value !== "object") {
-    throw new CoverMessageError("invalid_discount");
+    return { enabled: false, kind: "percent", value: "", until: "" };
   }
   const source = value as Record<string, unknown>;
-  const kind = source.kind === "fixed" ? "fixed" : source.kind === "percent" ? "percent" : null;
-  const amount = typeof source.value === "number" ? source.value : Number.NaN;
-  const until = typeof source.until === "string" ? source.until : "";
-  if (!kind || !Number.isFinite(amount) || amount <= 0 || (kind === "percent" && amount > 100)) {
+  return {
+    enabled: source.enabled === true,
+    kind: source.kind === "fixed" ? "fixed" : "percent",
+    value: typeof source.value === "string" ? source.value : "",
+    until: typeof source.until === "string" ? source.until.trim().slice(0, 10) : "",
+  };
+}
+
+function buildProposalDiscountMessage(
+  discount: CommercialProposal["discount"],
+  totals: ReturnType<typeof computeProposalTotals>,
+): CoverMessageProposalDiscount | null {
+  if (totals.discountAmount <= 0 || !discount.enabled) {
+    return null;
+  }
+  const value = proposalDiscountValue(discount);
+  if (value === null) {
     throw new CoverMessageError("invalid_discount");
   }
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(until)) {
-    throw new CoverMessageError("invalid_discount");
-  }
-  return { kind, value: amount, until };
+  const until = discount.until.trim();
+  return {
+    kind: discount.kind,
+    value,
+    amount: totals.discountAmount,
+    until: /^\d{4}-\d{2}-\d{2}$/.test(until) ? until : null,
+  };
 }
 
 function parsePublicItem(value: unknown): PublicItem[] {

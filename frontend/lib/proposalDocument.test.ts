@@ -4,6 +4,8 @@ import {
   emptyConfiguration,
   emptyProposal,
   clientProposalTotal,
+  computeProposalTotals,
+  wholeRubles,
   lineAmount,
   proposalTotal,
   type ProposalItem,
@@ -177,9 +179,12 @@ describe("proposal pdf model", () => {
       clientProposalTotal(proposal.items, proposal.roundingStep, proposal.roundingMode),
     );
     expect(model.total).toBe(
-      clientProposalTotal(proposal.items, proposal.roundingStep, proposal.roundingMode),
+      wholeRubles(
+        clientProposalTotal(proposal.items, proposal.roundingStep, proposal.roundingMode),
+      ),
     );
     expect(model.totalLabel).toBe(formatProposalMoney(model.total));
+    expect(model.subtotalLine).toBeNull();
     expect(formatProposalMoney(8800).replace(/\s/g, " ")).toBe("8 800 ₽");
     expect(formatProposalMoney(2300)).not.toContain(",");
     expect(model.sections[0].lines[0].confirmation).toBe(CLIENT_CONFIRMATION_NOTE);
@@ -190,6 +195,26 @@ describe("proposal pdf model", () => {
     expect(model.sections[0].lines[0].fabric).toBe("Софт");
     expect(clientCharacteristics(curtains)).toEqual([{ label: "Ткань", value: "Вандер" }]);
     expect(clientCharacteristics(assumed)).toEqual([{ label: "Ткань", value: "Софт" }]);
+
+    proposal.discount = {
+      enabled: true,
+      kind: "percent",
+      value: "10",
+      until: "2026-11-01",
+    };
+    const discounted = proposalPdfModel(proposal);
+    const totals = computeProposalTotals(proposal);
+    expect(discounted.subtotalLine).toBe(
+      `Стоимость изделий и услуг: ${formatProposalMoney(totals.subtotal)}`,
+    );
+    expect(discounted.discountLine).toBe(
+      `Скидка 10%: −${formatProposalMoney(totals.discountAmount)}`,
+    );
+    expect(discounted.discountUntilLine).toBe(
+      "Скидка действует при оплате до 1 ноября 2026",
+    );
+    expect(discounted.totalCaption).toBe("Итого к оплате");
+    expect(discounted.total).toBe(totals.finalTotal);
     expect(
       clientCharacteristics(
         item({

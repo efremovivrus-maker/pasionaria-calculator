@@ -3,6 +3,7 @@ import type {
   CoverDiscountKind,
   CoverOfferId,
   CoverTone,
+  ProposalDiscountState,
 } from "@/lib/proposal";
 
 export type { CoverOfferId };
@@ -20,10 +21,18 @@ export type PublicItem = {
   fabric: string | null;
 };
 
+export type CoverMessageProposalDiscount = {
+  kind: CoverDiscountKind;
+  value: number;
+  amount: number;
+  until: string | null;
+};
+
 export type CoverMessageInput = {
   tone: CoverTone;
   offers: CoverOfferId[];
-  discount: { kind: CoverDiscountKind; value: number; until: string } | null;
+  totals: { subtotal: number; finalTotal: number };
+  proposalDiscount: CoverMessageProposalDiscount | null;
   notes: string;
   proposal: {
     recipient: string | null;
@@ -32,6 +41,7 @@ export type CoverMessageInput = {
     issuedOn: string;
     roundingStep: CommercialProposal["roundingStep"];
     roundingMode: CommercialProposal["roundingMode"];
+    discount: ProposalDiscountState;
     rooms: Array<{ id: string; name: string }>;
     items: PublicItem[];
   };

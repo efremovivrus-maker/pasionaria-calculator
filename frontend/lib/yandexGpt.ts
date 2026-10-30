@@ -17,9 +17,6 @@ const COMPLETION_URL = "https://llm.api.cloud.yandex.net/foundationModels/v1/com
 
 export async function generateCoverMessage(value: unknown): Promise<string> {
   const input = parseCoverMessageInput(value);
-  if (input.offers.includes("discount") && !input.discount) {
-    throw new CoverMessageError("invalid_discount");
-  }
   const instructions = selectedOfferInstructions(input);
   const prompt = coverPrompt(input);
   let user = prompt.user;
@@ -38,7 +35,7 @@ export async function generateCoverMessage(value: unknown): Promise<string> {
 
   let text = composeCoverMessage(input, draft);
   if (messageViolatesSpec(text, input)) {
-    user = `${prompt.user}\n\nНе упоминай помещения, сумму, услуги и состав КП. Не пиши квартира, дом, жилой интерьер. Только selected_offers. Верни JSON заново.`;
+    user = `${prompt.user}\n\nНе упоминай помещения, сумму, услуги и состав КП. Не пиши квартира, дом, жилой интерьер. Не упоминай скидку. Только selected_offers. Верни JSON заново.`;
     draft = readDraft(await completeYandexGpt(prompt.system, user));
     missing = missingOfferIds(draft, input.offers);
     if (missing.length > 0) {

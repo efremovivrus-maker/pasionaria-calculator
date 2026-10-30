@@ -122,9 +122,8 @@ describe.skipIf(!live)("live YandexGPT cover messages", () => {
   it(
     "includes discount terms without recalculating the total",
     async () => {
-      const proposal = annaProposal(["discount"], "warm");
-      proposal.cover.discountValue = "10";
-      proposal.cover.discountUntil = "2026-10-31";
+      const proposal = annaProposal([], "warm");
+      proposal.discount = { enabled: true, kind: "percent", value: "10", until: "2026-10-31" };
       const text = await generateCoverMessage(coverMessageInput(proposal));
       expect(text).toContain("10%");
       expect(text).toMatch(/31\s*октябр/i);

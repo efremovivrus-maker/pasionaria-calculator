@@ -16,7 +16,10 @@ import {
   PROPOSAL_STORAGE_KEY,
   clientLineAmount,
   clientUnitPrice,
+  computeProposalTotals,
+  proposalDiscountAmount,
   roundToStep,
+  wholeRubles,
   saveProposal,
   todayIsoDate,
   unitPriceFromTotal,
@@ -303,3 +306,48 @@ function pricedItem(overrides: Partial<ProposalItem>): ProposalItem {
     ...overrides,
   };
 }
+
+describe("proposal discount", () => {
+  it("applies percent and fixed discounts to the subtotal in whole rubles", () => {
+    const proposal = emptyProposal();
+    proposal.items = [
+      pricedItem({ originalUnitPrice: 10000, unitPrice: 10000 }),
+      pricedItem({
+        title: "Доставка",
+        itemType: "service",
+        originalUnitPrice: 1600,
+        unitPrice: 1600,
+      }),
+    ];
+    proposal.discount = { enabled: true, kind: "percent", value: "10", until: "" };
+    const percentTotals = computeProposalTotals(proposal);
+    expect(percentTotals.subtotal).toBe(11600);
+    expect(percentTotals.discountAmount).toBe(1160);
+    expect(percentTotals.finalTotal).toBe(10440);
+
+    proposal.discount = { enabled: true, kind: "fixed", value: "5000", until: "" };
+    const fixedTotals = computeProposalTotals(proposal);
+    expect(fixedTotals.discountAmount).toBe(5000);
+    expect(fixedTotals.finalTotal).toBe(6600);
+  });
+
+  it("caps fixed discount and rejects invalid values", () => {
+    const proposal = emptyProposal();
+    proposal.items = [pricedItem({ originalUnitPrice: 3000, unitPrice: 3000 })];
+    expect(
+      proposalDiscountAmount(3000, { enabled: true, kind: "fixed", value: "5000", until: "" }),
+    ).toBe(3000);
+    expect(
+      proposalDiscountAmount(3000, { enabled: true, kind: "percent", value: "150", until: "" }),
+    ).toBe(0);
+    expect(wholeRubles(35200 * 0.1)).toBe(3520);
+  });
+
+  it("persists discount settings in sessionStorage", () => {
+    const proposal = emptyProposal();
+    proposal.discount = { enabled: true, kind: "percent", value: "10", until: "2026-10-31" };
+    saveProposal(proposal);
+    const loaded = loadProposal();
+    expect(loaded.discount).toEqual(proposal.discount);
+  });
+});

@@ -11,7 +11,7 @@ vi.mock("@/lib/api", () => ({
 }));
 
 const generated =
-  "Анна, подготовили коммерческое предложение для квартиры в Москве. В гостиной — шторы «Вандер», в спальне — покрывало «Софт». Общая стоимость 15 100 ₽. Можем отдельно рассчитать монтаж. Мария, PASIONARIA";
+  "Анна, добрый день! Направляем коммерческое предложение по текстильному оформлению. Общая стоимость — 4 600 ₽.\n\nМожем отдельно рассчитать монтаж.\n\nЕсли появятся вопросы — напишите. Мария, PASIONARIA";
 
 function stored() {
   return JSON.parse(sessionStorage.getItem(PROPOSAL_STORAGE_KEY) ?? "{}") as {
@@ -72,13 +72,6 @@ describe("cover message editor", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Коммерческое предложение, 1" }));
     fireEvent.click(screen.getByRole("button", { name: "Создать сопроводительное сообщение" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Рассчитать стоимость монтажа и вывеса штор." }));
-    fireEvent.click(screen.getByRole("checkbox", { name: "Предложить скидку при оплате до завтра." }));
-    expect(
-      (screen.getByRole("button", { name: "Сгенерировать сообщение" }) as HTMLButtonElement)
-        .disabled,
-    ).toBe(true);
-
-    fireEvent.change(screen.getByLabelText("Размер скидки"), { target: { value: "10" } });
     fireEvent.change(screen.getByLabelText("Пожелания к сообщению"), {
       target: { value: "Без срочности" },
     });
@@ -89,9 +82,10 @@ describe("cover message editor", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const request = JSON.parse(String(fetchMock.mock.calls[0][1].body)) as {
       offers: string[];
-      proposal: { items: Array<{ title: string }> };
+      proposal: { items: Array<{ title: string }>; discount: { enabled: boolean } };
     };
-    expect(request.offers).toEqual(["mounting", "discount"]);
+    expect(request.offers).toEqual(["mounting"]);
+    expect(request.proposal.discount.enabled).toBe(false);
     expect(JSON.stringify(request)).not.toContain("operationId");
 
     fireEvent.change(message, { target: { value: "Анна, отправили предложение." } });
@@ -113,6 +107,6 @@ describe("cover message editor", () => {
       ((await screen.findByLabelText("Текст сообщения")) as HTMLTextAreaElement).value,
     ).toBe("Анна, отправили предложение.");
     expect(stored().cover.notes).toBe("Без срочности");
-    expect(stored().cover.offers).toEqual(["mounting", "discount"]);
+    expect(stored().cover.offers).toEqual(["mounting"]);
   });
 });

@@ -2,8 +2,10 @@ import {
   clientLineAmount,
   clientProposalTotal,
   clientUnitPrice,
+  computeProposalTotals,
   formatDimensions,
   formatQuantity,
+  proposalDiscountValue,
   type CommercialProposal,
   type ProposalItem,
   type RoundingMode,
@@ -75,6 +77,10 @@ export type ProposalPdfModel = {
   objectName: string | null;
   issuedOnLabel: string;
   sections: ProposalPdfSection[];
+  subtotalLine: string | null;
+  discountLine: string | null;
+  discountUntilLine: string | null;
+  totalCaption: string;
   totalLabel: string;
   total: number;
 };
@@ -161,15 +167,33 @@ export function proposalPdfModel(proposal: CommercialProposal): ProposalPdfModel
     });
   }
 
-  const total = clientProposalTotal(proposal.items, step, mode);
+  const totals = computeProposalTotals(proposal);
+  const discountValue = proposalDiscountValue(proposal.discount);
+  const showDiscount = totals.discountAmount > 0 && discountValue !== null;
+  const discountLine = showDiscount
+    ? proposal.discount.kind === "percent"
+      ? `Скидка ${discountValue}%: −${formatProposalMoney(totals.discountAmount)}`
+      : `Скидка: −${formatProposalMoney(totals.discountAmount)}`
+    : null;
+  const until = proposal.discount.until.trim();
+  const discountUntilLine =
+    showDiscount && /^\d{4}-\d{2}-\d{2}$/.test(until)
+      ? `Скидка действует при оплате до ${formatProposalDate(until)}`
+      : null;
   return {
     recipient: proposal.recipient,
     author: proposal.author,
     objectName: proposal.objectName,
     issuedOnLabel: formatProposalDate(proposal.issuedOn),
     sections,
-    totalLabel: formatProposalMoney(total),
-    total,
+    subtotalLine: showDiscount
+      ? `Стоимость изделий и услуг: ${formatProposalMoney(totals.subtotal)}`
+      : null,
+    discountLine,
+    discountUntilLine,
+    totalCaption: showDiscount ? "Итого к оплате" : "Итого",
+    totalLabel: formatProposalMoney(totals.finalTotal),
+    total: totals.finalTotal,
   };
 }
 

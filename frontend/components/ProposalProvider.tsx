@@ -18,6 +18,7 @@ import {
   saveProposal,
   type CommercialProposal,
   type CoverMessageState,
+  type ProposalDiscountState,
   type ProposalItem,
   type RoundingMode,
   type RoundingStep,
@@ -50,6 +51,7 @@ type ProposalContextValue = {
   removeRoom: (id: string) => void;
   applyRounding: (step: RoundingStep, mode: RoundingMode) => void;
   updateCover: (patch: Partial<CoverMessageState>) => void;
+  updateDiscount: (patch: Partial<ProposalDiscountState>) => void;
   removeItem: (id: string) => void;
   clearItems: () => void;
 };
@@ -169,6 +171,12 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
         setProposal((current) => ({
           ...current,
           cover: { ...current.cover, ...patch },
+        }));
+      },
+      updateDiscount: (patch) => {
+        setProposal((current) => ({
+          ...current,
+          discount: { ...current.discount, ...patch },
         }));
       },
       removeItem: (id) => {

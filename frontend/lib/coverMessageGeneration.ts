@@ -1,5 +1,4 @@
 import { formatProposalDate, formatProposalMoney } from "@/lib/proposalDocument";
-import { clientLineAmount, roundMoney } from "@/lib/proposal";
 import type { CoverOfferId, CoverTone } from "@/lib/proposal";
 import type { CoverMessageInput, CoverMessageModelResponse } from "@/lib/coverMessageTypes";
 import {
@@ -29,6 +28,7 @@ closing — необязательное короткое завершение (
 - утверждать, что интерьер оформлен, изделия установлены, есть готовая гамма или сочетание;
 - рекламные клише: идеальный интерьер, уютная атмосфера, гармония, создать атмосферу, палитра интерьера (кроме нейтрального «подобрать в сочетании» как действие);
 - слова и образы жилого объекта без подтверждения: квартира, дом, жилой интерьер, ваше жильё; не угадывать тип объекта по изделиям;
+- скидки, пересчёт суммы и условия оплаты — их добавит система;
 - придумывать сроки, наличие, скидки не из instruction.
 
 relationshipHints — только подсказка к формулировке выбранных id.`;
@@ -57,15 +57,6 @@ export function coverMessageBriefForModel(input: CoverMessageInput): Record<stri
     requiredOfferIds: input.offers,
     managerSelectedOffers,
     relationshipHints: relationshipHints(input),
-    discount: input.discount
-      ? {
-          size:
-            input.discount.kind === "percent"
-              ? `${input.discount.value}%`
-              : formatProposalMoney(input.discount.value),
-          until: formatProposalDate(input.discount.until),
-        }
-      : null,
     managerNotes: input.notes || null,
     note: "Фактическая часть сообщения (обращение, объект, сумма, услуги) уже сформирована сервером. Помещения используй только внутри формулировок допродаж по instruction; не перечисляй их отдельно и не повторяй фактическую часть.",
   };
@@ -78,14 +69,6 @@ export function roomsWithProducts(input: CoverMessageInput): string[] {
       .map((item) => item.room as string),
   );
   return input.proposal.rooms.filter((room) => roomIds.has(room.id)).map((room) => room.name);
-}
-
-export function proposalTotal(input: CoverMessageInput): number {
-  const step = input.proposal.roundingStep;
-  const mode = input.proposal.roundingMode;
-  return roundMoney(
-    input.proposal.items.reduce((sum, item) => sum + clientLineAmount(item, step, mode), 0),
-  );
 }
 
 function recipientFirstName(recipient: string | null): string | null {
@@ -119,19 +102,45 @@ function formatTotalLine(total: string, services: string[]): string {
   return `Общая стоимость — ${total}.`;
 }
 
+function formatProjectCostLine(total: string, services: string[]): string {
+  if (services.length === 1) {
+    return `Стоимость проекта — ${total}, включая ${serviceForIncluding(services[0])}.`;
+  }
+  return `Стоимость проекта — ${total}.`;
+}
+
+function formatIntroCostLine(input: CoverMessageInput, services: string[]): string {
+  const hasDiscount = input.proposalDiscount !== null;
+  const amount = formatProposalMoney(
+    hasDiscount ? input.totals.subtotal : input.totals.finalTotal,
+  );
+  if (hasDiscount) {
+    return formatProjectCostLine(amount, services);
+  }
+  return formatTotalLine(amount, services);
+}
+
 export function buildServerFactualBlock(input: CoverMessageInput): string {
   const tone = input.tone;
-  const total = formatProposalMoney(proposalTotal(input));
   const services = includedServiceTitles(input);
   const objectName = input.proposal.objectName?.trim() || null;
   const name = recipientFirstName(input.proposal.recipient);
+  const hasDiscount = input.proposalDiscount !== null;
+  const introCost = formatIntroCostLine(input, services);
 
   if (tone === "brief") {
     const parts: string[] = [];
     parts.push(name ? `${name},` : "");
-    parts.push(`коммерческое предложение по текстильному оформлению готово, итого ${total}.`);
-    if (services.length > 0) {
-      parts.push(`Включено: ${formatServiceList(services)}.`);
+    if (hasDiscount) {
+      parts.push("коммерческое предложение по текстильному оформлению готово.");
+      parts.push(introCost);
+    } else {
+      parts.push(
+        `коммерческое предложение по текстильному оформлению готово, итого ${formatProposalMoney(input.totals.finalTotal)}.`,
+      );
+      if (services.length > 0) {
+        parts.push(`Включено: ${formatServiceList(services)}.`);
+      }
     }
     return parts.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
   }
@@ -143,13 +152,51 @@ export function buildServerFactualBlock(input: CoverMessageInput): string {
     lines.push(name ? `${name}, добрый день.` : "Добрый день.");
   }
   lines.push(proposalIntroPhrase(objectName));
-  lines.push(formatTotalLine(total, services));
+  lines.push(introCost);
 
-  if (services.length > 1) {
+  if (!hasDiscount && services.length > 1) {
     lines.push(`В предложение включены: ${formatServiceList(services)}.`);
   }
 
   return lines.join(" ");
+}
+
+export function buildServerDiscountParagraph(input: CoverMessageInput): string {
+  const discount = input.proposalDiscount;
+  if (!discount) {
+    return "";
+  }
+  const finalLabel = formatProposalMoney(input.totals.finalTotal);
+  const amountLabel = formatProposalMoney(discount.amount);
+  const untilLabel = discount.until ? formatProposalDate(discount.until) : null;
+  const business = input.tone === "business";
+
+  let offerSentence = "";
+  if (discount.kind === "percent") {
+    const pct = `${discount.value}%`;
+    if (untilLabel) {
+      offerSentence = business
+        ? `При оплате до ${untilLabel} предусмотрена скидка ${pct} (${amountLabel}).`
+        : `При оплате до ${untilLabel} предоставляем скидку ${pct} (${amountLabel}).`;
+    } else {
+      offerSentence = business
+        ? `Предусмотрена скидка ${pct} (${amountLabel}).`
+        : `Предоставляем скидку ${pct} (${amountLabel}).`;
+    }
+  } else {
+    const fixedLabel = formatProposalMoney(discount.value);
+    if (untilLabel) {
+      offerSentence = business
+        ? `При оплате до ${untilLabel} предусмотрена скидка ${fixedLabel}.`
+        : `При оплате до ${untilLabel} предоставляем скидку ${fixedLabel}.`;
+    } else {
+      offerSentence = business
+        ? `Предусмотрена скидка ${fixedLabel}.`
+        : `Предоставляем скидку ${fixedLabel}.`;
+    }
+  }
+
+  return `${offerSentence} Итоговая стоимость — ${finalLabel}.`.replace(/\s+/g, " ").trim();
 }
 
 function formatServiceList(services: string[]): string {
@@ -298,11 +345,6 @@ export function fallbackOfferText(
       business: "Возможен пересчёт в более премиальном исполнении.",
       brief: "Премиальное исполнение — по запросу.",
     },
-    discount: {
-      warm: short?.includes("скидк") ? short : "Действует согласованная скидка при оплате в указанный срок.",
-      business: short?.includes("скидк") ? short : "Предусмотрена согласованная скидка при оплате в указанный срок.",
-      brief: short?.includes("скидк") ? short : "Скидка — при оплате в срок.",
-    },
   };
   return templates[id]?.[tone] ?? (short || "Можем дополнительно просчитать этот вариант.");
 }
@@ -313,10 +355,12 @@ export function composeCoverMessage(
 ): string {
   const factual = buildServerFactualBlock(input);
   const offers = model.selected_offers.map((entry) => entry.text.trim()).filter(Boolean);
+  const discountBlock = buildServerDiscountParagraph(input);
   const closing = model.closing.trim() || buildDefaultClosing(input);
+  const footer = [discountBlock, closing].filter(Boolean).join(" ");
 
   if (input.tone === "brief") {
-    const sentence = [factual, ...offers, closing].filter(Boolean).join(" ");
+    const sentence = [factual, offers.join(" "), footer].filter(Boolean).join(" ");
     return sentence.replace(/\s+/g, " ").trim();
   }
 
@@ -324,7 +368,9 @@ export function composeCoverMessage(
   if (offers.length > 0) {
     parts.push(offers.join(" "));
   }
-  parts.push(closing);
+  if (footer) {
+    parts.push(footer);
+  }
   return parts.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
@@ -373,8 +419,15 @@ export function messageViolatesSpec(text: string, input: CoverMessageInput): boo
     }
   }
   const rubleMatches = text.match(/\d[\d\s\u00a0]*(?:₽|руб)/giu) ?? [];
-  if (rubleMatches.length > 2) {
+  const rubleLimit = input.proposalDiscount ? 4 : 2;
+  if (rubleMatches.length > rubleLimit) {
     return true;
+  }
+  if (input.proposalDiscount && /скидк/i.test(text)) {
+    const withoutServerDiscount = text.replace(buildServerDiscountParagraph(input), "");
+    if (/скидк/i.test(withoutServerDiscount)) {
+      return true;
+    }
   }
   return false;
 }
@@ -425,8 +478,6 @@ function offerNeedles(id: CoverOfferId): string[] {
       return ["кухон"];
     case "premium":
       return ["премиаль"];
-    case "discount":
-      return ["скидк"];
     default:
       return [];
   }

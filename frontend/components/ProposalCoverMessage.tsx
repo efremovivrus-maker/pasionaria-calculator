@@ -3,13 +3,9 @@
 import { useEffect, useState } from "react";
 
 import { useProposal } from "@/components/ProposalProvider";
-import {
-  coverDiscountReady,
-  coverMessageInput,
-  proposalContentFingerprint,
-} from "@/lib/coverMessage";
+import { coverMessageInput, proposalContentFingerprint } from "@/lib/coverMessage";
 import { COVER_OFFER_GROUPS } from "@/lib/coverMessageCatalog";
-import type { CoverOfferId, CoverTone } from "@/lib/proposal";
+import { computeProposalTotals, proposalDiscountValid, type CoverOfferId, type CoverTone } from "@/lib/proposal";
 
 const fieldClass =
   "mt-2 w-full border border-stone-300 bg-transparent px-3 py-2 text-sm font-normal normal-case tracking-normal text-stone-950 outline-none focus:border-stone-800";
@@ -28,7 +24,10 @@ export function ProposalCoverMessage() {
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
   const cover = proposal.cover;
-  const ready = coverDiscountReady(cover) && proposal.items.length > 0;
+  const totals = computeProposalTotals(proposal);
+  const ready =
+    proposal.items.length > 0 &&
+    proposalDiscountValid(proposal.discount, totals.subtotal);
   const stale =
     cover.text.trim().length > 0 &&
     cover.sourceFingerprint !== proposalContentFingerprint(proposal);
@@ -118,58 +117,6 @@ export function ProposalCoverMessage() {
               </fieldset>
             ))}
           </div>
-          {cover.offers.includes("discount") ? (
-            <div className="mt-5 grid gap-4 border border-stone-200 px-4 py-4 sm:grid-cols-2">
-              <fieldset>
-                <legend className="text-xs text-stone-600">Размер скидки</legend>
-                <div className="mt-2 flex flex-wrap gap-4">
-                  <label className="inline-flex items-center gap-2 text-sm text-stone-800">
-                    <input
-                      type="radio"
-                      name="cover-discount-kind"
-                      value="percent"
-                      checked={cover.discountKind === "percent"}
-                      onChange={() => updateCover({ discountKind: "percent" })}
-                    />
-                    Процент
-                  </label>
-                  <label className="inline-flex items-center gap-2 text-sm text-stone-800">
-                    <input
-                      type="radio"
-                      name="cover-discount-kind"
-                      value="fixed"
-                      checked={cover.discountKind === "fixed"}
-                      onChange={() => updateCover({ discountKind: "fixed" })}
-                    />
-                    Фиксированная сумма
-                  </label>
-                </div>
-                <input
-                  aria-label="Размер скидки"
-                  inputMode="decimal"
-                  value={cover.discountValue}
-                  placeholder={cover.discountKind === "percent" ? "10" : "5000"}
-                  onChange={(event) => updateCover({ discountValue: event.target.value })}
-                  className={fieldClass}
-                />
-              </fieldset>
-              <label className="block text-xs text-stone-600">
-                Дата окончания предложения
-                <input
-                  aria-label="Дата окончания предложения"
-                  type="date"
-                  value={cover.discountUntil}
-                  onChange={(event) => updateCover({ discountUntil: event.target.value })}
-                  className={fieldClass}
-                />
-              </label>
-              {!coverDiscountReady(cover) ? (
-                <p className="text-sm text-stone-700 sm:col-span-2">
-                  Укажите размер скидки, чтобы включить её в сообщение.
-                </p>
-              ) : null}
-            </div>
-          ) : null}
           <label className="mt-5 block text-xs text-stone-600">
             Пожелания к сообщению
             <textarea
@@ -214,7 +161,7 @@ export function ProposalCoverMessage() {
           {state === "failed" ? (
             <p role="alert" className="mt-3 text-sm text-stone-700">
               {failure === "discount"
-                ? "Укажите размер скидки, чтобы включить её в сообщение."
+                ? "Проверьте настройки скидки в коммерческом предложении."
                 : "Не удалось создать сообщение. Сервис временно недоступен, попробуйте ещё раз."}
             </p>
           ) : null}
@@ -222,7 +169,7 @@ export function ProposalCoverMessage() {
             <div className="mt-5">
               {stale ? (
                 <p role="status" className="mb-3 text-sm text-stone-700">
-                  Состав, цены или адресат коммерческого предложения изменились. Текст
+                  Состав, цены, скидка или адресат коммерческого предложения изменились. Текст
                   сообщения может быть неактуальным.
                 </p>
               ) : null}

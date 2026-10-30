@@ -9,6 +9,8 @@ import {
   clientLineAmount,
   clientProposalTotal,
   clientUnitPrice,
+  computeProposalTotals,
+  proposalDiscountValid,
   createManualItem,
   formatDimensions,
   formatEditableNumber,
@@ -42,6 +44,7 @@ export function ProposalScreen() {
     addItem,
     removeItem,
     clearItems,
+    updateDiscount,
   } = useProposal();
   const [confirmClear, setConfirmClear] = useState(false);
   const [pdfState, setPdfState] = useState<"idle" | "working" | "failed">("idle");
@@ -50,11 +53,9 @@ export function ProposalScreen() {
   const [manualQuantity, setManualQuantity] = useState("1");
   const [manualPrice, setManualPrice] = useState("");
   const [manualType, setManualType] = useState<"product" | "service">("product");
-  const total = clientProposalTotal(
-    proposal.items,
-    proposal.roundingStep,
-    proposal.roundingMode,
-  );
+  const totals = computeProposalTotals(proposal);
+  const discount = proposal.discount;
+  const discountReady = proposalDiscountValid(discount, totals.subtotal);
   const unassigned = itemsInRoom(proposal.items, null);
   const manualQuantityValue = parseEditableNumber(manualQuantity);
   const manualPriceValue = parseEditableNumber(manualPrice);
@@ -410,14 +411,100 @@ export function ProposalScreen() {
         </div>
       </form>
 
-      <div className="mt-8 flex items-baseline justify-between gap-6 border-t border-stone-800 pt-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
-          Итого
-        </p>
-        <p className="font-editorial text-[2.4rem] leading-none text-stone-950 sm:text-[3rem]">
-          {formatProposalMoney(total)}
-        </p>
-      </div>
+      <section className="mt-8 border-t border-stone-800 pt-6">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
+          Скидка на КП
+        </h2>
+        <label className="mt-4 flex items-start gap-3 text-sm text-stone-800">
+          <input
+            type="checkbox"
+            className="mt-1"
+            checked={discount.enabled}
+            onChange={(event) => updateDiscount({ enabled: event.target.checked })}
+          />
+          <span>Применить скидку ко всей стоимости предложения</span>
+        </label>
+        {discount.enabled ? (
+          <div className="mt-4 grid gap-4 border border-stone-200 px-4 py-4 sm:grid-cols-2">
+            <fieldset>
+              <legend className="text-xs text-stone-600">Тип скидки</legend>
+              <div className="mt-2 flex flex-wrap gap-4">
+                <label className="inline-flex items-center gap-2 text-sm text-stone-800">
+                  <input
+                    type="radio"
+                    name="proposal-discount-kind"
+                    checked={discount.kind === "percent"}
+                    onChange={() => updateDiscount({ kind: "percent" })}
+                  />
+                  Процент
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm text-stone-800">
+                  <input
+                    type="radio"
+                    name="proposal-discount-kind"
+                    checked={discount.kind === "fixed"}
+                    onChange={() => updateDiscount({ kind: "fixed" })}
+                  />
+                  Фиксированная сумма
+                </label>
+              </div>
+              <input
+                aria-label="Значение скидки"
+                inputMode="decimal"
+                value={discount.value}
+                placeholder={discount.kind === "percent" ? "10" : "5000"}
+                onChange={(event) => updateDiscount({ value: event.target.value })}
+                className={fieldClass}
+              />
+            </fieldset>
+            <label className="block text-xs text-stone-600">
+              Дата окончания (необязательно)
+              <input
+                aria-label="Дата окончания скидки"
+                type="date"
+                value={discount.until}
+                onChange={(event) => updateDiscount({ until: event.target.value })}
+                className={fieldClass}
+              />
+            </label>
+            {!discountReady ? (
+              <p className="text-sm text-stone-700 sm:col-span-2">
+                Укажите корректный размер скидки: не больше 100% и не больше суммы КП.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+        <div className="mt-6 space-y-2 text-sm text-stone-800">
+          {discount.enabled && totals.discountAmount > 0 && discountReady ? (
+            <>
+              <div className="flex justify-between gap-4">
+                <span>Стоимость изделий и услуг</span>
+                <span>{formatProposalMoney(totals.subtotal)}</span>
+              </div>
+              <div className="flex justify-between gap-4">
+                <span>
+                  {discount.kind === "percent"
+                    ? `Скидка ${parseEditableNumber(discount.value) ?? ""}%`
+                    : "Скидка"}
+                </span>
+                <span>−{formatProposalMoney(totals.discountAmount)}</span>
+              </div>
+            </>
+          ) : null}
+          <div className="flex items-baseline justify-between gap-6 pt-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
+              {discount.enabled && totals.discountAmount > 0 && discountReady
+                ? "Итого к оплате"
+                : "Итого"}
+            </p>
+            <p className="font-editorial text-[2.4rem] leading-none text-stone-950 sm:text-[3rem]">
+              {formatProposalMoney(
+                discount.enabled && discountReady ? totals.finalTotal : totals.subtotal,
+              )}
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <button

@@ -8,7 +8,7 @@ import {
   COVER_REQUEST_MAX_CHARS,
   proposalIntroPhrase,
   composeCoverMessage,
-  coverDiscountReady,
+  buildServerDiscountParagraph,
   coverMessageBrief,
   coverMessageInput,
   coverPrompt,
@@ -29,9 +29,13 @@ import {
 import { projectTextileGaps } from "@/lib/coverMessageOffers";
 import { generateCoverMessage } from "@/lib/yandexGpt";
 import {
+  computeProposalTotals,
   emptyConfiguration,
   emptyCoverMessage,
   emptyProposal,
+  proposalDiscountAmount,
+  proposalDiscountValid,
+  wholeRubles,
   type ProposalItem,
 } from "@/lib/proposal";
 
@@ -253,19 +257,29 @@ describe("cover message", () => {
     expect(text).toContain("Не предлагай для: Спальня");
   });
 
-  it("requires a discount size and keeps the confirmed date", () => {
+  it("uses proposal discount in the server block, not in upsell offers", () => {
     const proposal = proposalWith([item({ id: "curtains", title: "Шторы «Вандер»" })]);
-    proposal.cover.offers = ["discount"];
-    proposal.cover.discountValue = "";
-    expect(coverDiscountReady(proposal.cover)).toBe(false);
-
-    proposal.cover.discountValue = "10";
-    proposal.cover.discountUntil = "2026-10-31";
-    const instruction =
-      selectedOfferInstructions(coverMessageInput(proposal)).find((entry) => entry.id === "discount")
-        ?.instruction ?? "";
-    expect(instruction).toContain("10%");
-    expect(instruction).toContain("31 октября 2026");
+    proposal.discount = { enabled: true, kind: "percent", value: "10", until: "2026-10-31" };
+    const totals = computeProposalTotals(proposal);
+    expect(proposalDiscountValid(proposal.discount, totals.subtotal)).toBe(true);
+    const input = coverMessageInput(proposal);
+    expect(input.proposalDiscount?.amount).toBeGreaterThan(0);
+    expect(selectedOfferInstructions(input).map((entry) => entry.id)).not.toContain("discount");
+    const factual = buildServerFactualBlock(input);
+    expect(factual).toMatch(/Стоимость проекта/i);
+    expect(factual).not.toMatch(/Итоговая стоимость/i);
+    const discountText = buildServerDiscountParagraph(input);
+    expect(discountText).toContain("10%");
+    expect(discountText).toContain("31 октября 2026");
+    expect(discountText).toMatch(/Итоговая стоимость/i);
+    expect(discountText.match(/скидк/giu)?.length).toBe(1);
+    const composed = composeCoverMessage(input, {
+      selected_offers: [{ id: "mounting", text: "Можем отдельно рассчитать монтаж." }],
+      closing: "",
+    });
+    expect(composed).toMatch(/монтаж/i);
+    expect(composed).toContain(discountText);
+    expect(composed.split("\n\n").length).toBe(3);
   });
 
   it("uses structured JSON from Yandex and merges missing offer ids", async () => {
@@ -307,14 +321,11 @@ describe("cover message", () => {
     const draft = parseCoverMessageDraft(modelJson());
     const merged = mergeDraftWithFallbacks(
       draft,
-      ["mounting", "discount"],
-      [
-        { id: "mounting", instruction: "Предложи монтаж." },
-        { id: "discount", instruction: "Скидка 10% до 31 октября." },
-      ],
+      ["mounting"],
+      [{ id: "mounting", instruction: "Предложи монтаж." }],
       "warm",
     );
-    expect(missingOfferIds(merged, ["mounting", "discount"])).toEqual([]);
+    expect(missingOfferIds(merged, ["mounting"])).toEqual([]);
     expect(composeCoverMessage(input, merged)).toContain("монтаж");
   });
 
@@ -327,18 +338,6 @@ describe("cover message", () => {
     expect(brief.system).toContain("краткий");
     expect(warm.system).toContain("selected_offers");
     expect(brief.system).toMatch(/1–2 коротких предложения/i);
-  });
-
-  it("refuses a discount promise without a size", async () => {
-    await expect(
-      generateCoverMessage({
-        tone: "warm",
-        offers: ["discount"],
-        discount: null,
-        notes: "",
-        proposal: coverMessageInput(proposalWith([item({ id: "curtains", title: "Шторы" })])).proposal,
-      }),
-    ).rejects.toMatchObject({ code: "invalid_discount" });
   });
 
   it("keeps the Yandex call out of the browser module", () => {

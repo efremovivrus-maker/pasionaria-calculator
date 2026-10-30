@@ -170,22 +170,9 @@ function instructionForOffer(
       return curtainsInstruction(rooms, loose);
     case "premium":
       return "Предложи дополнительно пересчитать проект в более дорогом исполнении с премиальными тканями. Не называй новую цену и не изменяй текущую сумму.";
-    case "discount":
-      if (!input.discount) {
-        return null;
-      }
-      return discountInstruction(input);
     default:
       return null;
   }
-}
-
-function discountInstruction(input: CoverMessageInput): string {
-  const size =
-    input.discount!.kind === "percent"
-      ? `${input.discount!.value}%`
-      : formatProposalMoney(input.discount!.value);
-  return `Сообщи скидку ровно ${size} при оплате до ${formatProposalDate(input.discount!.until)}. Не пересчитывай сумму КП и не называй цену после скидки.`;
 }
 
 function serviceInstruction(

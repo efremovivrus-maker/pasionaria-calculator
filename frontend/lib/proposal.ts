@@ -61,7 +61,6 @@ export const COVER_OFFER_IDS = [
   "pillows",
   "curtains",
   "premium",
-  "discount",
 ] as const;
 
 export type CoverOfferId = (typeof COVER_OFFER_IDS)[number];
@@ -71,12 +70,22 @@ export type CoverDiscountKind = "percent" | "fixed";
 export type CoverMessageState = {
   tone: CoverTone;
   offers: CoverOfferId[];
-  discountKind: CoverDiscountKind;
-  discountValue: string;
-  discountUntil: string;
   notes: string;
   text: string;
   sourceFingerprint: string | null;
+};
+
+export type ProposalDiscountState = {
+  enabled: boolean;
+  kind: CoverDiscountKind;
+  value: string;
+  until: string;
+};
+
+export type ProposalTotals = {
+  subtotal: number;
+  discountAmount: number;
+  finalTotal: number;
 };
 
 export type CommercialProposal = {
@@ -88,6 +97,7 @@ export type CommercialProposal = {
   issuedOn: string;
   roundingStep: RoundingStep;
   roundingMode: RoundingMode;
+  discount: ProposalDiscountState;
   cover: CoverMessageState;
 };
 
@@ -106,13 +116,19 @@ export function tomorrowIsoDate(now = new Date()): string {
   return todayIsoDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
 }
 
-export function emptyCoverMessage(now = new Date()): CoverMessageState {
+export function emptyProposalDiscount(): ProposalDiscountState {
+  return {
+    enabled: false,
+    kind: "percent",
+    value: "",
+    until: "",
+  };
+}
+
+export function emptyCoverMessage(): CoverMessageState {
   return {
     tone: "warm",
     offers: [],
-    discountKind: "percent",
-    discountValue: "",
-    discountUntil: tomorrowIsoDate(now),
     notes: "",
     text: "",
     sourceFingerprint: null,
@@ -129,7 +145,8 @@ export function emptyProposal(now = new Date()): CommercialProposal {
     issuedOn: todayIsoDate(now),
     roundingStep: 100,
     roundingMode: "nearest",
-    cover: emptyCoverMessage(now),
+    discount: emptyProposalDiscount(),
+    cover: emptyCoverMessage(),
   };
 }
 
@@ -220,6 +237,72 @@ export function clientProposalTotal(
   return roundMoney(
     items.reduce((total, item) => total + clientLineAmount(item, step, mode), 0),
   );
+}
+
+export function wholeRubles(value: number): number {
+  return roundWholeRubles(roundMoney(value), "nearest");
+}
+
+export function proposalDiscountValue(discount: ProposalDiscountState): number | null {
+  if (!discount.enabled) {
+    return null;
+  }
+  const parsed = parseEditableNumber(discount.value);
+  if (parsed === null || parsed <= 0) {
+    return null;
+  }
+  if (discount.kind === "percent" && parsed > 100) {
+    return null;
+  }
+  return parsed;
+}
+
+export function proposalDiscountAmount(
+  subtotal: number,
+  discount: ProposalDiscountState,
+): number {
+  const value = proposalDiscountValue(discount);
+  if (value === null || subtotal <= 0) {
+    return 0;
+  }
+  if (discount.kind === "percent") {
+    return wholeRubles((subtotal * value) / 100);
+  }
+  return Math.min(wholeRubles(value), subtotal);
+}
+
+export function computeProposalTotals(
+  proposal: Pick<CommercialProposal, "items" | "roundingStep" | "roundingMode" | "discount">,
+): ProposalTotals {
+  const subtotal = wholeRubles(
+    clientProposalTotal(proposal.items, proposal.roundingStep, proposal.roundingMode),
+  );
+  const discountAmount = proposalDiscountAmount(subtotal, proposal.discount);
+  return {
+    subtotal,
+    discountAmount,
+    finalTotal: Math.max(0, subtotal - discountAmount),
+  };
+}
+
+export function proposalDiscountValid(
+  discount: ProposalDiscountState,
+  subtotal: number,
+): boolean {
+  if (!discount.enabled) {
+    return true;
+  }
+  const value = proposalDiscountValue(discount);
+  if (value === null) {
+    return false;
+  }
+  if (discount.kind === "fixed" && value > subtotal) {
+    return false;
+  }
+  if (discount.until.trim() && !/^\d{4}-\d{2}-\d{2}$/.test(discount.until.trim())) {
+    return false;
+  }
+  return true;
 }
 
 export function proposalTotal(items: ProposalItem[]): number {
@@ -448,8 +531,40 @@ export function parseProposal(value: unknown): CommercialProposal {
     issuedOn: parseIssuedOn(source.issuedOn),
     roundingStep: parseRoundingStep(source.roundingStep),
     roundingMode: source.roundingMode === "up" ? "up" : "nearest",
+    discount: parseProposalDiscount(source.discount, source.cover),
     cover: parseCoverMessage(source.cover),
   };
+}
+
+function parseProposalDiscount(
+  value: unknown,
+  legacyCover: unknown,
+): ProposalDiscountState {
+  const source = record(value);
+  if (source) {
+    const kind = source.kind === "fixed" ? "fixed" : "percent";
+    return {
+      enabled: source.enabled === true,
+      kind,
+      value: typeof source.value === "string" ? source.value : "",
+      until: typeof source.until === "string" ? source.until.trim().slice(0, 10) : "",
+    };
+  }
+  const cover = record(legacyCover);
+  const migrated = emptyProposalDiscount();
+  if (!cover) {
+    return migrated;
+  }
+  const offers = Array.isArray(cover.offers) ? cover.offers : [];
+  if (!offers.includes("discount")) {
+    return migrated;
+  }
+  migrated.enabled = true;
+  migrated.kind = cover.discountKind === "fixed" ? "fixed" : "percent";
+  migrated.value = typeof cover.discountValue === "string" ? cover.discountValue : "";
+  migrated.until =
+    typeof cover.discountUntil === "string" ? parseIssuedOn(cover.discountUntil) : "";
+  return migrated;
 }
 
 function parseCoverMessage(value: unknown): CoverMessageState {
@@ -459,21 +574,17 @@ function parseCoverMessage(value: unknown): CoverMessageState {
     return cover;
   }
   const tone = source.tone;
-  const discountKind = source.discountKind;
   const offers = Array.isArray(source.offers)
-    ? source.offers.filter((offer): offer is CoverOfferId =>
-        COVER_OFFER_IDS.includes(offer as CoverOfferId),
+    ? source.offers.filter(
+        (offer): offer is CoverOfferId =>
+          typeof offer === "string" &&
+          offer !== "discount" &&
+          COVER_OFFER_IDS.includes(offer as CoverOfferId),
       )
     : [];
   return {
     tone: tone === "business" || tone === "brief" ? tone : "warm",
     offers: [...new Set(offers)],
-    discountKind: discountKind === "fixed" ? "fixed" : "percent",
-    discountValue: typeof source.discountValue === "string" ? source.discountValue : "",
-    discountUntil:
-      typeof source.discountUntil === "string"
-        ? parseIssuedOn(source.discountUntil)
-        : cover.discountUntil,
     notes: typeof source.notes === "string" ? source.notes.slice(0, 1000) : "",
     text: typeof source.text === "string" ? source.text.slice(0, 4000) : "",
     sourceFingerprint: text(source.sourceFingerprint),

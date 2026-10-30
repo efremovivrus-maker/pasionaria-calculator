@@ -219,11 +219,28 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: muted,
   },
+  summaryBlock: {
+    marginTop: totalGap,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 4,
+    backgroundColor: band,
+  },
+  summaryLine: {
+    fontSize: 11,
+    lineHeight: 1.45,
+    marginBottom: 6,
+  },
+  summaryUntil: {
+    fontSize: 10,
+    lineHeight: 1.4,
+    color: muted,
+    marginBottom: 4,
+  },
   total: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    marginTop: totalGap,
     paddingVertical: totalPad,
     paddingHorizontal: 16,
     backgroundColor: band,
@@ -310,9 +327,22 @@ export function ProposalPdfDocument({
           ))
         )}
 
-        <View wrap={false} style={styles.total}>
-          <Text style={styles.totalLabel}>Итого</Text>
-          <Text style={styles.totalValue}>{model.totalLabel}</Text>
+        <View wrap={false}>
+          {model.subtotalLine ? (
+            <View style={styles.summaryBlock}>
+              <Text style={styles.summaryLine}>{model.subtotalLine}</Text>
+              {model.discountLine ? (
+                <Text style={styles.summaryLine}>{model.discountLine}</Text>
+              ) : null}
+              {model.discountUntilLine ? (
+                <Text style={styles.summaryUntil}>{model.discountUntilLine}</Text>
+              ) : null}
+            </View>
+          ) : null}
+          <View style={styles.total}>
+            <Text style={styles.totalLabel}>{model.totalCaption}</Text>
+            <Text style={styles.totalValue}>{model.totalLabel}</Text>
+          </View>
         </View>
 
         <View style={styles.footer} fixed>
