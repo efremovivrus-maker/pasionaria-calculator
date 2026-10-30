@@ -359,7 +359,7 @@ function buildRelationshipHints(input: CoverMessageInput): RelationshipHint[] {
     if (!has("curtain") && !has("roman")) {
       hints.push({
         relatedOfferIds: ["curtains"],
-        text: "При покрывале без штор можно предложить шторы или римские шторы для других зон квартиры.",
+        text: "При покрывале без штор можно предложить шторы или римские шторы для других помещений.",
       });
     }
     if ((has("curtain") || has("roman")) && !has("tulle")) {

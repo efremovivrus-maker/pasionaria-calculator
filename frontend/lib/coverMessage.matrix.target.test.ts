@@ -172,7 +172,7 @@ describe("cover message matrix target samples", () => {
     }
     const warm = out.bedspread_only.warm;
     const business = out.bedspread_only.business;
-    expect(warm).toContain("коммерческое предложение");
+    expect(warm).toMatch(/текстильному оформлению/);
     expect(warm).toContain("Спальня");
     expect(warm).not.toContain("Гостиная");
     expect(business).not.toContain("будем рады");

@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildServerFactualBlock,
   COVER_REQUEST_MAX_CHARS,
+  proposalIntroPhrase,
   composeCoverMessage,
   coverDiscountReady,
   coverMessageBrief,
@@ -150,6 +151,57 @@ describe("cover message", () => {
     const factual = buildServerFactualBlock(coverMessageInput(proposal));
     expect(factual).toMatch(/Гостиная/);
     expect(factual).toMatch(/Спальня/);
+  });
+
+  it("uses universal textile intro when object name is empty", () => {
+    const proposal = proposalWith([item({ id: "curtains", title: "Шторы" })]);
+    proposal.objectName = "";
+    const input = coverMessageInput(proposal);
+    expect(proposalIntroPhrase(input.proposal.objectName)).toBe(
+      "Направляем коммерческое предложение по текстильному оформлению.",
+    );
+    const factual = buildServerFactualBlock(input);
+    expect(factual).toMatch(/текстильному оформлению/);
+    expect(factual).not.toMatch(/кварти/i);
+    expect(factual).not.toMatch(/по объекту/i);
+  });
+
+  it("quotes object name without inferring residential type", () => {
+    const proposal = proposalWith([item({ id: "curtains", title: "Шторы", room: "living" })]);
+    proposal.objectName = "Гостиница «Волга», Казань";
+    const factual = buildServerFactualBlock(coverMessageInput(proposal));
+    expect(factual).toContain("«Гостиница «Волга», Казань»");
+    expect(factual).toMatch(/текстильному оформлению объекта/);
+    expect(factual).not.toMatch(/кварти/i);
+  });
+
+  it("combines total and a single included service in the intro block", () => {
+    const proposal = proposalWith([
+      item({ id: "curtains", title: "Шторы" }),
+      item({
+        id: "delivery",
+        title: "Доставка",
+        itemType: "service",
+        productType: null,
+        room: null,
+        originalUnitPrice: 1600,
+        unitPrice: 1600,
+      }),
+    ]);
+    proposal.objectName = "";
+    const factual = buildServerFactualBlock(coverMessageInput(proposal));
+    expect(factual).toMatch(/включая доставку/i);
+  });
+
+  it("flags residential assumptions from the model unless confirmed in object name", () => {
+    const input = coverMessageInput(proposalWith([item({ id: "c", title: "Шторы" })]));
+    input.proposal.objectName = "";
+    expect(messageViolatesSpec("Рассчитаем шторы для вашей квартиры.", input)).toBe(true);
+
+    input.proposal.objectName = "Квартира, Москва";
+    const factual = buildServerFactualBlock(input);
+    expect(messageViolatesSpec(factual, input)).toBe(false);
+    expect(messageViolatesSpec(`${factual} Уют в вашей квартире.`, input)).toBe(true);
   });
 
   it("asks to calculate mounting but not rails when mounting is already in the KP", () => {

@@ -38,7 +38,7 @@ export async function generateCoverMessage(value: unknown): Promise<string> {
 
   let text = composeCoverMessage(input, draft);
   if (messageViolatesSpec(text, input)) {
-    user = `${prompt.user}\n\nНе упоминай помещения, сумму, услуги и состав КП. Только selected_offers. Верни JSON заново.`;
+    user = `${prompt.user}\n\nНе упоминай помещения, сумму, услуги и состав КП. Не пиши квартира, дом, жилой интерьер. Только selected_offers. Верни JSON заново.`;
     draft = readDraft(await completeYandexGpt(prompt.system, user));
     missing = missingOfferIds(draft, input.offers);
     if (missing.length > 0) {

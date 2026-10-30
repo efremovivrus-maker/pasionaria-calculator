@@ -28,6 +28,7 @@ closing — необязательное короткое завершение (
 - перечислять изделия, ткани, размеры, цены;
 - утверждать, что интерьер оформлен, изделия установлены, есть готовая гамма или сочетание;
 - рекламные клише: идеальный интерьер, уютная атмосфера, гармония, создать атмосферу, палитра интерьера (кроме нейтрального «подобрать в сочетании» как действие);
+- слова и образы жилого объекта без подтверждения: квартира, дом, жилой интерьер, ваше жильё; не угадывать тип объекта по изделиям;
 - придумывать сроки, наличие, скидки не из instruction.
 
 relationshipHints — только подсказка к формулировке выбранных id.`;
@@ -95,6 +96,29 @@ function recipientFirstName(recipient: string | null): string | null {
   return first || null;
 }
 
+/** Нейтральная фраза о КП: без угадывания типа объекта (квартира, дом и т. п.). */
+export function proposalIntroPhrase(objectName: string | null): string {
+  if (objectName) {
+    return `Направляем коммерческое предложение по текстильному оформлению объекта «${objectName}».`;
+  }
+  return "Направляем коммерческое предложение по текстильному оформлению.";
+}
+
+function serviceForIncluding(title: string): string {
+  const lower = title.toLocaleLowerCase("ru");
+  if (lower === "доставка") {
+    return "доставку";
+  }
+  return lower;
+}
+
+function formatTotalLine(total: string, services: string[]): string {
+  if (services.length === 1) {
+    return `Общая стоимость — ${total}, включая ${serviceForIncluding(services[0])}.`;
+  }
+  return `Общая стоимость — ${total}.`;
+}
+
 export function buildServerFactualBlock(input: CoverMessageInput): string {
   const tone = input.tone;
   const total = formatProposalMoney(proposalTotal(input));
@@ -106,7 +130,7 @@ export function buildServerFactualBlock(input: CoverMessageInput): string {
   if (tone === "brief") {
     const parts: string[] = [];
     parts.push(name ? `${name},` : "");
-    parts.push(`коммерческое предложение готово, итого ${total}.`);
+    parts.push(`коммерческое предложение по текстильному оформлению готово, итого ${total}.`);
     if (services.length > 0) {
       parts.push(`Включено: ${formatServiceList(services)}.`);
     }
@@ -116,13 +140,10 @@ export function buildServerFactualBlock(input: CoverMessageInput): string {
   const lines: string[] = [];
   if (tone === "warm") {
     lines.push(name ? `${name}, добрый день!` : "Добрый день!");
-    lines.push(`Направляем коммерческое предложение${objectName ? ` по объекту «${objectName}»` : ""}.`);
   } else {
     lines.push(name ? `${name}, добрый день.` : "Добрый день.");
-    lines.push(
-      `Направляем коммерческое предложение${objectName ? ` по объекту «${objectName}»` : ""}.`,
-    );
   }
+  lines.push(proposalIntroPhrase(objectName));
 
   if (rooms.length === 1) {
     lines.push(`В расчёте — помещение «${rooms[0]}».`);
@@ -130,9 +151,9 @@ export function buildServerFactualBlock(input: CoverMessageInput): string {
     lines.push(`В расчёте — помещения: ${rooms.join(", ")}.`);
   }
 
-  lines.push(`Общая стоимость — ${total}.`);
+  lines.push(formatTotalLine(total, services));
 
-  if (services.length > 0) {
+  if (services.length > 1) {
     lines.push(`В предложение включены: ${formatServiceList(services)}.`);
   }
 
@@ -318,8 +339,14 @@ export function composeCoverMessage(
 const CLICHE_PATTERN =
   /идеальн(?:ый|ого|ую|ые|ом|им)?\s+интер|уютн(?:ая|ую|ой|ые|ым)?\s+атмосф|гармон(?:ия|ии|ию|ией|ичн)|созда(?:ть|дим)\s+(?:уют|атмосф)/iu;
 
+const RESIDENTIAL_ASSUMPTION_PATTERN =
+  /(?:^|[^\p{L}])(?:кварти(?:ра|ре|ру|рой|ры)|дом(?:а|е|ом|ов)?|жил(?:ой|ое|ая|ые|ым|ых|ого|ому)?\s+интер(?:ьер|ьера|ьеру|ьером|ьере)?|ваш(?:е|а|у|им|его|ей)?\s+жиль(?:ё|е|я|ю|ем)?)(?:$|[^\p{L}])/iu;
+
 export function messageViolatesSpec(text: string, input: CoverMessageInput): boolean {
   if (CLICHE_PATTERN.test(text)) {
+    return true;
+  }
+  if (residentialAssumptionViolates(text, input.proposal.objectName?.trim() || null)) {
     return true;
   }
   if (/\d+\s*[×xх]\s*\d+/u.test(text)) {
@@ -358,6 +385,14 @@ export function messageViolatesSpec(text: string, input: CoverMessageInput): boo
     return true;
   }
   return false;
+}
+
+function residentialAssumptionViolates(text: string, objectName: string | null): boolean {
+  if (!RESIDENTIAL_ASSUMPTION_PATTERN.test(text)) {
+    return false;
+  }
+  const withoutConfirmedObject = objectName ? text.split(objectName).join("") : text;
+  return RESIDENTIAL_ASSUMPTION_PATTERN.test(withoutConfirmedObject);
 }
 
 export function repairPromptMissingIds(ids: CoverOfferId[]): string {

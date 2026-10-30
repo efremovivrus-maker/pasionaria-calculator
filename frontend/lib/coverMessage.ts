@@ -16,6 +16,7 @@ export {
   coverPrompt,
   composeCoverMessage,
   buildServerFactualBlock,
+  proposalIntroPhrase,
   roomsWithProducts,
   proposalTotal,
   parseCoverMessageDraft,
