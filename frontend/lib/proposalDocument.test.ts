@@ -184,22 +184,12 @@ describe("proposal pdf model", () => {
     expect(formatProposalMoney(2300)).not.toContain(",");
     expect(model.sections[0].lines[0].confirmation).toBe(CLIENT_CONFIRMATION_NOTE);
     expect(model.sections[1].lines[0].confirmation).toBeNull();
-    expect(model.sections[3].lines[0].characteristics).toEqual([]);
+    expect(model.sections[3].lines[0].fabric).toBeNull();
     expect(model.sections[2].lines[0].dimensions).toBe("130 × 280 см");
-    expect(clientCharacteristics(curtains)).toEqual([
-      { label: "Ткань", value: "Вандер" },
-      { label: "Обработка верха", value: "люверсы" },
-      { label: "Дополнительно", value: "подгиб" },
-    ]);
-    expect(clientCharacteristics(assumed)).toEqual(
-      expect.arrayContaining([
-        { label: "Подкладка", value: "Бойл" },
-        { label: "Стёжка", value: "Хьюго" },
-      ]),
-    );
-    expect(clientCharacteristics(assumed).map((row) => row.label)).not.toContain(
-      "Лицевая ткань",
-    );
+    expect(model.sections[2].lines[0].fabric).toBe("Вандер");
+    expect(model.sections[0].lines[0].fabric).toBe("Софт");
+    expect(clientCharacteristics(curtains)).toEqual([{ label: "Ткань", value: "Вандер" }]);
+    expect(clientCharacteristics(assumed)).toEqual([{ label: "Ткань", value: "Софт" }]);
     expect(
       clientCharacteristics(
         item({
@@ -208,10 +198,27 @@ describe("proposal pdf model", () => {
           configuration: {
             ...emptyConfiguration(),
             lining: "Подкладка «Анна»",
+            stitch: "Ромб 10×10",
+            filling: "100 г/м²",
+            heading: "люверсы",
           },
         }),
       ),
-    ).toEqual([{ label: "Подкладка", value: "Анна" }]);
+    ).toEqual([]);
+    expect(
+      clientCharacteristics(
+        item({
+          id: "faced",
+          title: "Покрывало",
+          configuration: {
+            ...emptyConfiguration(),
+            fabricName: "Основа",
+            faceFabric: "Софт",
+            dayFabric: "Вуаль",
+          },
+        }),
+      ),
+    ).toEqual([{ label: "Ткань", value: "Софт" }]);
     expect(serialized).not.toContain("8703");
     expect(serialized).not.toContain("4555");
     expect(serialized).not.toContain("6.25");

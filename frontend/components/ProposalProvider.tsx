@@ -17,6 +17,7 @@ import {
   moveItemWithinRoom,
   saveProposal,
   type CommercialProposal,
+  type CoverMessageState,
   type ProposalItem,
   type RoundingMode,
   type RoundingStep,
@@ -48,6 +49,7 @@ type ProposalContextValue = {
   renameRoom: (id: string, name: string) => void;
   removeRoom: (id: string) => void;
   applyRounding: (step: RoundingStep, mode: RoundingMode) => void;
+  updateCover: (patch: Partial<CoverMessageState>) => void;
   removeItem: (id: string) => void;
   clearItems: () => void;
 };
@@ -161,6 +163,12 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
           roundingStep: step,
           roundingMode: mode,
           items: applyUnitRounding(current.items, step, mode),
+        }));
+      },
+      updateCover: (patch) => {
+        setProposal((current) => ({
+          ...current,
+          cover: { ...current.cover, ...patch },
         }));
       },
       removeItem: (id) => {

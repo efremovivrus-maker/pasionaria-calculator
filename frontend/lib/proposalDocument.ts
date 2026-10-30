@@ -51,7 +51,7 @@ export type ProposalPdfLine = {
   id: string;
   title: string;
   dimensions: string | null;
-  characteristics: ProposalPdfCharacteristic[];
+  fabric: string | null;
   quantity: number;
   quantityLabel: string;
   unitPriceLabel: string;
@@ -105,50 +105,14 @@ export function itemNeedsConfirmation(item: ProposalItem): boolean {
   return UNCONFIRMED_PARAMETER.test(notes);
 }
 
-export function clientCharacteristics(item: ProposalItem): ProposalPdfCharacteristic[] {
-  const configuration = item.configuration;
-  const characteristics: ProposalPdfCharacteristic[] = [];
-  pushCharacteristic(characteristics, "Ткань", configuration.fabricName);
-  if (configuration.faceFabric !== configuration.fabricName) {
-    pushCharacteristic(characteristics, "Лицевая ткань", configuration.faceFabric);
-  }
-  pushCharacteristic(characteristics, "Дневная ткань", configuration.dayFabric);
-  pushCharacteristic(characteristics, "Подкладка", configuration.lining);
-  pushCharacteristic(characteristics, "Механизм", configuration.mechanism);
-  pushCharacteristic(characteristics, "Обработка верха", configuration.heading);
-  pushCharacteristic(characteristics, "Крепление", configuration.mounting);
-  pushCharacteristic(characteristics, "Стёжка", configuration.stitch);
-  pushCharacteristic(characteristics, "Наполнитель", configuration.filling);
-  if (configuration.extraOperations.length > 0) {
-    characteristics.push({
-      label: "Дополнительно",
-      value: configuration.extraOperations.join(", "),
-    });
-  }
-  return characteristics;
+export function clientFabric(item: ProposalItem): string | null {
+  const { faceFabric, fabricName, dayFabric } = item.configuration;
+  return faceFabric || fabricName || dayFabric;
 }
 
-function pushCharacteristic(
-  characteristics: ProposalPdfCharacteristic[],
-  label: string,
-  value: string | null,
-) {
-  if (!value) {
-    return;
-  }
-  const prefix = label.toLocaleLowerCase("ru");
-  const raw = value.trim();
-  if (!raw.toLocaleLowerCase("ru").startsWith(prefix)) {
-    characteristics.push({ label, value: raw });
-    return;
-  }
-  const rest = raw
-    .slice(label.length)
-    .replace(/^[\s:—–-]+/u, "")
-    .replace(/^«/u, "")
-    .replace(/»$/u, "")
-    .trim();
-  characteristics.push({ label, value: rest || raw });
+export function clientCharacteristics(item: ProposalItem): ProposalPdfCharacteristic[] {
+  const fabric = clientFabric(item);
+  return fabric ? [{ label: "Ткань", value: fabric }] : [];
 }
 
 export function proposalPdfModel(proposal: CommercialProposal): ProposalPdfModel {
@@ -241,7 +205,7 @@ function toLine(
     id: item.id,
     title: item.title,
     dimensions: formatDimensions(item.widthCm, item.heightCm),
-    characteristics: clientCharacteristics(item),
+    fabric: item.itemType === "service" ? null : clientFabric(item),
     quantity: item.quantity,
     quantityLabel: formatQuantity(item.quantity),
     unitPriceLabel: formatProposalMoney(unitPrice),

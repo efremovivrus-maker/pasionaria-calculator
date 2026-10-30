@@ -161,21 +161,6 @@ const styles = StyleSheet.create({
     lineHeight: 1.3,
     color: "#3f3c38",
   },
-  characteristic: {
-    flexDirection: "row",
-    marginTop: 2,
-  },
-  characteristicLabel: {
-    width: 92,
-    fontSize: 8,
-    lineHeight: 1.35,
-    color: muted,
-  },
-  characteristicValue: {
-    flex: 1,
-    fontSize: 8.5,
-    lineHeight: 1.35,
-  },
   serviceRow: {
     flexDirection: "row",
     alignItems: "baseline",
@@ -370,12 +355,9 @@ function lineHeight(section: ProposalPdfSection, line: ProposalPdfLine): number 
   }
   const titleLines = Math.max(1, Math.ceil(line.title.length / 32));
   let height = itemPad * 2 + titleLines * 14;
-  if (line.dimensions) {
-    height += 18;
-  }
-  for (const characteristic of line.characteristics) {
-    const valueLines = Math.max(1, Math.ceil(characteristic.value.length / 28));
-    height += 4 + valueLines * 12;
+  const detail = lineDetail(line);
+  if (detail) {
+    height += 18 * Math.max(1, Math.ceil(detail.length / 48));
   }
   if (line.confirmation) {
     height += 8 + Math.max(1, Math.ceil(line.confirmation.length / 42)) * 12;
@@ -655,20 +637,21 @@ function ColumnHeader() {
   );
 }
 
+function lineDetail(line: ProposalPdfLine): string | null {
+  const fabric = line.fabric ? `Ткань: ${line.fabric}` : null;
+  if (line.dimensions && fabric) {
+    return `${line.dimensions} · ${fabric}`;
+  }
+  return line.dimensions ?? fabric;
+}
+
 function ItemRow({ line }: { line: ProposalPdfLine }) {
+  const detail = lineDetail(line);
   return (
     <View style={styles.item}>
       <View style={styles.nameColumn}>
         <Text style={styles.itemTitle}>{line.title}</Text>
-        {line.dimensions ? (
-          <Text style={styles.dimensions}>{line.dimensions}</Text>
-        ) : null}
-        {line.characteristics.map((characteristic) => (
-          <View key={characteristic.label} style={styles.characteristic}>
-            <Text style={styles.characteristicLabel}>{characteristic.label}</Text>
-            <Text style={styles.characteristicValue}>{characteristic.value}</Text>
-          </View>
-        ))}
+        {detail ? <Text style={styles.dimensions}>{detail}</Text> : null}
         {line.confirmation ? (
           <Text style={styles.confirmation}>{line.confirmation}</Text>
         ) : null}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 
+import { ProposalCoverMessage } from "@/components/ProposalCoverMessage";
 import { useProposal } from "@/components/ProposalProvider";
 import { formatProposalMoney } from "@/lib/proposalDocument";
 import {
@@ -418,7 +419,7 @@ export function ProposalScreen() {
         </p>
       </div>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="mt-8 flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => void createPdf()}
@@ -427,8 +428,9 @@ export function ProposalScreen() {
         >
           {pdfState === "working" ? "Формируется PDF…" : "Сформировать PDF"}
         </button>
+        <ProposalCoverMessage />
         {pdfState === "failed" ? (
-          <p role="alert" className="text-sm text-stone-700">
+          <p role="alert" className="w-full text-sm text-stone-700">
             Не удалось сформировать PDF. Попробуйте ещё раз.
           </p>
         ) : null}

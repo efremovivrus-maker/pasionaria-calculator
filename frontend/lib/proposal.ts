@@ -51,6 +51,32 @@ export type ProposalRoom = {
   name: string;
 };
 
+export const COVER_OFFER_IDS = [
+  "mounting",
+  "rails",
+  "bedding",
+  "kitchen",
+  "bedspread",
+  "tulle",
+  "premium",
+  "discount",
+] as const;
+
+export type CoverOfferId = (typeof COVER_OFFER_IDS)[number];
+export type CoverTone = "warm" | "business" | "brief";
+export type CoverDiscountKind = "percent" | "fixed";
+
+export type CoverMessageState = {
+  tone: CoverTone;
+  offers: CoverOfferId[];
+  discountKind: CoverDiscountKind;
+  discountValue: string;
+  discountUntil: string;
+  notes: string;
+  text: string;
+  sourceFingerprint: string | null;
+};
+
 export type CommercialProposal = {
   items: ProposalItem[];
   rooms: ProposalRoom[];
@@ -60,6 +86,7 @@ export type CommercialProposal = {
   issuedOn: string;
   roundingStep: RoundingStep;
   roundingMode: RoundingMode;
+  cover: CoverMessageState;
 };
 
 const rubles = new Intl.NumberFormat("ru-RU", {
@@ -73,16 +100,34 @@ const decimal = new Intl.NumberFormat("ru-RU", {
   maximumFractionDigits: 2,
 });
 
-export function emptyProposal(): CommercialProposal {
+export function tomorrowIsoDate(now = new Date()): string {
+  return todayIsoDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1));
+}
+
+export function emptyCoverMessage(now = new Date()): CoverMessageState {
+  return {
+    tone: "warm",
+    offers: [],
+    discountKind: "percent",
+    discountValue: "",
+    discountUntil: tomorrowIsoDate(now),
+    notes: "",
+    text: "",
+    sourceFingerprint: null,
+  };
+}
+
+export function emptyProposal(now = new Date()): CommercialProposal {
   return {
     items: [],
     rooms: [],
     recipient: null,
     author: null,
     objectName: null,
-    issuedOn: todayIsoDate(),
+    issuedOn: todayIsoDate(now),
     roundingStep: 100,
     roundingMode: "nearest",
+    cover: emptyCoverMessage(now),
   };
 }
 
@@ -401,6 +446,35 @@ export function parseProposal(value: unknown): CommercialProposal {
     issuedOn: parseIssuedOn(source.issuedOn),
     roundingStep: parseRoundingStep(source.roundingStep),
     roundingMode: source.roundingMode === "up" ? "up" : "nearest",
+    cover: parseCoverMessage(source.cover),
+  };
+}
+
+function parseCoverMessage(value: unknown): CoverMessageState {
+  const source = record(value);
+  const cover = emptyCoverMessage();
+  if (!source) {
+    return cover;
+  }
+  const tone = source.tone;
+  const discountKind = source.discountKind;
+  const offers = Array.isArray(source.offers)
+    ? source.offers.filter((offer): offer is CoverOfferId =>
+        COVER_OFFER_IDS.includes(offer as CoverOfferId),
+      )
+    : [];
+  return {
+    tone: tone === "business" || tone === "brief" ? tone : "warm",
+    offers: [...new Set(offers)],
+    discountKind: discountKind === "fixed" ? "fixed" : "percent",
+    discountValue: typeof source.discountValue === "string" ? source.discountValue : "",
+    discountUntil:
+      typeof source.discountUntil === "string"
+        ? parseIssuedOn(source.discountUntil)
+        : cover.discountUntil,
+    notes: typeof source.notes === "string" ? source.notes.slice(0, 1000) : "",
+    text: typeof source.text === "string" ? source.text.slice(0, 4000) : "",
+    sourceFingerprint: text(source.sourceFingerprint),
   };
 }
 
