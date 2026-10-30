@@ -5,6 +5,7 @@ import type { CalculationResult } from "@/lib/types";
 type ResultCardProps = {
   result: CalculationResult;
   onReset: () => void;
+  onAddToProposal?: () => void;
 };
 
 const rubles = new Intl.NumberFormat("ru-RU", {
@@ -56,10 +57,25 @@ export function calculationCopyText(result: CalculationResult): string {
   return lines.join("\n");
 }
 
-export function ResultCard({ result, onReset }: ResultCardProps) {
+export function ResultCard({
+  result,
+  onReset,
+  onAddToProposal,
+}: ResultCardProps) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
+  const [addedToProposal, setAddedToProposal] = useState(false);
+  const canAddToProposal =
+    Boolean(onAddToProposal) && Number.isFinite(result.retailPrice);
+
+  function addToProposal() {
+    if (!onAddToProposal || !Number.isFinite(result.retailPrice)) {
+      return;
+    }
+    onAddToProposal();
+    setAddedToProposal(true);
+  }
 
   async function copyResult() {
     try {
@@ -201,8 +217,22 @@ export function ResultCard({ result, onReset }: ResultCardProps) {
           <p className="mt-1 text-xs leading-5 text-stone-500">
             Стоимость рассчитана по текущим параметрам изделия.
           </p>
+          {addedToProposal && (
+            <p role="status" className="mt-3 text-sm text-stone-800">
+              Добавлено в коммерческое предложение.
+            </p>
+          )}
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          {canAddToProposal && (
+            <button
+              type="button"
+              onClick={addToProposal}
+              className="min-h-11 w-full bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors duration-200 hover:bg-[#6d7565] sm:w-auto"
+            >
+              Добавить в КП
+            </button>
+          )}
           <button
             type="button"
             onClick={() => void copyResult()}

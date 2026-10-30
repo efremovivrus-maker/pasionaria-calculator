@@ -10,6 +10,7 @@ import {
 
 import { FeedbackPrompt } from "@/components/FeedbackPrompt";
 import { Message } from "@/components/Message";
+import { useProposal } from "@/components/ProposalProvider";
 import { ResultCard } from "@/components/ResultCard";
 import { ThinkingState } from "@/components/ThinkingState";
 import {
@@ -18,6 +19,7 @@ import {
   warmUpBackend,
 } from "@/lib/api";
 import { createFeedbackContext } from "@/lib/feedback";
+import { createProposalItem } from "@/lib/proposal";
 import type {
   CalculationResult,
   ChatMessage,
@@ -56,6 +58,7 @@ export function CalculatorChat() {
   const [failedAttempt, setFailedAttempt] =
     useState<FailedAttempt | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const { addItem } = useProposal();
 
   const hasConversation =
     messages.length > 0 || isLoading || completed !== null;
@@ -264,6 +267,14 @@ export function CalculatorChat() {
               <ResultCard
                 result={completed.result}
                 onReset={resetCalculation}
+                onAddToProposal={() =>
+                  addItem(
+                    createProposalItem(
+                      completed.result,
+                      completed.feedback.result,
+                    ),
+                  )
+                }
               />
               <FeedbackPrompt context={completed.feedback} />
             </>

@@ -199,5 +199,36 @@ describe("ResultCard", () => {
     expect(screen.getByText(warning)).toBeTruthy();
     expect(screen.getByText("Стежка покрывала — Хьюго")).toBeTruthy();
     expect(calculationCopyText(result)).toContain(warning);
+    expect(screen.queryByRole("button", { name: "Добавить в КП" })).toBeNull();
+  });
+
+  it("confirms each addition to the proposal without leaving the result", () => {
+    const onAddToProposal = vi.fn();
+    const result: CalculationResult = {
+      status: "success",
+      retailPrice: 8703,
+      model: "Софт",
+      productType: "bedspread",
+      operations: [],
+      extras: [],
+      components: [],
+    };
+
+    render(
+      <ResultCard
+        result={result}
+        onReset={vi.fn()}
+        onAddToProposal={onAddToProposal}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
+    fireEvent.click(screen.getByRole("button", { name: "Добавить в КП" }));
+
+    expect(onAddToProposal).toHaveBeenCalledTimes(2);
+    expect(
+      screen.getByText("Добавлено в коммерческое предложение."),
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Новый расчёт" })).toBeTruthy();
   });
 });
