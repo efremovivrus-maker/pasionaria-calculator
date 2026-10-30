@@ -82,11 +82,14 @@ export function formatUnavailableMessage(value: unknown): string {
     reasonCode === "MISSING_RULE" ||
     reasonCode === "BEDSPREAD_MODEL_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_CONSTRUCTION_UNSUPPORTED" ||
+    reasonCode === "BEDSPREAD_INDIVIDUAL_CALCULATION_EXCLUDED" ||
     reasonCode === "BEDSPREAD_EMBROIDERY_UNCONFIRMED" ||
     reasonCode === "BEDSPREAD_LINING_UNCONFIRMED" ||
     reasonCode === "BEDSPREAD_FABRIC_UNCONFIRMED" ||
     reasonCode === "BEDSPREAD_FABRIC_DATA_MISSING" ||
     reasonCode === "BEDSPREAD_STITCH_REQUIRED" ||
+    reasonCode === "BEDSPREAD_STITCH_UNMATCHED" ||
+    reasonCode === "BEDSPREAD_CUSTOMIZATION_LOCKED" ||
     reasonCode === "BEDSPREAD_STITCH_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_FILLING_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_LINING_NOT_FOUND" ||

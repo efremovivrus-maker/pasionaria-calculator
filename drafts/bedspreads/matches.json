@@ -17,109 +17,32 @@
     ],
     "unresolved": [
       {
-        "model": "Каспиан",
-        "stated_name": null,
-        "candidate": {
-          "catalog_name": "Каспиан/Довер",
-          "catalog_width_cm": 280,
-          "catalog_rrc_rub_per_m": 1470,
-          "why_not_exact": "Ткани с именем «Каспиан» нет. Есть «Каспиан/Довер»: комментарий каталога говорит использовать её для моделей с тканью «Каспиан». Карточка покрывала ткань не называет."
-        }
-      },
-      {
-        "model": "Лилас",
-        "stated_name": "Довер",
-        "candidate": {
-          "catalog_name": "Каспиан/Довер",
-          "catalog_width_cm": 280,
-          "catalog_rrc_rub_per_m": 1470,
-          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
-        }
-      },
-      {
         "model": "Кьюб",
-        "stated_name": null,
-        "candidate": null
-      },
-      {
-        "model": "Довер",
-        "stated_name": null,
-        "candidate": {
-          "catalog_name": "Каспиан/Довер",
-          "catalog_width_cm": 280,
-          "catalog_rrc_rub_per_m": 1470,
-          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
-        }
-      },
-      {
-        "model": "Джим",
-        "stated_name": "Довер",
-        "candidate": {
-          "catalog_name": "Каспиан/Довер",
-          "catalog_width_cm": 280,
-          "catalog_rrc_rub_per_m": 1470,
-          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
-        }
-      },
-      {
-        "model": "Диана",
-        "stated_name": null,
-        "candidate": null
-      },
-      {
-        "model": "Даллас",
-        "stated_name": null,
-        "candidate": null
-      },
-      {
-        "model": "Тара",
-        "stated_name": null,
-        "candidate": null
+        "stated_name": null
       },
       {
         "model": "Бруно",
-        "stated_name": null,
-        "candidate": null
+        "stated_name": null
       },
       {
         "model": "Лео",
-        "stated_name": "пике",
-        "candidate": null
+        "stated_name": "пике"
       },
       {
         "model": "Шифу",
-        "stated_name": "муслин",
-        "candidate": null
+        "stated_name": "муслин"
       },
       {
         "model": "Бойл",
-        "stated_name": "вареный хлопок",
-        "candidate": null
+        "stated_name": "вареный хлопок"
       },
       {
         "model": "Киа",
-        "stated_name": "тенсель",
-        "candidate": null
-      },
-      {
-        "model": "Узорье",
-        "stated_name": "бархат",
-        "candidate": null
-      },
-      {
-        "model": "Кьют",
-        "stated_name": null,
-        "candidate": null
+        "stated_name": "тенсель"
       },
       {
         "model": "Эмма",
-        "stated_name": "бархатистая ткань",
-        "candidate": null
-      },
-      {
-        "model": "Тина",
-        "stated_name": null,
-        "candidate": null
+        "stated_name": "бархатистая ткань"
       }
     ],
     "do_not_add_rrc_again": [
@@ -130,6 +53,140 @@
       {
         "fabric": "Сканди",
         "reason": "Входит в тариф подкладки 350 ₽/м²."
+      }
+    ],
+    "confirmed_by_mapping_review": [
+      {
+        "model": "Ибица",
+        "catalog_name": "Ибица",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Каспиан",
+        "catalog_name": "Каспиан/Довер",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Лилас",
+        "catalog_name": "Каспиан/Довер",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Джерри",
+        "catalog_name": "Джерри",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Конни",
+        "catalog_name": "Конни",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Джим",
+        "catalog_name": "Каспиан/Довер",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Ким",
+        "catalog_name": "Ким",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Лаура",
+        "catalog_name": "Лаура",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Нигма",
+        "catalog_name": "Нигма",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Голди",
+        "catalog_name": "Голди",
+        "source": "mapping_review"
+      },
+      {
+        "model": "Деко",
+        "catalog_name": "Деко",
+        "source": "mapping_review"
+      }
+    ],
+    "confirmed_by_production_review": [
+      {
+        "model": "Довер",
+        "catalog_name": "Каспиан/Довер",
+        "source": "production_review"
+      },
+      {
+        "model": "Хьюго",
+        "catalog_name": "Ким",
+        "source": "production_review"
+      },
+      {
+        "model": "Диана",
+        "catalog_name": "Ибица",
+        "source": "production_review"
+      },
+      {
+        "model": "Даллас",
+        "catalog_name": "Софт",
+        "source": "production_review"
+      },
+      {
+        "model": "Тара",
+        "catalog_name": "Каспиан/Довер",
+        "source": "production_review"
+      },
+      {
+        "model": "Мэри",
+        "catalog_name": "Ибица",
+        "source": "production_review"
+      },
+      {
+        "model": "Ронда",
+        "catalog_name": "Софт",
+        "source": "production_review"
+      },
+      {
+        "model": "Лао",
+        "catalog_name": "Луара",
+        "source": "production_review"
+      },
+      {
+        "model": "Зоуи",
+        "catalog_name": "Софт",
+        "source": "production_review"
+      },
+      {
+        "model": "Узорье",
+        "catalog_name": "Репаблик",
+        "source": "production_review"
+      },
+      {
+        "model": "Кьют",
+        "catalog_name": "Ибица",
+        "source": "production_review"
+      },
+      {
+        "model": "Астер",
+        "catalog_name": "Астер",
+        "source": "production_review"
+      },
+      {
+        "model": "Тина",
+        "catalog_name": "Софт",
+        "source": "production_review"
+      },
+      {
+        "model": "Бохо",
+        "catalog_name": "Бохо",
+        "source": "production_review"
+      },
+      {
+        "model": "Перси",
+        "catalog_name": "Софт",
+        "source": "production_review"
       }
     ]
   },
@@ -392,5 +449,279 @@
   "compatibility": {
     "all_catalog_fabrics_allowed": false,
     "reason": "Документы не содержат перечень тканей, которые можно ставить вместо лицевой. Коэффициенты типа ткани не являются таким перечнем."
+  },
+  "stitch": {
+    "import_file": "/Users/iliaefremov/Desktop/bedspread_mapping_review (1) (1).xlsx",
+    "previous_import_file": "drafts/bedspreads/bedspread_mapping_review.xlsx",
+    "previous_import_note": "Столбец «Стандартная стёжка» в копии репозитория пуст у всех 45 моделей.",
+    "ibiza_standard": {
+      "variant": "Квадрат 5х5 см",
+      "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+      "tariff_rub": 180,
+      "verified_in_operations_catalog": true,
+      "filled_table_stitch_cell": "Квадрат 5х5 см"
+    },
+    "exact_from_review": [
+      {
+        "model": "Инициалы",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Софт",
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Ибица",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Каспиан",
+        "variant": "Ромб 5х5 см",
+        "operation_id": "BSD-STITCH-Ромб 5х5 см",
+        "tariff_rub": 220,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Прайм",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Флэш",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Либерти",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Лилас",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Джерри",
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Конни",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Мика",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Джим",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Ким",
+        "variant": "Ромб 10х10 см",
+        "operation_id": "BSD-STITCH-Ромб 10х10 см",
+        "tariff_rub": 150,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Лука",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Бэлли",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Аника",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Элис",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Вайн",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "mapping_review"
+      },
+      {
+        "model": "Хьюго",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Диана",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Даллас",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Тара",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Мэри",
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "source": "production_review"
+      },
+      {
+        "model": "Ронда",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Лао",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Киа",
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "source": "production_review"
+      },
+      {
+        "model": "Узорье",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Кьют",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Астер",
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "source": "production_review"
+      },
+      {
+        "model": "Бохо",
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "source": "production_review"
+      }
+    ],
+    "default_stitch_assumed": [
+      "Бриджит",
+      "Лаура",
+      "Голди",
+      "Деко"
+    ],
+    "not_in_catalog": [
+      {
+        "model": "Довер",
+        "stated_pattern": "нет на сайте"
+      }
+    ],
+    "ambiguous": [],
+    "not_applicable": [
+      {
+        "model": "Кьюб",
+        "reason": "пледового типа"
+      },
+      {
+        "model": "Бруно",
+        "reason": "вязаное готовое изделие"
+      },
+      {
+        "model": "Лео",
+        "reason": "вязаное готовое изделие"
+      },
+      {
+        "model": "Шифу",
+        "reason": "муслин с декоративными элементами"
+      },
+      {
+        "model": "Бойл",
+        "reason": "покрывало-одеяло"
+      },
+      {
+        "model": "Нигма",
+        "reason": "жаккард"
+      },
+      {
+        "model": "Эмма",
+        "reason": "покрывало-одеяло"
+      }
+    ],
+    "production_review_file": "/Users/iliaefremov/Desktop/PASIONARIA_17_problem_bedspreads.xlsx",
+    "production_review_note": "Столбец «Стёжка — текущее значение» принят как новое указание. Столбец «Разрешить расчёт?» не использовался. Строка 17 не заполнялась.",
+    "customization_locked": [
+      "Зоуи",
+      "Тина",
+      "Перси"
+    ]
   }
 }

@@ -148,7 +148,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Софт",
@@ -244,7 +252,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 10х10 см."
+      }
     },
     {
       "model": "Ибица",
@@ -295,8 +311,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 2835,
         "catalog_base_rub_per_m": 1770,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -329,7 +345,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Каспиан",
@@ -369,15 +393,20 @@
       ],
       "face_fabric": {
         "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
+        "match": "exact",
+        "catalog_name": "Каспиан/Довер",
+        "confirmed": true,
         "candidate": {
           "catalog_name": "Каспиан/Довер",
           "catalog_width_cm": 280,
           "catalog_rrc_rub_per_m": 1470,
           "why_not_exact": "Ткани с именем «Каспиан» нет. Есть «Каспиан/Довер»: комментарий каталога говорит использовать её для моделей с тканью «Каспиан». Карточка покрывала ткань не называет."
-        }
+        },
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1470,
+        "catalog_base_rub_per_m": 920,
+        "source": "mapping_review",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx."
       },
       "construction": {
         "quilted": true,
@@ -408,7 +437,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Ромб 5х5 см",
+        "operation_id": "BSD-STITCH-Ромб 5х5 см",
+        "tariff_rub": 220,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Ромб 5х5 см."
+      }
     },
     {
       "model": "Прайм",
@@ -493,7 +530,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Флэш",
@@ -575,7 +620,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Либерти",
@@ -660,7 +713,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Лилас",
@@ -694,15 +755,20 @@
       ],
       "face_fabric": {
         "stated_name": "Довер",
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
+        "match": "exact",
+        "catalog_name": "Каспиан/Довер",
+        "confirmed": true,
         "candidate": {
           "catalog_name": "Каспиан/Довер",
           "catalog_width_cm": 280,
           "catalog_rrc_rub_per_m": 1470,
           "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
-        }
+        },
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1470,
+        "catalog_base_rub_per_m": 920,
+        "source": "mapping_review",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx."
       },
       "construction": {
         "quilted": true,
@@ -742,7 +808,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Джерри",
@@ -791,8 +865,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 3465,
         "catalog_base_rub_per_m": 2165,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -825,7 +899,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 10х10 см."
+      }
     },
     {
       "model": "Конни",
@@ -869,8 +951,8 @@
         "catalog_width_cm": 310,
         "catalog_rrc_rub_per_m": 3385,
         "catalog_base_rub_per_m": 2115,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -903,7 +985,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Кьюб",
@@ -944,9 +1034,10 @@
         "quilted": false,
         "lining": "not_mentioned",
         "planks": false,
-        "construction_type": "пледового типа",
+        "construction_type": "plaid_type",
         "filler": null,
-        "stitch_pattern": null
+        "stitch_pattern": null,
+        "previous_construction_type": "пледового типа"
       },
       "embroidery": {
         "mentioned": false,
@@ -969,7 +1060,11 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "not_applicable",
+        "reason": "plaid_type"
+      }
     },
     {
       "model": "Мика",
@@ -1051,7 +1146,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Довер",
@@ -1081,16 +1184,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": {
-          "catalog_name": "Каспиан/Довер",
-          "catalog_width_cm": 280,
-          "catalog_rrc_rub_per_m": 1470,
-          "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
-        }
+        "stated_name": "Каспиан/Довер",
+        "match": "exact",
+        "catalog_name": "Каспиан/Довер",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1470,
+        "catalog_base_rub_per_m": 920,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -1121,7 +1223,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "source": "production_review",
+        "basis": "Пользователь указал считать «Довер» по умолчанию. Значение «нет на сайте» не является операцией. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      }
     },
     {
       "model": "Джим",
@@ -1149,15 +1259,20 @@
       ],
       "face_fabric": {
         "stated_name": "Довер",
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
+        "match": "exact",
+        "catalog_name": "Каспиан/Довер",
+        "confirmed": true,
         "candidate": {
           "catalog_name": "Каспиан/Довер",
           "catalog_width_cm": 280,
           "catalog_rrc_rub_per_m": 1470,
           "why_not_exact": "Отдельной ткани «Довер» нет. Комментарий каталога относит «Каспиан/Довер» к моделям с тканью «Каспиан», а не к слову «Довер». Шторные модели «Джим» и «Лилас» используют эту ткань, но карточка покрывала этого не говорит."
-        }
+        },
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1470,
+        "catalog_base_rub_per_m": 920,
+        "source": "mapping_review",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx."
       },
       "construction": {
         "quilted": true,
@@ -1168,9 +1283,9 @@
       },
       "embroidery": {
         "mentioned": true,
-        "on_bedspread": true,
-        "on_pillowcases": false,
-        "described_as": "фигурная вышивка",
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "только на подушках",
         "candidate": {
           "operation_id": "OP_080",
           "variant": "Джим",
@@ -1180,7 +1295,8 @@
           "group": "Вышивка по всей площади",
           "reason": "Название модели совпадает с существующим вариантом вышивки, тариф в прайсе услуг от 25.10.2026 тот же. Карточка покрывала не пишет, где именно расположена вышивка."
         },
-        "confirmed": false
+        "confirmed": false,
+        "production_note": "Пользователь подтвердил: вышивка есть только на подушках и в расчёт покрывала не входит."
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -1197,7 +1313,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Ким",
@@ -1251,8 +1375,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 2315,
         "catalog_base_rub_per_m": 1445,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -1286,7 +1410,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Ромб 10х10 см",
+        "operation_id": "BSD-STITCH-Ромб 10х10 см",
+        "tariff_rub": 150,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Ромб 10х10 см."
+      }
     },
     {
       "model": "Лука",
@@ -1370,7 +1502,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Бэлли",
@@ -1453,7 +1593,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Аника",
@@ -1526,7 +1674,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Элис",
@@ -1610,7 +1766,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Вайн",
@@ -1680,7 +1844,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "mapping_review",
+        "basis": "Рисунок указан в столбце «Стандартная стёжка» файла bedspread_mapping_review (1) (1).xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Хьюго",
@@ -1713,8 +1885,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 2315,
         "catalog_base_rub_per_m": 1445,
-        "note": null,
-        "source": "product_description",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -1726,11 +1898,12 @@
       },
       "embroidery": {
         "mentioned": true,
-        "on_bedspread": true,
-        "on_pillowcases": false,
-        "described_as": "с вышивкой",
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "только на подушках",
         "candidate": null,
-        "confirmed": false
+        "confirmed": false,
+        "production_note": "Пользователь подтвердил: вышивка есть только на подушках и в расчёт покрывала не входит."
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -1746,7 +1919,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Бриджит",
@@ -1820,7 +2001,14 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "basis": "Стёжка конструкцией предусмотрена, но в заполненной таблице рисунок пуст. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      }
     },
     {
       "model": "Лаура",
@@ -1849,8 +2037,8 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 1670,
         "catalog_base_rub_per_m": 728,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -1884,7 +2072,14 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "basis": "Стёжка конструкцией предусмотрена, но в заполненной таблице рисунок пуст. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      }
     },
     {
       "model": "Диана",
@@ -1909,11 +2104,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -1924,9 +2123,9 @@
       },
       "embroidery": {
         "mentioned": true,
-        "on_bedspread": true,
-        "on_pillowcases": false,
-        "described_as": "декоративная вышивка-шнур",
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "только на подушках",
         "candidate": {
           "operation_id": "OP_090",
           "variant": "Диана",
@@ -1936,7 +2135,8 @@
           "group": "Вышивка с одной стороны",
           "reason": "В прайсе услуг «Диана» есть только как вышивка с одной стороны. Карточка покрывала называет декоративную вышивку-шнур и не указывает сторону."
         },
-        "confirmed": false
+        "confirmed": false,
+        "production_note": "Пользователь подтвердил: вышивка есть только на подушках и в расчёт покрывала не входит."
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -1955,7 +2155,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Даллас",
@@ -1980,11 +2188,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -1995,11 +2207,12 @@
       },
       "embroidery": {
         "mentioned": true,
-        "on_bedspread": true,
-        "on_pillowcases": false,
-        "described_as": "декоративная вышивка",
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "только на подушках",
         "candidate": null,
-        "confirmed": false
+        "confirmed": false,
+        "production_note": "Пользователь подтвердил: вышивка есть только на подушках и в расчёт покрывала не входит."
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -2017,7 +2230,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Тара",
@@ -2043,11 +2264,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Каспиан/Довер",
+        "match": "exact",
+        "catalog_name": "Каспиан/Довер",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 1470,
+        "catalog_base_rub_per_m": 920,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -2058,11 +2283,12 @@
       },
       "embroidery": {
         "mentioned": true,
-        "on_bedspread": true,
-        "on_pillowcases": false,
-        "described_as": "декоративная вышивка",
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "только на подушках",
         "candidate": null,
-        "confirmed": false
+        "confirmed": false,
+        "production_note": "Пользователь подтвердил: вышивка есть только на подушках и в расчёт покрывала не входит."
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -2080,7 +2306,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Бруно",
@@ -2119,10 +2353,11 @@
         "quilted": false,
         "lining": "not_mentioned",
         "planks": false,
-        "construction_type": "вязаное готовое изделие",
+        "construction_type": "plaid_type",
         "pom_poms": true,
         "filler": null,
-        "stitch_pattern": null
+        "stitch_pattern": null,
+        "previous_construction_type": "вязаное готовое изделие"
       },
       "embroidery": {
         "mentioned": false,
@@ -2143,7 +2378,11 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "not_applicable",
+        "reason": "plaid_type"
+      }
     },
     {
       "model": "Мэри",
@@ -2174,8 +2413,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 2835,
         "catalog_base_rub_per_m": 1770,
-        "note": null,
-        "source": "product_description",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -2187,11 +2426,12 @@
       },
       "embroidery": {
         "mentioned": true,
-        "on_bedspread": true,
-        "on_pillowcases": false,
-        "described_as": "с вышивкой",
+        "on_bedspread": false,
+        "on_pillowcases": true,
+        "described_as": "только на подушках",
         "candidate": null,
-        "confirmed": false
+        "confirmed": false,
+        "production_note": "Пользователь подтвердил: вышивка есть только на подушках и в расчёт покрывала не входит."
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -2207,7 +2447,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Закрепки",
+        "operation_id": "BSD-STITCH-Закрепки",
+        "tariff_rub": 50,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Закрепки."
+      }
     },
     {
       "model": "Ронда",
@@ -2239,8 +2487,8 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 990,
         "catalog_base_rub_per_m": 630,
-        "note": null,
-        "source": "product_description",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -2274,7 +2522,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Лео",
@@ -2311,9 +2567,10 @@
         "quilted": false,
         "lining": "not_mentioned",
         "planks": false,
-        "construction_type": "вязаное готовое изделие",
+        "construction_type": "plaid_type",
         "filler": null,
-        "stitch_pattern": null
+        "stitch_pattern": null,
+        "previous_construction_type": "вязаное готовое изделие"
       },
       "embroidery": {
         "mentioned": false,
@@ -2336,7 +2593,11 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "not_applicable",
+        "reason": "plaid_type"
+      }
     },
     {
       "model": "Лао",
@@ -2366,8 +2627,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 2800,
         "catalog_base_rub_per_m": null,
-        "note": "В каталоге нет базовой цены, есть ширина и RRC.",
-        "source": "product_description",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -2382,8 +2643,16 @@
         "on_bedspread": true,
         "on_pillowcases": false,
         "described_as": "с вышивкой",
-        "candidate": null,
-        "confirmed": false
+        "candidate": {
+          "operation_id": "OP_067",
+          "variant": "Прайм",
+          "tariff_rub": 370,
+          "unit": "М2",
+          "formula": "area",
+          "group": "Вышивка по всей площади",
+          "reason": "Пользователь указал, что вышивка «Лао» равна вышивке «Прайм». Используется существующая операция OP_067, новая не создаётся."
+        },
+        "confirmed": true
       },
       "preserved_when_fabric_changes": [
         "стежка",
@@ -2400,7 +2669,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Шифу",
@@ -2441,9 +2718,10 @@
         "quilted": false,
         "lining": "not_mentioned",
         "planks": false,
-        "construction_type": "муслин с декоративными элементами",
+        "construction_type": "plaid_type",
         "filler": null,
-        "stitch_pattern": null
+        "stitch_pattern": null,
+        "previous_construction_type": "муслин с декоративными элементами"
       },
       "embroidery": {
         "mentioned": false,
@@ -2467,7 +2745,11 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "not_applicable",
+        "reason": "plaid_type"
+      }
     },
     {
       "model": "Бойл",
@@ -2491,17 +2773,21 @@
       ],
       "pillowcases_in_listed_price": false,
       "face_fabric": {
-        "stated_name": "вареный хлопок",
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Бойл",
+        "match": "production_specification",
+        "catalog_name": "Бойл",
+        "catalog_width_cm": 250,
+        "catalog_rrc_rub_per_m": 695,
+        "catalog_base_rub_per_m": null,
+        "confirmed": true,
+        "source": "production_review",
+        "note": "В импортированном fabrics.json нет строки с ценой 695 ₽/пог. м и шириной 250 см. Параметры заданы пользователем как ткань модели «Бойл»."
       },
       "construction": {
         "quilted": true,
-        "lining": "not_mentioned",
+        "lining": "Бойл",
         "planks": false,
-        "construction_type": "покрывало-одеяло",
+        "construction_type": "стеганое",
         "filler": null,
         "stitch_pattern": null
       },
@@ -2526,7 +2812,24 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "source": "production_review",
+        "basis": "Модель отнесена к стандартным стеганым покрывалам. Рисунок стёжки не подтверждён. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      },
+      "lining_rule": {
+        "variant": "Подкладка «Бойл»",
+        "operation_id": "BSD-LIN-Подкладка «Бойл»",
+        "tariff_rub": 200,
+        "unit": "М2",
+        "confirmed": true,
+        "source": "production_review",
+        "basis": "Подкладка «Бойл», 200 ₽/м². Существующая операция, без дубля."
+      }
     },
     {
       "model": "Киа",
@@ -2549,11 +2852,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": "тенсель",
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Киа",
+        "match": "production_specification",
+        "catalog_name": "Киа",
+        "catalog_width_cm": 250,
+        "catalog_rrc_rub_per_m": 1310,
+        "catalog_base_rub_per_m": null,
+        "confirmed": true,
+        "source": "production_review",
+        "note": "Ткани «Киа» в каталоге нет. Ширина 250 см и цена 1310 ₽/пог. м заданы пользователем."
       },
       "construction": {
         "quilted": true,
@@ -2587,7 +2894,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 10х10 см."
+      }
     },
     {
       "model": "Нигма",
@@ -2617,17 +2932,18 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 2995,
         "catalog_base_rub_per_m": 1870,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
         "quilted": false,
         "lining": "not_mentioned",
         "planks": false,
-        "construction_type": "жаккард",
+        "construction_type": "plaid_type",
         "filler": null,
-        "stitch_pattern": null
+        "stitch_pattern": null,
+        "previous_construction_type": "жаккард"
       },
       "embroidery": {
         "mentioned": false,
@@ -2651,7 +2967,11 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "not_applicable",
+        "reason": "plaid_type"
+      }
     },
     {
       "model": "Голди",
@@ -2684,8 +3004,8 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 3159,
         "catalog_base_rub_per_m": 1979,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -2719,7 +3039,14 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "basis": "Стёжка конструкцией предусмотрена, но в заполненной таблице рисунок пуст. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      }
     },
     {
       "model": "Деко",
@@ -2752,8 +3079,8 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 1199,
         "catalog_base_rub_per_m": 750,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в bedspread_mapping_review.xlsx.",
+        "source": "mapping_review",
         "confirmed": true
       },
       "construction": {
@@ -2787,7 +3114,14 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "basis": "Стёжка конструкцией предусмотрена, но в заполненной таблице рисунок пуст. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      }
     },
     {
       "model": "Зоуи",
@@ -2817,8 +3151,8 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 990,
         "catalog_base_rub_per_m": 630,
-        "note": null,
-        "source": "product_description",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -2850,7 +3184,18 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "customization": {
+        "status": "locked",
+        "source": "production_review",
+        "stated_value": "не кастомизируема",
+        "meaning": "Пользователь подтвердил, что модель не кастомизируется. Подкладка и стёжка не заменяются."
+      },
+      "stitch_resolution": {
+        "status": "customization_locked",
+        "stated_pattern": "нет возможности кастомизировать",
+        "reason": "Пользователь запретил кастомизацию. Тариф стёжки из этой фразы не берётся и не заменяется тарифом «Квадрат 5х5 см»."
+      }
     },
     {
       "model": "Узорье",
@@ -2875,11 +3220,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": "бархат",
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Репаблик",
+        "match": "exact",
+        "catalog_name": "Репаблик",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 1240,
+        "catalog_base_rub_per_m": 780,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -2910,7 +3259,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Кьют",
@@ -2935,11 +3292,15 @@
       ],
       "pillowcases_in_listed_price": false,
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Ибица",
+        "match": "exact",
+        "catalog_name": "Ибица",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2835,
+        "catalog_base_rub_per_m": 1770,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -2971,7 +3332,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      }
     },
     {
       "model": "Астер",
@@ -3002,13 +3371,13 @@
         "catalog_width_cm": 300,
         "catalog_rrc_rub_per_m": 3000,
         "catalog_base_rub_per_m": 1875,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
         "quilted": true,
-        "lining": "100% хлопок, имя не указано",
+        "lining": "Бойл",
         "planks": false,
         "filler": null,
         "stitch_pattern": null
@@ -3037,7 +3406,24 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 5х5 см."
+      },
+      "lining_rule": {
+        "variant": "Подкладка «Бойл»",
+        "operation_id": "BSD-LIN-Подкладка «Бойл»",
+        "tariff_rub": 200,
+        "unit": "М2",
+        "confirmed": true,
+        "source": "production_review",
+        "basis": "Пользователь задал подкладку «Бойл», 200 ₽/м², для модели «Астер»."
+      }
     },
     {
       "model": "Эмма",
@@ -3062,17 +3448,21 @@
       ],
       "pillowcases_in_listed_price": false,
       "face_fabric": {
-        "stated_name": "бархатистая ткань",
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Ким",
+        "match": "exact",
+        "catalog_name": "Ким",
+        "catalog_width_cm": 300,
+        "catalog_rrc_rub_per_m": 2315,
+        "catalog_base_rub_per_m": 1445,
+        "confirmed": true,
+        "source": "production_review",
+        "note": "Лицевая ткань «Ким» подтверждена пользователем и есть в каталоге."
       },
       "construction": {
         "quilted": true,
-        "lining": "изнанка 100% хлопок",
+        "lining": "Бойл",
         "planks": false,
-        "construction_type": "покрывало-одеяло",
+        "construction_type": "стеганое",
         "filler": "упомянут, материал и плотность не названы",
         "stitch_pattern": null
       },
@@ -3100,7 +3490,32 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 5х5 см",
+        "operation_id": "BSD-STITCH-Квадрат 5х5 см",
+        "tariff_rub": 180,
+        "binding": "default_stitch_assumed",
+        "source": "production_review",
+        "basis": "Модель отнесена к стандартным стеганым покрывалам. Рисунок стёжки не подтверждён. Использован тариф стандартной стёжки «Ибица»: Квадрат 5х5 см, 180 ₽/м²."
+      },
+      "lining_rule": {
+        "variant": "Подкладка «Бойл»",
+        "operation_id": "BSD-LIN-Подкладка «Бойл»",
+        "tariff_rub": 200,
+        "unit": "М2",
+        "confirmed": true,
+        "source": "production_review",
+        "basis": "Подкладка «Бойл», 200 ₽/м². Существующая операция, без дубля."
+      },
+      "filling_rule": {
+        "density_g_m2": 300,
+        "requested_value": "300",
+        "confirmed": true,
+        "multiplier": 2,
+        "basis_operation_id": "BSD-FILL-200 г/м2 (Среднее)",
+        "basis": "Тарифа синтепона 300 г/м² нет. Берётся тариф 200 г/м², умноженный на 2."
+      }
     },
     {
       "model": "Тина",
@@ -3157,11 +3572,15 @@
       ],
       "pillowcases_in_listed_price": "depends_on_size",
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Софт",
+        "match": "exact",
+        "catalog_name": "Софт",
+        "catalog_width_cm": 280,
+        "catalog_rrc_rub_per_m": 990,
+        "catalog_base_rub_per_m": 630,
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
+        "confirmed": true
       },
       "construction": {
         "quilted": true,
@@ -3193,7 +3612,18 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "customization_locked",
+        "stated_pattern": "нет возможности кастомизировать",
+        "reason": "Пользователь запретил кастомизацию. Тариф стёжки из этой фразы не берётся и не заменяется тарифом «Квадрат 5х5 см»."
+      },
+      "customization": {
+        "status": "locked",
+        "source": "production_review",
+        "stated_value": "нет возможности кастомизировать",
+        "meaning": "Ограничение на изменение модели. Не является операцией стёжки."
+      }
     },
     {
       "model": "Бохо",
@@ -3226,8 +3656,8 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 1085,
         "catalog_base_rub_per_m": 680,
-        "note": "В описании товара ткань по имени не повторена. По правилу заказа ткань каталога с тем же названием берётся по умолчанию.",
-        "source": "model_name_equals_catalog_fabric",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -3261,7 +3691,15 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "default_stitch": {
+        "variant": "Квадрат 10х10 см",
+        "operation_id": "BSD-STITCH-Квадрат 10х10 см",
+        "tariff_rub": 130,
+        "binding": "confirmed",
+        "source": "production_review",
+        "basis": "Рисунок указан в столбце «Стёжка — текущее значение» файла PASIONARIA_17_problem_bedspreads.xlsx. Тариф и ID взяты из существующей операции BSD-STITCH-Квадрат 10х10 см."
+      }
     },
     {
       "model": "Перси",
@@ -3315,8 +3753,8 @@
         "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 990,
         "catalog_base_rub_per_m": 630,
-        "note": null,
-        "source": "product_description",
+        "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",
+        "source": "production_review",
         "confirmed": true
       },
       "construction": {
@@ -3349,7 +3787,18 @@
         "allowed_assortment_defined": false,
         "compatibility_restrictions_in_source": false
       },
-      "calculation_status": "not_ready"
+      "calculation_status": "not_ready",
+      "stitch_resolution": {
+        "status": "customization_locked",
+        "stated_pattern": "нет возможности кастомизировать",
+        "reason": "Пользователь запретил кастомизацию. Тариф стёжки из этой фразы не берётся и не заменяется тарифом «Квадрат 5х5 см»."
+      },
+      "customization": {
+        "status": "locked",
+        "source": "production_review",
+        "stated_value": "нет возможности кастомизировать",
+        "meaning": "Ограничение на изменение модели. Не является операцией стёжки."
+      }
     }
   ]
 }

@@ -8,7 +8,7 @@
     "Постельные наволочки.",
     "Операции штор и римских штор, даже если они напечатаны в том же файле."
   ],
-  "record_count": 101,
+  "record_count": 102,
   "records": [
     {
       "draft_id": "BSD-SEW-001",
@@ -2401,6 +2401,29 @@
         28
       ],
       "tariff_status": "confirmed"
+    },
+    {
+      "draft_id": "BSD-LIN-Подкладка «Бойл»",
+      "section": "Покрывало на подкладке",
+      "group": "Подкладка покрывала",
+      "variant": "Подкладка «Бойл»",
+      "unit": "М2",
+      "tariff_rub": 200,
+      "calculation_basis": "площадь изделия",
+      "existing_formula": "area",
+      "included": [
+        "соответствующая ткань"
+      ],
+      "excluded": [
+        "синтепон",
+        "стежка"
+      ],
+      "limitations": "Тариф 200 ₽/м² задан пользователем для подкладки «Бойл». Это не модель «Бойл». Операция одна: её используют «Астер», «Бойл» и «Эмма».",
+      "source_pages": [],
+      "tariff_status": "confirmed",
+      "existing_catalog_operation_id": null,
+      "duplicate_of_existing_catalog": false,
+      "source": "production_instruction"
     }
   ]
 }

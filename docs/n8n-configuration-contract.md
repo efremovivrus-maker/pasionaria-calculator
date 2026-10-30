@@ -124,7 +124,9 @@ Add these rules to the parser prompt:
     `face_fabric: null`; the backend uses the confirmed default.
 22. A named stitch (`ромб 10×10`, `квадрат 5×5`, `Аура` and the other
     bedspread stitch names) goes to `stitch`. Do not invent a stitch when
-    the user did not name one. `синтепон 200` or `синтепон 100` goes to
+    the user did not name one: leave `stitch` null. The backend then uses
+    the model's standard stitch, including a marked `default_stitch_assumed`
+    when the card is quilted but names no pattern. `синтепон 200` or `синтепон 100` goes to
     `filling`. `подкладка Сканди` or `подкладка Анна` goes to
     `configuration.lining`. If lining is not named, leave it null: the
     backend applies `Анна`.
@@ -205,7 +207,11 @@ Prompt examples:
 - `Покрывало Софт 230×250` → `product_type: "bedspread"`, model `Софт`,
   width `230`, height `250`, quantity `1` inferred, `face_fabric: null`,
   `stitch: null`, `filling: null`, `configuration.lining: null`,
-  `extra_operations: []`.
+  `extra_operations: []`. The parser does not invent a stitch. The backend
+  applies the model default.
+- `Покрывало Ибица 230×250` → model `Ибица`, `face_fabric: null`,
+  `stitch: null`. The confirmed fabric and the model stitch stay on the
+  backend.
 - `Покрывало Аника 230×250 из ткани Софт` → model `Аника`,
   `face_fabric: "Софт"`, `stitch: null`.
 - `Покрывало Ибица 200×220, ромб 10×10` → model `Ибица`,
