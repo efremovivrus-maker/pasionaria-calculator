@@ -232,26 +232,26 @@ def _filling_record(value: str | None) -> dict[str, Any] | None:
     return None
 
 
+_LINING_KEYS = ("анна", "сканди", "бойл")
+
+
 def _lining_record(value: str | None) -> dict[str, Any] | None:
     options = [
         record
         for record in _draft_operations()
         if record.get("group") == "Подкладка покрывала"
         and record.get("tariff_rub") is not None
-        and (
-            "анна" in _normalize_token(str(record["variant"]))
-            or "сканди" in _normalize_token(str(record["variant"]))
+        and any(
+            key in _normalize_token(str(record["variant"]))
+            for key in _LINING_KEYS
         )
     ]
     if value is None:
         key = "анна"
     else:
         text = _normalize_token(value)
-        if "анна" in text:
-            key = "анна"
-        elif "сканди" in text:
-            key = "сканди"
-        else:
+        key = next((item for item in _LINING_KEYS if item in text), None)
+        if key is None:
             return None
     matches = [
         record
@@ -443,7 +443,7 @@ REQUEST_PARAMETERS = [
     "стежка из прайса",
     "лицевая ткань из каталога",
     "синтепон 100 или 200 г/м²",
-    "подкладка «Анна» или «Сканди»",
+    "подкладка «Анна», «Сканди» или «Бойл»",
 ]
 
 
@@ -906,7 +906,7 @@ def calculate_bedspread(
     if lining_conflict:
         message = (
             f"У покрывала «{model['model']}» подкладка описана как "
-            f"«{lining_conflict}». Это не «Анна» и не «Сканди», "
+            f"«{lining_conflict}». Это не «Анна», не «Сканди» и не «Бойл», "
             "поэтому стандартный тариф подкладки не применён."
         )
         return _unavailable(
@@ -1096,14 +1096,14 @@ def calculate_bedspread(
         return _unavailable(
             "BEDSPREAD_LINING_NOT_FOUND",
             _new_request_message(
-                "подкладку «Анна» или «Сканди»",
+                "подкладку «Анна», «Сканди» или «Бойл»",
                 "Покрывало Софт 230×250, ромб 10×10, подкладка Сканди",
             ),
             details={
                 "model": model["model"],
                 "field": "lining",
                 "requested_value": lining_name,
-                "available_options": ["Анна", "Сканди"],
+                "available_options": ["Анна", "Сканди", "Бойл"],
             },
         )
 

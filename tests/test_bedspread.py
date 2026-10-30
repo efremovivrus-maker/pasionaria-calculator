@@ -808,6 +808,15 @@ class BedspreadCalculationTests(unittest.TestCase):
         )
         self.assertEqual(emma["retail_price"], 12280.5)
 
+    def test_named_boyle_lining_is_priced_on_any_quilted_bedspread(self) -> None:
+        payload = self.soft(configuration={"lining": "Бойл"})
+        lining = self.component(payload, "BSD-LIN-Подкладка «Бойл»")
+
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(lining["tariff"], 200)
+        self.assertEqual(lining["cost"], 1150)
+        self.assertEqual(payload["retail_price"], 7265.5)
+
     def test_curtain_request_is_unchanged(self) -> None:
         payload = self.calculate(
             product_type="curtain",

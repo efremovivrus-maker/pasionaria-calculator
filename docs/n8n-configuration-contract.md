@@ -127,9 +127,9 @@ Add these rules to the parser prompt:
     the user did not name one: leave `stitch` null. The backend then uses
     the model's standard stitch, including a marked `default_stitch_assumed`
     when the card is quilted but names no pattern. `синтепон 200` or `синтепон 100` goes to
-    `filling`. `подкладка Сканди` or `подкладка Анна` goes to
-    `configuration.lining`. If lining is not named, leave it null: the
-    backend applies `Анна`.
+    `filling`. `подкладка Сканди`, `подкладка Анна` or `подкладка Бойл`
+    goes to `configuration.lining`. If lining is not named, leave it null:
+    the backend applies `Анна`, or `Бойл` when that is the model's lining.
 23. Do not put pillowcases, planks, ribbons or the model embroidery into
     `extra_operations` for a bedspread. The backend adds confirmed
     embroidery itself and will stop if an unsupported extra arrives.
@@ -337,8 +337,8 @@ in the Data Table. Omit a field when it is null:
   message does not name one
 - `stitch` — a stitch named in this message, or omitted when it is absent
 - `filling` — `100` or `200` when this message names the density, or omitted
-- `configuration.lining` — `Анна` or `Сканди` when this message names it, or
-  omitted so the backend applies `Анна`
+- `configuration.lining` — `Анна`, `Сканди` or `Бойл` when this message names it, or
+  omitted so the backend applies `Анна`, or `Бойл` when that is the model's own lining
 
 ```json
 {
