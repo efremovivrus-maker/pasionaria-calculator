@@ -66,14 +66,14 @@ class BedspreadCalculationTests(unittest.TestCase):
                 "требуется уточнение",
             },
         )
-        self.assertEqual(statuses["готова к расчёту"], 38)
-        self.assertEqual(statuses["требуется уточнение"], 7)
+        self.assertEqual(statuses["готова к расчёту"], 39)
+        self.assertEqual(statuses["требуется уточнение"], 6)
         for item in report:
             self.assertIn("block_reason", item)
             self.assertIsInstance(item["manager_can_specify"], list)
             if item["calculation_status"] == "готова к расчёту":
                 self.assertIsNone(item["block_reason"])
-                if item["model"] != "Нигма":
+                if item.get("construction") != "plaid_type":
                     self.assertIn("стежка из прайса", item["manager_can_specify"])
             else:
                 self.assertTrue(item["block_reason"])
@@ -146,7 +146,8 @@ class BedspreadCalculationTests(unittest.TestCase):
         quilted = [
             item
             for item in report
-            if item["calculation_status"] == "готова к расчёту" and item["model"] != "Нигма"
+            if item["calculation_status"] == "готова к расчёту"
+            and item.get("construction") != "plaid_type"
         ]
         boyle_lining = {"Бойл", "Эмма", "Астер"}
 
@@ -726,27 +727,30 @@ class BedspreadCalculationTests(unittest.TestCase):
         self.assertNotIn("помпон", nigma["explanation"].lower())
         self.assertNotIn("бахром", nigma["explanation"].lower())
         self.assertNotIn("кант", nigma["explanation"].lower())
-        self.assertEqual(bruno["reason_code"], "BEDSPREAD_FABRIC_UNCONFIRMED")
+        self.assertEqual(bruno["reason_code"], "BEDSPREAD_NOT_CALCULATED")
+        self.assertIn("Индивидуальный расчёт не выполняется", bruno["message"])
         self.assertNotIn("retail_price", bruno)
-        self.assertEqual(bruno_fabric["status"], "success")
-        self.assertEqual(self.component(bruno_fabric, "BSD-SEW-PLAIN")["tariff"], 70)
-        self.assertNotIn("Стежка", str(bruno_fabric["components"]))
-        self.assertIn(
-            "Цена не включает декоративные помпоны: отдельного тарифа нет.",
-            bruno_fabric["explanation"],
-        )
+        self.assertEqual(bruno_fabric["reason_code"], "BEDSPREAD_NOT_CALCULATED")
+        self.assertNotIn("retail_price", bruno_fabric)
         self.assertEqual(excluded["reason_code"], "BEDSPREAD_INDIVIDUAL_CALCULATION_EXCLUDED")
         self.assertNotIn("retail_price", excluded)
 
-        for model_name in ("Кьюб", "Лео", "Шифу"):
+        cube = self.calculate(
+            product_type="bedspread",
+            model="Кьюб",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+        )
+        self.assertEqual(cube["status"], "success")
+        self.assertEqual(cube["fabric"]["name"], "Кьюб")
+        self.assertEqual(cube["fabric"]["width_cm"], 285)
+        self.assertEqual(cube["fabric"]["price_per_m"], 2400)
+        self.assertEqual(cube["retail_price"], 7352)
+        self.assertNotIn("помпон", cube["explanation"].lower())
+
+        for model_name in ("Лео", "Шифу", "Данфорд", "Тай"):
             plain = self.calculate(
-                product_type="bedspread",
-                model=model_name,
-                width_cm=230,
-                height_cm=250,
-                quantity=1,
-            )
-            priced = self.calculate(
                 product_type="bedspread",
                 model=model_name,
                 width_cm=230,
@@ -754,25 +758,10 @@ class BedspreadCalculationTests(unittest.TestCase):
                 quantity=1,
                 face_fabric="Софт",
                 stitch="Квадрат 5х5 см",
-                filling="200",
-                configuration={"lining": "Анна"},
             )
-            self.assertEqual(plain["reason_code"], "BEDSPREAD_FABRIC_UNCONFIRMED")
-            self.assertEqual(priced["status"], "success")
-            self.assertEqual(priced["retail_price"], 3545.0)
-            self.assertEqual(self.component(priced, "BSD-SEW-PLAIN")["tariff"], 70)
-            operation_ids = {item.get("operation_id") for item in priced["components"]}
-            self.assertNotIn("BSD-FILL-100 г/м2 (Легкое)", operation_ids)
-            self.assertNotIn("BSD-LIN-Подкладка «Анна»", operation_ids)
-            self.assertFalse(any(str(item).startswith("BSD-STITCH") for item in operation_ids))
-            if model_name == "Шифу":
-                self.assertIn(
-                    "Цена не включает декоративные элементы: в карточке они не названы, тарифа нет.",
-                    priced["explanation"],
-                )
-            else:
-                self.assertNotIn("помпон", priced["explanation"].lower())
-                self.assertNotIn("декоративные элементы", priced["explanation"])
+            self.assertEqual(plain["reason_code"], "BEDSPREAD_NOT_CALCULATED")
+            self.assertIn("Индивидуальный расчёт не выполняется", plain["message"])
+            self.assertNotIn("retail_price", plain)
 
     def test_boyle_and_emma_use_confirmed_fabric_lining_and_filling(self) -> None:
         boyle = self.calculate(

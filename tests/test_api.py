@@ -794,6 +794,7 @@ class CalculationApiTests(unittest.TestCase):
         }
         success_count = 0
         problematic_count = 0
+        not_calculated_count = 0
 
         for model in master:
             fabric = fabrics.get(model["fabric_name"])
@@ -817,13 +818,19 @@ class CalculationApiTests(unittest.TestCase):
             if model["status"] == "problematic":
                 problematic_count += 1
                 self.assertEqual(payload["reason_code"], "PROBLEMATIC_MODEL")
+            elif model["status"] == "not_calculated":
+                not_calculated_count += 1
+                self.assertEqual(payload["reason_code"], "MODEL_NOT_CALCULATED")
+                self.assertIn("Индивидуальный расчёт не выполняется", payload["message"])
+                self.assertNotIn("retail_price", payload)
             else:
                 success_count += 1
-                self.assertEqual(payload["status"], "success")
+                self.assertEqual(payload["status"], "success", model["model"])
                 self.assert_components_match_retail(payload)
 
-        self.assertEqual(success_count, 95)
+        self.assertEqual(success_count, 114)
         self.assertEqual(problematic_count, 7)
+        self.assertEqual(not_calculated_count, 8)
 
 
 class DayNightRomanTests(unittest.TestCase):

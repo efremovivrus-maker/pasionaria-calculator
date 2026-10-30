@@ -466,6 +466,11 @@ def _calculate(
             model["reason"] or "Модель помечена как проблемная.",
             message="Расчёт для этой модели пока недоступен.",
         )
+    if model["status"] == "not_calculated":
+        notice = model["reason"] or (
+            f"Модель «{model['model']}» не рассчитывается индивидуально."
+        )
+        return _unavailable("MODEL_NOT_CALCULATED", notice, message=notice)
 
     fabric_name = model.get("fabric_name")
     if not fabric_name:
@@ -502,12 +507,14 @@ def _calculate(
             f"Для ткани {fabric_name!r} не указана цена RRC.",
         )
 
+    fullness = Decimal(str(model.get("fullness_coefficient") or 1))
     consumption = calculate_fabric_consumption(
         product_type=product_type,
         width_cm=width_cm,
         height_cm=height_cm,
         quantity=quantity,
         fabric_width_cm=Decimal(str(fabric["width_cm"])),
+        fullness=fullness,
     )
     audit.update(
         {

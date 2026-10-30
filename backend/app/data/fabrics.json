@@ -5,13 +5,13 @@
     {
       "name": "Авиньон",
       "base_article": "PAS-F-04-101",
-      "width_cm": null,
+      "width_cm": 170,
       "base_price_rub_per_m": 240,
       "rrc_price_rub_per_m": 380,
       "sku_count": 1,
       "used_in_mvp": false,
-      "status": "Проверить",
-      "comment": "Разная ширина в SKU: "
+      "status": "OK",
+      "comment": "Ширина погонного метра 170 см в прайсе декоративных тканей от 30.10.26."
     },
     {
       "name": "Айза",
@@ -38,13 +38,13 @@
     {
       "name": "Амьен",
       "base_article": "PAS-F-04-102",
-      "width_cm": null,
+      "width_cm": 165,
       "base_price_rub_per_m": 240,
       "rrc_price_rub_per_m": 380,
       "sku_count": 1,
       "used_in_mvp": false,
-      "status": "Проверить",
-      "comment": "Разная ширина в SKU: "
+      "status": "OK",
+      "comment": "Ширина погонного метра 165 см в прайсе декоративных тканей от 30.10.26."
     },
     {
       "name": "Анна",
@@ -303,13 +303,13 @@
     {
       "name": "Джиорджина",
       "base_article": "PAS-F-04-104",
-      "width_cm": null,
+      "width_cm": 165,
       "base_price_rub_per_m": 240,
       "rrc_price_rub_per_m": 380,
       "sku_count": 1,
       "used_in_mvp": false,
-      "status": "Проверить",
-      "comment": "Разная ширина в SKU: "
+      "status": "OK",
+      "comment": "Ширина погонного метра 165 см в прайсе декоративных тканей от 30.10.26."
     },
     {
       "name": "Джуди",
@@ -375,7 +375,7 @@
       "sku_count": 4,
       "used_in_mvp": true,
       "status": "OK",
-      "comment": null
+      "comment": "Ширина 300 см подтверждена. В строке цены прайса от 30.10.26 указано 290 см."
     },
     {
       "name": "Карма",
@@ -469,7 +469,7 @@
       "name": "Лаура",
       "base_article": "PAS-F-06-60",
       "width_cm": 280,
-      "base_price_rub_per_m": 728,
+      "base_price_rub_per_m": 1040,
       "rrc_price_rub_per_m": 1670,
       "sku_count": 2,
       "used_in_mvp": true,
@@ -666,13 +666,13 @@
     {
       "name": "Репаблик",
       "base_article": "PAS-F-07-59",
-      "width_cm": 300,
+      "width_cm": 280,
       "base_price_rub_per_m": 780,
       "rrc_price_rub_per_m": 1240,
       "sku_count": 11,
       "used_in_mvp": true,
       "status": "Проверить",
-      "comment": "Для расчёта подтверждена ширина 300 см."
+      "comment": "Ширина 280 см подтверждена по прайсу от 30.10.26."
     },
     {
       "name": "Рири",
@@ -721,24 +721,24 @@
     {
       "name": "Серам",
       "base_article": "PAS-F-04-103",
-      "width_cm": null,
+      "width_cm": 170,
       "base_price_rub_per_m": 240,
       "rrc_price_rub_per_m": 380,
       "sku_count": 1,
       "used_in_mvp": false,
-      "status": "Проверить",
-      "comment": "Разная ширина в SKU: "
+      "status": "OK",
+      "comment": "Ширина погонного метра 170 см в прайсе декоративных тканей от 30.10.26."
     },
     {
       "name": "Сири",
       "base_article": "PAS-F-05-30",
       "width_cm": 180,
-      "base_price_rub_per_m": null,
+      "base_price_rub_per_m": 945,
       "rrc_price_rub_per_m": 1510,
       "sku_count": 7,
       "used_in_mvp": true,
-      "status": "Проверить",
-      "comment": "Розничная цена 1510 ₽/м подтверждена вручную."
+      "status": "OK",
+      "comment": "Опт 945 ₽/м и розница 1510 ₽/м — прайс декоративных тканей от 30.10.26."
     },
     {
       "name": "Ситис",
@@ -787,13 +787,13 @@
     {
       "name": "Стори",
       "base_article": "PAS-F-04-42",
-      "width_cm": 305,
+      "width_cm": 300,
       "base_price_rub_per_m": 455,
       "rrc_price_rub_per_m": 725,
       "sku_count": 8,
       "used_in_mvp": false,
       "status": "OK",
-      "comment": null
+      "comment": "Ширина 300 см подтверждена. В описании прайса от 30.10.26 указано 305 см."
     },
     {
       "name": "Тедди",
@@ -843,7 +843,7 @@
       "name": "Уолис",
       "base_article": "PAS-F-05-38",
       "width_cm": 180,
-      "base_price_rub_per_m": 555,
+      "base_price_rub_per_m": 740,
       "rrc_price_rub_per_m": 1180,
       "sku_count": 1,
       "used_in_mvp": true,
@@ -864,13 +864,13 @@
     {
       "name": "Флай",
       "base_article": "PAS-F-04-106",
-      "width_cm": null,
+      "width_cm": 170,
       "base_price_rub_per_m": 240,
       "rrc_price_rub_per_m": 380,
       "sku_count": 1,
       "used_in_mvp": false,
-      "status": "Проверить",
-      "comment": "Разная ширина в SKU: "
+      "status": "OK",
+      "comment": "Ширина погонного метра 170 см в прайсе декоративных тканей от 30.10.26."
     },
     {
       "name": "Форест",
@@ -897,13 +897,13 @@
     {
       "name": "Шайн",
       "base_article": "PAS-F-04-107",
-      "width_cm": null,
+      "width_cm": 170,
       "base_price_rub_per_m": 210,
       "rrc_price_rub_per_m": 340,
       "sku_count": 1,
       "used_in_mvp": false,
-      "status": "Проверить",
-      "comment": "Разная ширина в SKU: "
+      "status": "OK",
+      "comment": "Ширина погонного метра 170 см в прайсе декоративных тканей от 30.10.26."
     },
     {
       "name": "Эзра",
@@ -940,14 +940,14 @@
     },
     {
       "name": "Эйприл",
-      "base_article": null,
+      "base_article": "PAS-F-99-00",
       "width_cm": 300,
-      "base_price_rub_per_m": null,
+      "base_price_rub_per_m": 250,
       "rrc_price_rub_per_m": 390,
       "sku_count": null,
       "used_in_mvp": true,
       "status": "OK",
-      "comment": "Ширина и розничная цена подтверждены вручную."
+      "comment": "Артикул PAS-F-99-00 и опт 250 ₽/м — прайс декоративных тканей от 30.10.26."
     },
     {
       "name": "Сайфер",
@@ -970,6 +970,127 @@
       "used_in_mvp": true,
       "status": "OK",
       "comment": "Ширина и розничная цена подтверждены вручную."
+    },
+    {
+      "name": "Роузен",
+      "base_article": "PAS-F-03-154",
+      "width_cm": 280,
+      "base_price_rub_per_m": 970,
+      "rrc_price_rub_per_m": 1550,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Ширина 280 см подтверждена. В прайсе от 30.10.26 ширина не была напечатана."
+    },
+    {
+      "name": "Силва",
+      "base_article": "PAS-F-03-407",
+      "width_cm": 290,
+      "base_price_rub_per_m": 1050,
+      "rrc_price_rub_per_m": 1650,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Ширина 290 см указана в описании прайса от 30.10.26, в строке цены не продублирована."
+    },
+    {
+      "name": "Грик",
+      "base_article": "PAS-F-04-39",
+      "width_cm": 300,
+      "base_price_rub_per_m": 455,
+      "rrc_price_rub_per_m": 725,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Прайс декоративных тканей от 30.10.26."
+    },
+    {
+      "name": "Эннеди",
+      "base_article": "PAS-F-05-153",
+      "width_cm": 280,
+      "base_price_rub_per_m": 775,
+      "rrc_price_rub_per_m": 1245,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Прайс декоративных тканей от 30.10.26."
+    },
+    {
+      "name": "Хэвен",
+      "base_article": "PAS-F-05-155",
+      "width_cm": 280,
+      "base_price_rub_per_m": 775,
+      "rrc_price_rub_per_m": 1245,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Ширина 280 см указана в описании прайса от 30.10.26."
+    },
+    {
+      "name": "Лиона",
+      "base_article": "PAS-F-05-156",
+      "width_cm": 280,
+      "base_price_rub_per_m": 775,
+      "rrc_price_rub_per_m": 1245,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Ширина 280 см указана в описании прайса от 30.10.26."
+    },
+    {
+      "name": "Джейн",
+      "base_article": "PAS-F-05-157",
+      "width_cm": 280,
+      "base_price_rub_per_m": 775,
+      "rrc_price_rub_per_m": 1245,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Ширина 280 см указана в описании прайса от 30.10.26."
+    },
+    {
+      "name": "Эклипсо",
+      "base_article": "PAS-F-11-33",
+      "width_cm": 290,
+      "base_price_rub_per_m": 3430,
+      "rrc_price_rub_per_m": 5480,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Прайс декоративных тканей от 30.10.26."
+    },
+    {
+      "name": "Эллипс",
+      "base_article": "PAS-F-11-34",
+      "width_cm": 280,
+      "base_price_rub_per_m": 2830,
+      "rrc_price_rub_per_m": 4530,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Прайс декоративных тканей от 30.10.26."
+    },
+    {
+      "name": "Леви",
+      "base_article": "PAS-F-12-108",
+      "width_cm": 300,
+      "base_price_rub_per_m": 480,
+      "rrc_price_rub_per_m": 730,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Прайс декоративных тканей от 30.10.26."
+    },
+    {
+      "name": "Кьюб",
+      "base_article": "PAS-F-99-91",
+      "width_cm": 285,
+      "base_price_rub_per_m": 1500,
+      "rrc_price_rub_per_m": 2400,
+      "sku_count": null,
+      "used_in_mvp": false,
+      "status": "OK",
+      "comment": "Покрывальная ткань. Прайс декоративных тканей от 30.10.26."
     }
   ]
 }

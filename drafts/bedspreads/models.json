@@ -1024,11 +1024,15 @@
         }
       ],
       "face_fabric": {
-        "stated_name": null,
-        "match": "not_found",
-        "catalog_name": null,
-        "confirmed": false,
-        "candidate": null
+        "stated_name": "Кьюб",
+        "match": "exact",
+        "catalog_name": "Кьюб",
+        "catalog_width_cm": 285,
+        "catalog_rrc_rub_per_m": 2400,
+        "catalog_base_rub_per_m": 1500,
+        "confirmed": true,
+        "source": "price_list_2026_10_30",
+        "note": "Покрывальная ткань «Кьюб», арт. PAS-F-99-91, прайс декоративных тканей от 30.10.26. Ширина 285 см, розница 2400 ₽/м.п."
       },
       "construction": {
         "quilted": false,
@@ -1049,7 +1053,7 @@
       },
       "preserved_when_fabric_changes": [],
       "open_questions": [
-        "Лицевая ткань не названа, в каталоге ткани «Кьюб» нет.",
+        "Лицевая ткань «Кьюб» взята из прайса декоративных тканей от 30.10.26.",
         "Раздел прайса «Покрывало пледового типа» совпадает по названию, но карточка не связывает артикул с тарифом пошива без подкладки.",
         "Стежка не упомянута."
       ],
@@ -3223,7 +3227,7 @@
         "stated_name": "Репаблик",
         "match": "exact",
         "catalog_name": "Репаблик",
-        "catalog_width_cm": 300,
+        "catalog_width_cm": 280,
         "catalog_rrc_rub_per_m": 1240,
         "catalog_base_rub_per_m": 780,
         "note": "Соответствие подтверждено в столбце «Ткань — итоговое правило» файла PASIONARIA_17_problem_bedspreads.xlsx.",

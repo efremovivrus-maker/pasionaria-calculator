@@ -83,6 +83,8 @@ export function formatUnavailableMessage(value: unknown): string {
     reasonCode === "BEDSPREAD_MODEL_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_CONSTRUCTION_UNSUPPORTED" ||
     reasonCode === "BEDSPREAD_INDIVIDUAL_CALCULATION_EXCLUDED" ||
+    reasonCode === "BEDSPREAD_NOT_CALCULATED" ||
+    reasonCode === "MODEL_NOT_CALCULATED" ||
     reasonCode === "BEDSPREAD_EMBROIDERY_UNCONFIRMED" ||
     reasonCode === "BEDSPREAD_LINING_UNCONFIRMED" ||
     reasonCode === "BEDSPREAD_FABRIC_UNCONFIRMED" ||

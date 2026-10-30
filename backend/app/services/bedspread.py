@@ -36,6 +36,45 @@ UNSUPPORTED_CONSTRUCTION_TYPES = {
 }
 PLAID_TYPE_MODELS = {"Кьюб", "Бруно", "Лео", "Нигма", "Шифу"}
 EXCLUDED_FROM_INDIVIDUAL_CALCULATION = {"Зоуи", "Тина", "Перси"}
+NOT_CALCULATED_BEDSPREADS = {
+    "Бруно": (
+        "Покрывало «Бруно» — готовое вязаное изделие с помпонами. "
+        "Индивидуальный расчёт не выполняется."
+    ),
+    "Лео": (
+        "Покрывало «Лео» — готовое вязаное изделие из пике. "
+        "Индивидуальный расчёт не выполняется."
+    ),
+    "Шифу": (
+        "Покрывало «Шифу» — муслин с декоративными элементами. "
+        "Индивидуальный расчёт не выполняется: отделка не тарифицирована."
+    ),
+    "Данфорд": (
+        "Плед «Данфорд» — готовое изделие. Индивидуальный расчёт не выполняется."
+    ),
+    "Ниэль": (
+        "Плед «Ниэль» — ручная вязка. Индивидуальный расчёт не выполняется."
+    ),
+    "Хейли": (
+        "Плед «Хейли» — готовое изделие. Индивидуальный расчёт не выполняется."
+    ),
+    "Паудер": (
+        "Плед «Паудер» — готовое изделие. Индивидуальный расчёт не выполняется."
+    ),
+    "Сэмми": (
+        "Плед «Сэмми» — готовое изделие. Индивидуальный расчёт не выполняется."
+    ),
+    "Китти": (
+        "Плед «Китти» — готовое изделие. Индивидуальный расчёт не выполняется."
+    ),
+    "Ричи": (
+        "Плед «Ричи» — готовое изделие. Индивидуальный расчёт не выполняется."
+    ),
+    "Тай": (
+        "Плед «Тай» — муслин с декоративной бахромой. "
+        "Индивидуальный расчёт не выполняется: бахрома не тарифицирована."
+    ),
+}
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -235,6 +274,7 @@ CONFIRMED_FABRIC_SOURCES = {
     "product_description",
     "mapping_review",
     "production_review",
+    "price_list_2026_10_30",
 }
 
 
@@ -382,6 +422,14 @@ def _unsupported_reason(model: dict[str, Any]) -> str | None:
     return None
 
 
+def _not_calculated_bedspread(name: str) -> str | None:
+    key = name.strip().casefold().replace("ё", "е")
+    for model_name, message in NOT_CALCULATED_BEDSPREADS.items():
+        if model_name.casefold().replace("ё", "е") == key:
+            return message
+    return None
+
+
 def _individual_exclusion_message(model: dict[str, Any]) -> str | None:
     if model["model"] not in EXCLUDED_FROM_INDIVIDUAL_CALCULATION:
         return None
@@ -448,10 +496,15 @@ def classify_model(model: dict[str, Any]) -> dict[str, Any]:
     if stitch_message:
         missing.append(f"рисунок стежки «{stitch_pattern}» не совпал с тарифом")
 
-    if unsupported:
+    notice = _not_calculated_bedspread(model["model"])
+    if notice:
+        status = "требуется уточнение"
+        block_reason = notice
+        manager_can_specify: list[str] = []
+    elif unsupported:
         status = "неподдерживаемая технология"
         block_reason = unsupported
-        manager_can_specify: list[str] = []
+        manager_can_specify = []
     elif individual_exclusion:
         status = "требуется уточнение"
         block_reason = individual_exclusion
@@ -784,7 +837,11 @@ def calculate_bedspread(
     configuration: dict[str, str | None],
     extra_operations: list[str],
 ) -> dict[str, Any]:
-    model = _resolve_model(str(request.get("model") or ""))
+    requested_name = str(request.get("model") or "").strip()
+    notice = _not_calculated_bedspread(requested_name)
+    if notice:
+        return _unavailable("BEDSPREAD_NOT_CALCULATED", notice)
+    model = _resolve_model(requested_name)
     if model is None:
         requested = str(request.get("model") or "").strip()
         message = (

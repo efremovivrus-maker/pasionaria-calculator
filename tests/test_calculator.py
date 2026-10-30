@@ -174,7 +174,7 @@ class CalculatorTests(unittest.TestCase):
             ("Сайфер", "Сайфер", 300, 2680),
             ("Фито", "Луара", 300, 2800),
             ("Сири", "Сири", 180, 1510),
-            ("Бархат", "Репаблик", 300, 1240),
+            ("Бархат", "Репаблик", 280, 1240),
         ]
         for model, fabric, width, price in cases:
             with self.subTest(model=model):
@@ -193,6 +193,37 @@ class CalculatorTests(unittest.TestCase):
                 self.assertEqual(result["fabric"]["width_cm"], width)
                 self.assertEqual(result["fabric"]["price_rub_per_m"], price)
 
+    def test_bow_pleat_multiplies_curtain_width_by_two_and_a_half(self) -> None:
+        result = calculate(
+            {
+                "product_type": "curtain",
+                "model": "Эйприл+",
+                "width_cm": 100,
+                "height_cm": 200,
+                "quantity": 1,
+            }
+        )
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["fabric"]["name"], "Эйприл")
+        self.assertEqual(result["consumption"]["consumption_m"], 2.7)
+        self.assertIn("2,5", result["consumption"]["explanation"])
+
+    def test_stock_and_special_curtains_are_not_priced(self) -> None:
+        for model in ("Бали", "Эллипс", "Руфус", "Амели"):
+            result = calculate(
+                {
+                    "product_type": "curtain",
+                    "model": model,
+                    "width_cm": 140,
+                    "height_cm": 270,
+                    "quantity": 1,
+                }
+            )
+            self.assertEqual(result["reason_code"], "MODEL_NOT_CALCULATED", model)
+            self.assertIn("Индивидуальный расчёт не выполняется", result["message"])
+            self.assertNotIn("retail_price", result)
+
     def test_check_fabric_status_does_not_block_calculation(self) -> None:
         result = calculate(
             {
@@ -205,7 +236,7 @@ class CalculatorTests(unittest.TestCase):
         )
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["fabric"]["status"], "Проверить")
-        self.assertEqual(result["fabric"]["width_cm"], 300)
+        self.assertEqual(result["fabric"]["width_cm"], 280)
 
     def test_fabric_type_coefficients_are_not_applied(self) -> None:
         request = {

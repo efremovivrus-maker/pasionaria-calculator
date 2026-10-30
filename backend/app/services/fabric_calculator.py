@@ -32,10 +32,22 @@ def calculate_curtain_consumption(
     height_cm: Decimal,
     quantity: int,
     fabric_width_cm: Decimal,
+    fullness: Decimal = Decimal("1"),
 ) -> FabricConsumptionResult:
-    """Calculate curtain fabric usage, including shared rotated cutting."""
+    """Calculate curtain fabric usage, including shared rotated cutting.
+
+    Bow pleats use the finished width times the fullness coefficient.
+    The published ratio 1:2.5 means the cloth is 2.5 times the finished width.
+    """
+    piece_width = width_cm * fullness
+    pleat_note = ""
+    if fullness != 1:
+        pleat_note = (
+            f"Бантовая складка: ширина умножена на {fullness} "
+            "(соотношение 1:2,5, ткань в 2,5 раза шире готовой шторы). "
+        )
     if height_cm + Decimal("10") <= fabric_width_cm:
-        consumption = (width_cm + Decimal("20")) * quantity / Decimal("100")
+        consumption = (piece_width + Decimal("20")) * quantity / Decimal("100")
         return FabricConsumptionResult(
             status="success",
             consumption_m=consumption,
@@ -43,12 +55,13 @@ def calculate_curtain_consumption(
             cuts=quantity,
             items_per_cut=1,
             explanation=(
-                "Высота изделия с технологическим запасом 10 см помещается "
+                pleat_note
+                + "Высота изделия с технологическим запасом 10 см помещается "
                 "в ширину ткани; расход равен ширине изделия + 20 см на каждую штору."
             ),
         )
 
-    items_per_cut = floor(fabric_width_cm / width_cm)
+    items_per_cut = floor(fabric_width_cm / piece_width)
     if items_per_cut < 1:
         return FabricConsumptionResult(
             status="unavailable",
@@ -70,7 +83,8 @@ def calculate_curtain_consumption(
         cuts=cuts,
         items_per_cut=items_per_cut,
         explanation=(
-            "Высота с запасом не помещается в ширину ткани, поэтому шторы "
+            pleat_note
+            + "Высота с запасом не помещается в ширину ткани, поэтому шторы "
             f"развёрнуты. В одном отрезе помещается {items_per_cut} шт.; "
             f"требуется отрезов: {cuts}."
         ),
@@ -181,6 +195,7 @@ def calculate_fabric_consumption(
     height_cm: Decimal,
     quantity: int,
     fabric_width_cm: Decimal,
+    fullness: Decimal = Decimal("1"),
 ) -> FabricConsumptionResult:
     if product_type == "curtain":
         return calculate_curtain_consumption(
@@ -188,6 +203,7 @@ def calculate_fabric_consumption(
             height_cm=height_cm,
             quantity=quantity,
             fabric_width_cm=fabric_width_cm,
+            fullness=fullness,
         )
     if product_type == "roman":
         return calculate_roman_consumption(
