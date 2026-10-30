@@ -4,6 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  buildServerFactualBlock,
   COVER_REQUEST_MAX_CHARS,
   composeCoverMessage,
   coverDiscountReady,
@@ -15,11 +16,13 @@ import {
   messageViolatesSpec,
   missingOfferIds,
   offerInstructions,
+  offerMentionedTwice,
   parseCoverMessageDraft,
   parseCoverMessageInput,
   parseCoverRequestBody,
   proposalContentFingerprint,
   relationshipHints,
+  roomsWithProducts,
   selectedOfferInstructions,
 } from "@/lib/coverMessage";
 import { projectTextileGaps } from "@/lib/coverMessageOffers";
@@ -71,11 +74,8 @@ function proposalWith(items: ProposalItem[]) {
 
 const modelJson = (offers: Array<{ id: string; text: string }> = []) =>
   JSON.stringify({
-    introduction: "Анна, направляем коммерческое предложение.",
-    project_summary: "По текстилю для квартиры в Москве, общая стоимость 4 600 ₽.",
-    included_services: "",
     selected_offers: offers,
-    closing: "Мария, PASIONARIA",
+    closing: "",
   });
 
 afterEach(() => {
@@ -91,15 +91,16 @@ describe("cover message", () => {
     ]);
     const serialized = JSON.stringify(coverMessageBrief(coverMessageInput(proposal)));
 
-    expect(serialized).toContain("roomsOverview");
-    expect(serialized).toContain("total");
+    expect(serialized).not.toContain("roomsOverview");
+    expect(serialized).not.toContain('"total"');
     expect(serialized).not.toContain("130 × 280");
     expect(serialized).not.toContain("Вандер");
     expect(serialized).not.toContain("2 300");
-    expect(serialized).toContain("Анна Иванова");
+    expect(serialized).toContain("requiredOfferIds");
+    expect(serialized).toContain("Фактическая часть");
   });
 
-  it("lists included services separately from upsells", () => {
+  it("builds factual block with included services on the server", () => {
     const proposal = proposalWith([
       item({ id: "curtains", title: "Шторы «Вандер»" }),
       item({
@@ -112,8 +113,43 @@ describe("cover message", () => {
         unitPrice: 1600,
       }),
     ]);
-    const brief = coverMessageBrief(coverMessageInput(proposal));
-    expect(brief.includedServicesInProposal).toEqual(["Доставка"]);
+    const input = coverMessageInput(proposal);
+    const factual = buildServerFactualBlock(input);
+    expect(factual).toMatch(/доставк/i);
+    expect(factual).toMatch(/стоимость/i);
+  });
+
+  it("omits rooms when no product is assigned to a room", () => {
+    const proposal = proposalWith([
+      item({ id: "curtains", title: "Шторы «Вандер»", room: null }),
+    ]);
+    const input = coverMessageInput(proposal);
+    expect(roomsWithProducts(input)).toEqual([]);
+    const factual = buildServerFactualBlock(input);
+    expect(factual).not.toContain("Гостиная");
+    expect(factual).not.toContain("Спальня");
+    expect(factual).not.toMatch(/помещен/i);
+  });
+
+  it("mentions a single room only when one room has products", () => {
+    const proposal = proposalWith([
+      item({ id: "spread", title: "Покрывало", productType: "bedspread", room: "bedroom" }),
+    ]);
+    const input = coverMessageInput(proposal);
+    const factual = buildServerFactualBlock(input);
+    expect(factual).toContain("Спальня");
+    expect(factual).not.toContain("Гостиная");
+    expect(factual).not.toMatch(/помещения:/i);
+  });
+
+  it("lists multiple rooms when products span them", () => {
+    const proposal = proposalWith([
+      item({ id: "curtains", title: "Шторы", room: "living" }),
+      item({ id: "spread", title: "Покрывало", productType: "bedspread", room: "bedroom" }),
+    ]);
+    const factual = buildServerFactualBlock(coverMessageInput(proposal));
+    expect(factual).toMatch(/Гостиная/);
+    expect(factual).toMatch(/Спальня/);
   });
 
   it("asks to calculate mounting but not rails when mounting is already in the KP", () => {
@@ -223,6 +259,7 @@ describe("cover message", () => {
   });
 
   it("fills missing ids via fallback", () => {
+    const input = coverMessageInput(proposalWith([item({ id: "curtains", title: "Шторы «Вандер»" })]));
     const draft = parseCoverMessageDraft(modelJson());
     const merged = mergeDraftWithFallbacks(
       draft,
@@ -231,9 +268,10 @@ describe("cover message", () => {
         { id: "mounting", instruction: "Предложи монтаж." },
         { id: "discount", instruction: "Скидка 10% до 31 октября." },
       ],
+      "warm",
     );
     expect(missingOfferIds(merged, ["mounting", "discount"])).toEqual([]);
-    expect(composeCoverMessage(merged)).toContain("монтаж");
+    expect(composeCoverMessage(input, merged)).toContain("монтаж");
   });
 
   it("uses different tone instructions", () => {
@@ -243,7 +281,8 @@ describe("cover message", () => {
     const brief = coverPrompt({ ...base, tone: "brief" });
     expect(warm.system).toContain("тёплый");
     expect(brief.system).toContain("краткий");
-    expect(brief.system).toMatch(/60\s*слов/);
+    expect(warm.system).toContain("selected_offers");
+    expect(brief.system).toMatch(/1–2 коротких предложения/i);
   });
 
   it("refuses a discount promise without a size", async () => {
@@ -291,46 +330,48 @@ describe("cover message", () => {
     expect(gaps.absentCategories).toContain("шторы");
   });
 
-  it("includes tone-specific intro guidance and forbids template openers in prompt", () => {
-    const base = coverMessageInput(proposalWith([item({ id: "c", title: "Шторы" })]));
-    const warm = coverPrompt({ ...base, tone: "warm" }).system;
-    const business = coverPrompt({ ...base, tone: "business" }).system;
-    expect(warm).toContain("личное сообщение");
-    expect(business).toContain("профессиональное");
-    expect(warm).not.toEqual(business);
-    expect(warm).toContain("Запрещено начинать");
+  it("forbids invented rooms in composed messages", () => {
+    const input = coverMessageInput(
+      proposalWith([item({ id: "spread", title: "Покрывало", productType: "bedspread", room: "bedroom" })]),
+    );
+    const text = composeCoverMessage(input, {
+      selected_offers: [{ id: "bedding", text: "Можем подобрать постельное бельё." }],
+      closing: "",
+    });
+    expect(messageViolatesSpec(`${text} Гостиная`, input)).toBe(true);
+    expect(offerMentionedTwice("монтаж штор. монтаж и вывес.", ["mounting"])).toBe(true);
   });
 
-  it("composes three distinct tone samples from structured drafts", () => {
+  it("composes three distinct tone samples from server factual + model offers", () => {
+    const proposal = proposalWith([
+      item({ id: "curtains", title: "Шторы", room: "living" }),
+      item({ id: "spread", title: "Покрывало", productType: "bedspread", room: "bedroom" }),
+      item({
+        id: "delivery",
+        title: "Доставка",
+        itemType: "service",
+        productType: null,
+        room: null,
+        originalUnitPrice: 1600,
+        unitPrice: 1600,
+      }),
+    ]);
+    proposal.cover.offers = ["mounting", "bedding"];
     const offers = [
-      { id: "mounting", text: "Можем отдельно рассчитать монтаж и вывес штор в гостиной." },
-      { id: "bedding", text: "Для спальни подберём постельное бельё в тон покрывалу." },
+      { id: "mounting", text: "Можем отдельно рассчитать монтаж и вывес штор." },
+      { id: "bedding", text: "Можем подобрать постельное бельё." },
     ];
-    const warm = composeCoverMessage({
-      introduction: "Анна, добрый день!",
-      project_summary:
-        "Подготовили коммерческое предложение по текстилю для квартиры в Москве — гостиная и спальня. Общая стоимость 15 000 ₽.",
-      included_services: "В предложение уже включена доставка.",
-      selected_offers: offers,
-      closing: "Будем рады обсудить детали, когда вам удобно. Менеджер PASIONARIA",
-    });
-    const business = composeCoverMessage({
-      introduction: "Анна, направляем коммерческое предложение.",
-      project_summary: "Текстиль для квартиры в Москве: гостиная и спальня. Итого 15 000 ₽, доставка включена.",
-      included_services: "",
-      selected_offers: offers,
-      closing: "Готовы ответить на вопросы. Менеджер PASIONARIA",
-    });
-    const brief = composeCoverMessage({
-      introduction: "Анна, КП по текстилю для квартиры готово.",
-      project_summary: "Итого 15 000 ₽, доставка включена.",
-      included_services: "",
-      selected_offers: offers,
-      closing: "Менеджер PASIONARIA",
-    });
+    const model = { selected_offers: offers, closing: "" };
+    const warm = composeCoverMessage({ ...coverMessageInput(proposal), tone: "warm" }, model);
+    const business = composeCoverMessage({ ...coverMessageInput(proposal), tone: "business" }, model);
+    const brief = composeCoverMessage({ ...coverMessageInput(proposal), tone: "brief" }, model);
     expect(warm.length).toBeGreaterThan(brief.length);
     expect(business).not.toEqual(warm);
+    expect(warm).toContain("добрый день!");
+    expect(business).toContain("добрый день.");
     expect(warm).not.toMatch(/\d+\s*×\s*\d+/);
+    expect(warm).toMatch(/монтаж/i);
+    expect(warm).toMatch(/постельн/i);
   });
 
   it("rejects oversized requests", () => {

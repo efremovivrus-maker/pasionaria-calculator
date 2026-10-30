@@ -1,59 +1,41 @@
 import { formatProposalDate, formatProposalMoney } from "@/lib/proposalDocument";
 import { clientLineAmount, roundMoney } from "@/lib/proposal";
 import type { CoverOfferId, CoverTone } from "@/lib/proposal";
-import type { CoverMessageDraft, CoverMessageInput } from "@/lib/coverMessageTypes";
+import type { CoverMessageInput, CoverMessageModelResponse } from "@/lib/coverMessageTypes";
 import {
-  categoryLabel,
   includedServiceTitles,
   productKind,
-  projectTextileGaps,
   relationshipHints,
-  roomFacts,
   selectedOfferInstructions,
 } from "@/lib/coverMessageOffers";
 import { COVER_OFFER_LABELS } from "@/lib/coverMessageCatalog";
 
-const BASE_RULES = `Ты помощник менеджера PASIONARIA. Клиент уже получит PDF с позициями — не пересказывай спецификацию.
+const BASE_RULES = `Ты формулируешь только дополнительные предложения менеджера PASIONARIA для клиента.
 
-Ответь ТОЛЬКО валидным JSON без markdown и комментариев:
-{
-  "introduction": "обращение и факт отправки КП",
-  "project_summary": "кратко объект, помещения, характер проекта и ОДНА общая стоимость из total",
-  "included_services": "услуги уже в КП или пустая строка",
-  "selected_offers": [{"id":"<id из managerSelectedOffers>","text":"естественная фраза"}],
-  "closing": "приглашение обсудить и подпись"
-}
+Ответь ТОЛЬКО валидным JSON без markdown:
+{"selected_offers":[{"id":"<id из managerSelectedOffers>","text":"фраза"}],"closing":""}
 
-Запрещено в любом поле:
-- перечислять изделия с размерами, тканями, количеством и ценой за единицу;
-- повторять более одной суммы (только общая стоимость КП из total);
-- придумывать цены, сроки, наличие, условия акций;
-- добавлять предложения, которых нет в managerSelectedOffers;
-- пропускать ни одного id из managerSelectedOffers — каждый обязателен в selected_offers с тем же id;
-- утверждать, что дополнительный расчёт уже включён в сумму КП.
+closing — необязательное короткое завершение (приглашение написать/обсудить). Можно оставить пустой строкой: подпись добавит система.
 
-included_services: перечисли только услуги из includedServicesInProposal (доставка, монтаж и т.д.), если они есть.
-selected_offers: только выбранные менеджером пункты; следуй instruction для каждого id; можно объединять близкие в одной фразе, но каждый id — отдельный элемент массива.
-relationshipHints и textileGaps — только контекст для формулировки УЖЕ выбранных id. Не упоминай категории, которых нет в managerSelectedOffers.
-Не используй emoji и markdown.
+Правила для selected_offers:
+- каждый id из requiredOfferIds ровно один раз, с непустым text;
+- следуй instruction для id; не добавляй id вне списка;
+- не отказывай в предложении, если менеджер его выбрал — предлагай дополнительный расчёт нейтрально;
+- не дублируй один смысл в разных id.
 
-Вступление (introduction): каждый раз разное по формулировке. Запрещено начинать с «Подготовили коммерческое предложение» и близких клише («направляем КП», «высылаем коммерческое предложение» в начале каждого текста).`;
+Строго запрещено в text и closing:
+- упоминать помещения, объект, адрес, сумму КП, услуги в составе КП;
+- перечислять изделия, ткани, размеры, цены;
+- утверждать, что интерьер оформлен, изделия установлены, есть готовая гамма или сочетание;
+- рекламные клише: идеальный интерьер, уютная атмосфера, гармония, создать атмосферу, палитра интерьера (кроме нейтрального «подобрать в сочетании» как действие);
+- придумывать сроки, наличие, скидки не из instruction.
+
+relationshipHints — только подсказка к формулировке выбранных id.`;
 
 const TONE_RULES: Record<CoverTone, string> = {
-  warm: `Стиль «тёплый» — личное сообщение менеджера, который помогает оформить дом текстилем.
-Пиши от лица команды («мы»), с заботой о комфорте и гармонии интерьера, без официоза.
-Мягкие связки к допродажам: «будем рады», «можем аккуратно подобрать», «если захотите дополнить».
-Примеры начала introduction (выбери один, не копируй дословно): «Анна, добрый день! Собрали для вас текстиль по объекту…»; «Здравствуйте, Анна! Завершили расчёт текстиля для…»; «Анна, делимся расчётом по вашей квартире…».
-Объём всего сообщения: ориентир 75–120 слов.`,
-  business: `Стиль «деловой» — профессиональное коммерческое сопровождение, не переписка «между знакомыми».
-Нейтрально-уважительный тон, без эмоциональных эпитетов и бытовых оборотов. Без «будем рады» и «если захотите».
-Структура сухая: факт КП → объект и зоны → сумма → дополнения → контакт.
-Примеры начала introduction: «Анна, добрый день. Коммерческое предложение по текстилю для объекта…»; «Уважаемая Анна, направляем расчёт по текстильному оснащению…»; «Анна, по вашему запросу сформирован расчёт…».
-Объём: 55–95 слов.`,
-  brief: `Стиль «краткий» — сообщение в мессенджере, 2–4 предложения на ВСЁ поле (все части JSON вместе).
-Без развёрнутого приветствия и длинного closing. Одна мысль — одно короткое предложение.
-Примеры: «Анна, расчёт по квартире — 8 800 ₽. …»; «КП по спальне готово, итого …».
-Не больше 60 слов суммарно.`,
+  warm: `Стиль «тёплый»: мягко, по-человечески, от «мы». Короткие живые фразы, без канцелярита и без рекламных лозунгов.`,
+  business: `Стиль «деловой»: конкретно и нейтрально. Без «будем рады», без восклицаний, без образных метафор.`,
+  brief: `Стиль «краткий»: каждый text — одно короткое предложение или фраза. closing — не более 5 слов или пусто. Весь ответ модели должен уложиться в 1–2 коротких предложения суммарно по text всех offers.`,
 };
 
 export function coverPrompt(input: CoverMessageInput): { system: string; user: string } {
@@ -64,15 +46,6 @@ export function coverPrompt(input: CoverMessageInput): { system: string; user: s
 }
 
 export function coverMessageBriefForModel(input: CoverMessageInput): Record<string, unknown> {
-  const step = input.proposal.roundingStep;
-  const mode = input.proposal.roundingMode;
-  const total = roundMoney(
-    input.proposal.items.reduce((sum, item) => sum + clientLineAmount(item, step, mode), 0),
-  );
-  const rooms = roomFacts(input).map((room) => ({
-    name: room.name,
-    categories: [...room.kinds].map((kind) => categoryLabel(kind)),
-  }));
   const managerSelectedOffers = selectedOfferInstructions(input).map((entry) => ({
     id: entry.id,
     label: COVER_OFFER_LABELS[entry.id],
@@ -80,16 +53,8 @@ export function coverMessageBriefForModel(input: CoverMessageInput): Record<stri
   }));
   return {
     tone: input.tone,
-    recipient: input.proposal.recipient,
-    author: input.proposal.author,
-    objectName: input.proposal.objectName,
-    issuedOn: formatProposalDate(input.proposal.issuedOn),
-    total: formatProposalMoney(total),
-    roomsOverview: rooms,
-    includedServicesInProposal: includedServiceTitles(input),
-    managerSelectedOffers,
     requiredOfferIds: input.offers,
-    textileGaps: projectTextileGaps(input),
+    managerSelectedOffers,
     relationshipHints: relationshipHints(input),
     discount: input.discount
       ? {
@@ -101,16 +66,105 @@ export function coverMessageBriefForModel(input: CoverMessageInput): Record<stri
         }
       : null,
     managerNotes: input.notes || null,
+    note: "Фактическая часть сообщения (обращение, сумма, услуги, помещения) уже сформирована сервером. Не повторяй их.",
   };
 }
 
-export function parseCoverMessageDraft(raw: string): CoverMessageDraft {
+export function roomsWithProducts(input: CoverMessageInput): string[] {
+  const roomIds = new Set(
+    input.proposal.items
+      .filter((item) => item.itemType === "product" && item.room)
+      .map((item) => item.room as string),
+  );
+  return input.proposal.rooms.filter((room) => roomIds.has(room.id)).map((room) => room.name);
+}
+
+export function proposalTotal(input: CoverMessageInput): number {
+  const step = input.proposal.roundingStep;
+  const mode = input.proposal.roundingMode;
+  return roundMoney(
+    input.proposal.items.reduce((sum, item) => sum + clientLineAmount(item, step, mode), 0),
+  );
+}
+
+function recipientFirstName(recipient: string | null): string | null {
+  if (!recipient?.trim()) {
+    return null;
+  }
+  const first = recipient.trim().split(/\s+/)[0];
+  return first || null;
+}
+
+export function buildServerFactualBlock(input: CoverMessageInput): string {
+  const tone = input.tone;
+  const total = formatProposalMoney(proposalTotal(input));
+  const services = includedServiceTitles(input);
+  const rooms = roomsWithProducts(input);
+  const objectName = input.proposal.objectName?.trim() || null;
+  const name = recipientFirstName(input.proposal.recipient);
+
+  if (tone === "brief") {
+    const parts: string[] = [];
+    parts.push(name ? `${name},` : "");
+    parts.push(`коммерческое предложение готово, итого ${total}.`);
+    if (services.length > 0) {
+      parts.push(`Включено: ${formatServiceList(services)}.`);
+    }
+    return parts.filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+  }
+
+  const lines: string[] = [];
+  if (tone === "warm") {
+    lines.push(name ? `${name}, добрый день!` : "Добрый день!");
+    lines.push(`Направляем коммерческое предложение${objectName ? ` по объекту «${objectName}»` : ""}.`);
+  } else {
+    lines.push(name ? `${name}, добрый день.` : "Добрый день.");
+    lines.push(
+      `Направляем коммерческое предложение${objectName ? ` по объекту «${objectName}»` : ""}.`,
+    );
+  }
+
+  if (rooms.length === 1) {
+    lines.push(`В расчёте — помещение «${rooms[0]}».`);
+  } else if (rooms.length > 1) {
+    lines.push(`В расчёте — помещения: ${rooms.join(", ")}.`);
+  }
+
+  lines.push(`Общая стоимость — ${total}.`);
+
+  if (services.length > 0) {
+    lines.push(`В предложение включены: ${formatServiceList(services)}.`);
+  }
+
+  return lines.join(" ");
+}
+
+function formatServiceList(services: string[]): string {
+  if (services.length === 1) {
+    return services[0].toLocaleLowerCase("ru");
+  }
+  return services.map((service) => service.toLocaleLowerCase("ru")).join(", ");
+}
+
+export function buildDefaultClosing(input: CoverMessageInput): string {
+  const author = input.proposal.author?.trim();
+  if (input.tone === "brief") {
+    return author ? `${author}, PASIONARIA` : "PASIONARIA";
+  }
+  if (author) {
+    return input.tone === "warm"
+      ? `Если появятся вопросы — напишите. ${author}, PASIONARIA`
+      : `Готовы ответить на вопросы. ${author}, PASIONARIA`;
+  }
+  return input.tone === "warm"
+    ? "Если появятся вопросы — напишите. PASIONARIA"
+    : "Готовы ответить на вопросы. PASIONARIA";
+}
+
+export function parseCoverMessageDraft(raw: string): CoverMessageModelResponse {
   const json = extractJsonObject(raw);
   const source = JSON.parse(json) as Record<string, unknown>;
   return {
-    introduction: textField(source.introduction),
-    project_summary: textField(source.project_summary),
-    included_services: textField(source.included_services),
     selected_offers: parseSelectedOffers(source.selected_offers),
     closing: textField(source.closing),
   };
@@ -134,7 +188,7 @@ function textField(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function parseSelectedOffers(value: unknown): CoverMessageDraft["selected_offers"] {
+function parseSelectedOffers(value: unknown): CoverMessageModelResponse["selected_offers"] {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -151,23 +205,27 @@ function parseSelectedOffers(value: unknown): CoverMessageDraft["selected_offers
   });
 }
 
-export function missingOfferIds(draft: CoverMessageDraft, required: CoverOfferId[]): CoverOfferId[] {
+export function missingOfferIds(
+  draft: CoverMessageModelResponse,
+  required: CoverOfferId[],
+): CoverOfferId[] {
   const present = new Set(draft.selected_offers.map((entry) => entry.id));
   return required.filter((id) => !present.has(id));
 }
 
 export function mergeDraftWithFallbacks(
-  draft: CoverMessageDraft,
+  draft: CoverMessageModelResponse,
   missing: CoverOfferId[],
   instructions: Array<{ id: CoverOfferId; instruction: string }>,
-): CoverMessageDraft {
+  tone: CoverTone,
+): CoverMessageModelResponse {
   if (missing.length === 0) {
     return draft;
   }
   const byId = new Map(instructions.map((entry) => [entry.id, entry.instruction]));
   const additions = missing.map((id) => ({
     id,
-    text: fallbackOfferText(id, byId.get(id) ?? ""),
+    text: fallbackOfferText(id, byId.get(id) ?? "", tone),
   }));
   return {
     ...draft,
@@ -175,43 +233,95 @@ export function mergeDraftWithFallbacks(
   };
 }
 
-export function fallbackOfferText(id: CoverOfferId, instruction: string): string {
+export function fallbackOfferText(
+  id: CoverOfferId,
+  instruction: string,
+  tone: CoverTone = "warm",
+): string {
   const short = instruction.split(".")[0]?.trim();
-  const templates: Partial<Record<CoverOfferId, string>> = {
-    mounting: "Можем отдельно рассчитать монтаж и вывес штор.",
-    rails: "Можем подобрать и рассчитать карнизы, включая электрические.",
-    bedding: "При необходимости подберём постельное бельё в тон интерьеру.",
-    kitchen: "Можем предложить кухонный текстиль под ваш проект.",
-    bedspread: "Можем подобрать покрывало в единой цветовой гамме.",
-    tulle: "Можем подобрать тюль к портьерам.",
-    pillows: "Можем предложить декоративные подушки, чтобы завершить композицию.",
-    curtains: "Можем рассчитать шторы или римские шторы для других зон.",
-    premium: "По запросу пересчитаем проект в более премиальном исполнении.",
-    discount: short?.includes("скидк") ? short : "Действует согласованная скидка при оплате в указанный срок.",
+  const templates: Partial<Record<CoverOfferId, Record<CoverTone, string>>> = {
+    mounting: {
+      warm: "Можем отдельно рассчитать монтаж и вывес штор.",
+      business: "Дополнительно возможен расчёт монтажа и вывеса штор.",
+      brief: "Монтаж — отдельный расчёт.",
+    },
+    rails: {
+      warm: "Можем подобрать и рассчитать карнизы, включая электрические.",
+      business: "Дополнительно возможен расчёт карнизов.",
+      brief: "Карнизы — отдельный расчёт.",
+    },
+    bedding: {
+      warm: "При необходимости подберём постельное бельё.",
+      business: "Возможен расчёт постельного белья.",
+      brief: "Постельное бельё — по запросу.",
+    },
+    kitchen: {
+      warm: "Можем предложить кухонный текстиль под ваш проект.",
+      business: "Возможен расчёт кухонного текстиля.",
+      brief: "Кухонный текстиль — по запросу.",
+    },
+    bedspread: {
+      warm: "Можем подобрать покрывало как дополнение к текстилю.",
+      business: "Возможен расчёт покрывала.",
+      brief: "Покрывало — отдельный расчёт.",
+    },
+    tulle: {
+      warm: "Можем подобрать тюль к портьерам — отдельным расчётом.",
+      business: "Возможен расчёт тюля к портьерам.",
+      brief: "Тюль — отдельный расчёт.",
+    },
+    pillows: {
+      warm: "Можем предложить декоративные подушки.",
+      business: "Возможен расчёт декоративных подушек.",
+      brief: "Подушки — по запросу.",
+    },
+    curtains: {
+      warm: "Можем рассчитать шторы или римские шторы для других зон.",
+      business: "Возможен расчёт штор или римских штор.",
+      brief: "Шторы — отдельный расчёт.",
+    },
+    premium: {
+      warm: "По запросу пересчитаем проект в более премиальном исполнении.",
+      business: "Возможен пересчёт в более премиальном исполнении.",
+      brief: "Премиальное исполнение — по запросу.",
+    },
+    discount: {
+      warm: short?.includes("скидк") ? short : "Действует согласованная скидка при оплате в указанный срок.",
+      business: short?.includes("скидк") ? short : "Предусмотрена согласованная скидка при оплате в указанный срок.",
+      brief: short?.includes("скидк") ? short : "Скидка — при оплате в срок.",
+    },
   };
-  return templates[id] ?? (short || "Можем дополнительно просчитать этот вариант.");
+  return templates[id]?.[tone] ?? (short || "Можем дополнительно просчитать этот вариант.");
 }
 
-export function composeCoverMessage(draft: CoverMessageDraft): string {
-  const parts: string[] = [];
-  const intro = [draft.introduction, draft.project_summary].filter(Boolean).join(" ").trim();
-  if (intro) {
-    parts.push(intro);
+export function composeCoverMessage(
+  input: CoverMessageInput,
+  model: CoverMessageModelResponse,
+): string {
+  const factual = buildServerFactualBlock(input);
+  const offers = model.selected_offers.map((entry) => entry.text.trim()).filter(Boolean);
+  const closing = model.closing.trim() || buildDefaultClosing(input);
+
+  if (input.tone === "brief") {
+    const sentence = [factual, ...offers, closing].filter(Boolean).join(" ");
+    return sentence.replace(/\s+/g, " ").trim();
   }
-  if (draft.included_services.trim()) {
-    parts.push(draft.included_services.trim());
-  }
-  const offers = draft.selected_offers.map((entry) => entry.text.trim()).filter(Boolean);
+
+  const parts = [factual];
   if (offers.length > 0) {
     parts.push(offers.join(" "));
   }
-  if (draft.closing.trim()) {
-    parts.push(draft.closing.trim());
-  }
+  parts.push(closing);
   return parts.join("\n\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
+const CLICHE_PATTERN =
+  /идеальн(?:ый|ого|ую|ые|ом|им)?\s+интер|уютн(?:ая|ую|ой|ые|ым)?\s+атмосф|гармон(?:ия|ии|ию|ией|ичн)|созда(?:ть|дим)\s+(?:уют|атмосф)/iu;
+
 export function messageViolatesSpec(text: string, input: CoverMessageInput): boolean {
+  if (CLICHE_PATTERN.test(text)) {
+    return true;
+  }
   if (/\d+\s*[×xх]\s*\d+/u.test(text)) {
     return true;
   }
@@ -230,6 +340,19 @@ export function messageViolatesSpec(text: string, input: CoverMessageInput): boo
       return true;
     }
   }
+  const allowedRooms = roomsWithProducts(input);
+  for (const room of input.proposal.rooms) {
+    if (text.includes(room.name) && !allowedRooms.includes(room.name)) {
+      return true;
+    }
+  }
+  if (allowedRooms.length === 0) {
+    for (const room of input.proposal.rooms) {
+      if (text.includes(room.name)) {
+        return true;
+      }
+    }
+  }
   const rubleMatches = text.match(/\d[\d\s\u00a0]*(?:₽|руб)/giu) ?? [];
   if (rubleMatches.length > 2) {
     return true;
@@ -239,5 +362,45 @@ export function messageViolatesSpec(text: string, input: CoverMessageInput): boo
 
 export function repairPromptMissingIds(ids: CoverOfferId[]): string {
   return `В предыдущем ответе отсутствовали обязательные id в selected_offers: ${ids.join(", ")}.
-Верни полный JSON заново. Каждый id из requiredOfferIds должен быть в selected_offers с непустым text.`;
+Верни JSON с полным массивом selected_offers. Не упоминай сумму, помещения и услуги.`;
+}
+
+export function offerMentionedTwice(text: string, offers: CoverOfferId[]): boolean {
+  const lower = text.toLocaleLowerCase("ru");
+  for (const id of offers) {
+    for (const needle of offerNeedles(id)) {
+      const matches = lower.match(new RegExp(needle, "giu"));
+      if (matches && matches.length > 1) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function offerNeedles(id: CoverOfferId): string[] {
+  switch (id) {
+    case "bedding":
+      return ["постельн"];
+    case "pillows":
+      return ["подуш"];
+    case "tulle":
+      return ["тюл"];
+    case "bedspread":
+      return ["покрывал"];
+    case "curtains":
+      return ["штор", "римск"];
+    case "mounting":
+      return ["монтаж"];
+    case "rails":
+      return ["карниз"];
+    case "kitchen":
+      return ["кухон"];
+    case "premium":
+      return ["премиаль"];
+    case "discount":
+      return ["скидк"];
+    default:
+      return [];
+  }
 }

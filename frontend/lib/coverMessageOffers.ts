@@ -227,10 +227,7 @@ function textileInstruction(
   const open = relevant.filter((room) => !room.kinds.has(existing)).map((room) => room.name);
   const closed = rooms.filter((room) => room.kinds.has(existing)).map((room) => room.name);
   if (relevant.length === 0) {
-    if (!looseOpen) {
-      return `Нет подходящих помещений для «${label}». Не придумывай помещение.`;
-    }
-    return `Предложи ${label} ${relation}, связав с уже выбранным текстилем в проекте. Не называй цену.`;
+    return `Предложи ${label} ${relation} как дополнительный расчёт. Не отказывай в предложении. Не называй цену и не придумывай помещение.`;
   }
   if (open.length === 0) {
     return `${label} уже есть в: ${closed.join(", ")}. Не предлагай повторно.`;

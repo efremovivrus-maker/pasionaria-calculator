@@ -75,36 +75,25 @@ function annaProposal(tone: "warm" | "business" | "brief") {
 
 const toneJson: Record<string, string> = {
   warm: JSON.stringify({
-    introduction: "Анна, добрый день!",
-    project_summary:
-      "Подготовили коммерческое предложение по текстилю для вашей квартиры в Москве — гостиная и спальня. Общая стоимость 15 000 ₽.",
-    included_services: "Доставка уже включена в предложение.",
     selected_offers: [
-      { id: "mounting", text: "По гостиной можем отдельно рассчитать монтаж и вывес штор." },
-      { id: "bedding", text: "Для спальни будем рады подобрать постельное бельё в тон интерьеру." },
+      { id: "mounting", text: "Можем отдельно рассчитать монтаж и вывес штор." },
+      { id: "bedding", text: "Можем подобрать постельное бельё отдельным расчётом." },
     ],
-    closing: "Если будет удобно, обсудим детали в ближайшее время. Менеджер PASIONARIA",
+    closing: "",
   }),
   business: JSON.stringify({
-    introduction: "Анна, направляем коммерческое предложение.",
-    project_summary:
-      "Текстильное оформление квартиры в Москве: гостиная и спальня. Итоговая сумма 15 000 ₽, доставка включена.",
-    included_services: "",
     selected_offers: [
-      { id: "mounting", text: "Дополнительно рассчитаем монтаж и вывес штор в гостиной." },
-      { id: "bedding", text: "Для спальни можем подобрать постельное бельё." },
+      { id: "mounting", text: "Дополнительно возможен расчёт монтажа и вывеса штор." },
+      { id: "bedding", text: "Возможен расчёт постельного белья." },
     ],
-    closing: "Готовы ответить на вопросы. Менеджер PASIONARIA",
+    closing: "",
   }),
   brief: JSON.stringify({
-    introduction: "Анна, КП по текстилю готово.",
-    project_summary: "Гостиная и спальня, итого 15 000 ₽, доставка включена.",
-    included_services: "",
     selected_offers: [
-      { id: "mounting", text: "Монтаж штор в гостиной — отдельный расчёт." },
-      { id: "bedding", text: "Постельное бельё для спальни — по запросу." },
+      { id: "mounting", text: "Монтаж — отдельный расчёт." },
+      { id: "bedding", text: "Постельное бельё — по запросу." },
     ],
-    closing: "Менеджер PASIONARIA",
+    closing: "",
   }),
 };
 

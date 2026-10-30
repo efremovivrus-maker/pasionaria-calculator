@@ -37,10 +37,15 @@ export type CoverMessageInput = {
   };
 };
 
-export type CoverMessageDraft = {
-  introduction: string;
-  project_summary: string;
-  included_services: string;
+/** Ответ YandexGPT: только допродажи и необязательное короткое завершение. */
+export type CoverMessageModelResponse = {
   selected_offers: Array<{ id: string; text: string }>;
   closing: string;
+};
+
+/** @deprecated используйте CoverMessageModelResponse */
+export type CoverMessageDraft = CoverMessageModelResponse & {
+  introduction?: string;
+  project_summary?: string;
+  included_services?: string;
 };

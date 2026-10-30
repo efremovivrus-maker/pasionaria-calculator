@@ -14,6 +14,7 @@ import {
 import { selectedOfferInstructions } from "@/lib/coverMessageOffers";
 
 const COMPLETION_URL = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion";
+
 export async function generateCoverMessage(value: unknown): Promise<string> {
   const input = parseCoverMessageInput(value);
   if (input.offers.includes("discount") && !input.discount) {
@@ -32,18 +33,18 @@ export async function generateCoverMessage(value: unknown): Promise<string> {
   }
 
   if (missing.length > 0) {
-    draft = mergeDraftWithFallbacks(draft, missing, instructions);
+    draft = mergeDraftWithFallbacks(draft, missing, instructions, input.tone);
   }
 
-  let text = composeCoverMessage(draft);
+  let text = composeCoverMessage(input, draft);
   if (messageViolatesSpec(text, input)) {
-    user = `${prompt.user}\n\nНе перечисляй изделия, размеры, ткани и цены позиций. Только общая сумма total. Верни JSON заново.`;
+    user = `${prompt.user}\n\nНе упоминай помещения, сумму, услуги и состав КП. Только selected_offers. Верни JSON заново.`;
     draft = readDraft(await completeYandexGpt(prompt.system, user));
     missing = missingOfferIds(draft, input.offers);
     if (missing.length > 0) {
-      draft = mergeDraftWithFallbacks(draft, missing, instructions);
+      draft = mergeDraftWithFallbacks(draft, missing, instructions, input.tone);
     }
-    text = composeCoverMessage(draft);
+    text = composeCoverMessage(input, draft);
   }
 
   if (!text.trim()) {
@@ -72,7 +73,7 @@ async function completeYandexGpt(system: string, user: string): Promise<string> 
         completionOptions: {
           stream: false,
           temperature: 0.35,
-          maxTokens: "1200",
+          maxTokens: "900",
         },
         messages: [
           { role: "system", text: system },

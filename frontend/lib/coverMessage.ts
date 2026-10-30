@@ -15,11 +15,16 @@ export {
   coverMessageBriefForModel as coverMessageBrief,
   coverPrompt,
   composeCoverMessage,
+  buildServerFactualBlock,
+  roomsWithProducts,
+  proposalTotal,
   parseCoverMessageDraft,
   missingOfferIds,
   mergeDraftWithFallbacks,
   messageViolatesSpec,
+  offerMentionedTwice,
   repairPromptMissingIds,
+  fallbackOfferText,
 } from "@/lib/coverMessageGeneration";
 export {
   selectedOfferInstructions,
