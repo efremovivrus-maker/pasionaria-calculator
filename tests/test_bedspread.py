@@ -942,6 +942,119 @@ class BedspreadCalculationTests(unittest.TestCase):
             self.assertNotIn("retail_price", payload)
             self.assertNotIn("укажите", payload["message"].casefold())
 
+    def test_unknown_bedspread_name_uses_exact_catalog_fabric(self) -> None:
+        named_as_model = self.calculate(
+            product_type="bedspread",
+            model="Эннеди",
+            width_cm=140,
+            height_cm=200,
+            quantity=1,
+            configuration={"lining": "Бойл"},
+        )
+        named_as_fabric = self.calculate(
+            product_type="bedspread",
+            width_cm=140,
+            height_cm=200,
+            quantity=1,
+            face_fabric="Эннеди",
+            configuration={"lining": "Бойл"},
+        )
+
+        for payload in (named_as_model, named_as_fabric):
+            self.assertEqual(payload["status"], "success")
+            self.assertNotIn("model", payload["normalized_request"])
+            self.assertEqual(payload["fabric"]["name"], "Эннеди")
+            self.assertEqual(payload["fabric"]["width_cm"], 280)
+            self.assertEqual(payload["fabric"]["consumption_m"], 2.2)
+            self.assertEqual(payload["fabric"]["cost"], 2739)
+            self.assertEqual(
+                self.component(payload, "BSD-STITCH-Квадрат 5х5 см")["tariff"],
+                180,
+            )
+            self.assertEqual(
+                self.component(payload, "BSD-FILL-100 г/м2 (Легкое)")["tariff"],
+                80,
+            )
+            self.assertEqual(
+                self.component(payload, "BSD-LIN-Подкладка «Бойл»")["tariff"],
+                200,
+            )
+            self.assertEqual(payload["retail_price"], 5587)
+        self.assertNotIn("подкладка «Анна»", named_as_model["explanation"])
+        self.assertIn("стёжка «Квадрат 5х5 см», 180 ₽/м²", named_as_model["explanation"])
+
+    def test_catalog_model_wins_over_the_same_fabric_name(self) -> None:
+        payload = self.calculate(
+            product_type="bedspread",
+            model="Софт",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+        )
+        replaced = self.calculate(
+            product_type="bedspread",
+            model="Софт",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="Эннеди",
+        )
+
+        self.assertEqual(payload["normalized_request"]["model"], "Софт")
+        self.assertEqual(payload["fabric"]["name"], "Софт")
+        self.assertEqual(
+            self.component(payload, "BSD-STITCH-Квадрат 10х10 см")["tariff"],
+            130,
+        )
+        self.assertEqual(payload["retail_price"], 8588)
+        self.assertEqual(replaced["normalized_request"]["model"], "Софт")
+        self.assertEqual(replaced["fabric"]["name"], "Эннеди")
+        self.assertEqual(
+            self.component(replaced, "BSD-STITCH-Квадрат 10х10 см")["tariff"],
+            130,
+        )
+        self.assertNotEqual(replaced["retail_price"], 5587)
+
+    def test_unknown_name_and_near_fabric_stay_unpriced(self) -> None:
+        unknown = self.calculate(
+            product_type="bedspread",
+            model="НетТакой",
+            width_cm=140,
+            height_cm=200,
+            quantity=1,
+            configuration={"lining": "Бойл"},
+        )
+        near = self.calculate(
+            product_type="bedspread",
+            model="Эннед",
+            width_cm=140,
+            height_cm=200,
+            quantity=1,
+        )
+        explicit = self.calculate(
+            product_type="bedspread",
+            model="НетТакой",
+            width_cm=140,
+            height_cm=200,
+            quantity=1,
+            face_fabric="Софт",
+            configuration={"lining": "Бойл"},
+        )
+
+        for payload in (unknown, near):
+            self.assertEqual(payload["status"], "unavailable")
+            self.assertEqual(payload["reason_code"], "BEDSPREAD_MODEL_NOT_FOUND")
+            self.assertNotIn("укажите", payload["message"].casefold())
+            self.assertNotIn("retail_price", payload)
+        self.assertEqual(explicit["status"], "success")
+        self.assertNotIn("model", explicit["normalized_request"])
+        self.assertEqual(explicit["fabric"]["name"], "Софт")
+        self.assertEqual(
+            self.component(explicit, "BSD-LIN-Подкладка «Бойл»")["tariff"],
+            200,
+        )
+        self.assertEqual(explicit["retail_price"], 5026)
+
     def test_curtain_request_is_unchanged(self) -> None:
         payload = self.calculate(
             product_type="curtain",

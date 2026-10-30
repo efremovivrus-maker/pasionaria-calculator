@@ -1225,6 +1225,60 @@ def _price_modeless_bedspread(
     )
 
 
+def _named_face_fabric(request: dict[str, Any]) -> str | None:
+    value = request.get("face_fabric")
+    if not isinstance(value, str):
+        return None
+    return value.strip() or None
+
+
+def _price_unknown_name(
+    request: dict[str, Any],
+    audit: dict[str, Any],
+    *,
+    requested_name: str,
+    width_cm: Decimal,
+    height_cm: Decimal,
+    quantity: int,
+    configuration: dict[str, str | None],
+    extra_operations: list[str],
+) -> dict[str, Any]:
+    """Use an exact catalog fabric when the bedspread model does not exist."""
+    explicit_fabric = _named_face_fabric(request)
+    if explicit_fabric:
+        return _price_modeless_bedspread(
+            request,
+            audit,
+            width_cm=width_cm,
+            height_cm=height_cm,
+            quantity=quantity,
+            configuration=configuration,
+            extra_operations=extra_operations,
+        )
+    fabric = _find_fabric(requested_name)
+    if fabric is None:
+        message = (
+            f"«{requested_name}» не найдено ни среди моделей покрывал, "
+            "ни среди тканей каталога."
+        )
+        return _unavailable(
+            "BEDSPREAD_MODEL_NOT_FOUND",
+            message,
+            details={"model": requested_name},
+        )
+    priced_request = {**request, "model": None, "face_fabric": fabric["name"]}
+    audit["bedspread_fabric_from_name"] = fabric["name"]
+    return _price_modeless_bedspread(
+        priced_request,
+        audit,
+        width_cm=width_cm,
+        height_cm=height_cm,
+        quantity=quantity,
+        configuration=configuration,
+        extra_operations=extra_operations,
+    )
+
+
 def calculate_bedspread(
     request: dict[str, Any],
     audit: dict[str, Any],
@@ -1251,15 +1305,15 @@ def calculate_bedspread(
         return _unavailable("BEDSPREAD_NOT_CALCULATED", notice)
     model = _resolve_model(requested_name)
     if model is None:
-        requested = str(request.get("model") or "").strip()
-        message = (
-            f"Покрывало «{requested}» нет в справочнике покрывал. "
-            + _new_request_message("модель из справочника")
-        )
-        return _unavailable(
-            "BEDSPREAD_MODEL_NOT_FOUND",
-            message,
-            details={"model": request.get("model"), "missing": ["модель"]},
+        return _price_unknown_name(
+            request,
+            audit,
+            requested_name=requested_name,
+            width_cm=width_cm,
+            height_cm=height_cm,
+            quantity=quantity,
+            configuration=configuration,
+            extra_operations=extra_operations,
         )
 
     classification = classify_model(model)
