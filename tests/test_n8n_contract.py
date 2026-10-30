@@ -70,6 +70,9 @@ class BedspreadSessionContractTests(unittest.TestCase):
             self.guide,
         )
         self.assertIn("Leave the curtain and Roman session", self.guide)
+        self.assertIn("Do not ask a clarifying question for a bedspread.", self.guide)
+        self.assertIn("`POST /api/calculate` with `model` omitted or null.", self.guide)
+        self.assertNotIn("укажите модель в новом полном запросе", self.guide)
 
     def test_curtain_merge_rules_remain(self) -> None:
         self.assertIn(

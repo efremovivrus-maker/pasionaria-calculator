@@ -96,7 +96,9 @@ export function formatUnavailableMessage(value: unknown): string {
     reasonCode === "BEDSPREAD_FILLING_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_LINING_NOT_FOUND" ||
     reasonCode === "BEDSPREAD_EXTRA_NOT_SUPPORTED" ||
-    reasonCode === "BEDSPREAD_FABRIC_TOO_NARROW"
+    reasonCode === "BEDSPREAD_FABRIC_TOO_NARROW" ||
+    reasonCode === "BEDSPREAD_SIZE_MISSING" ||
+    reasonCode === "BEDSPREAD_FACE_FABRIC_REQUIRED"
   ) {
     return (
       asString(payload.message) ??

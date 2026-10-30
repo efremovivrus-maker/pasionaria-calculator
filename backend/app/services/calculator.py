@@ -308,9 +308,27 @@ def _calculate(
             "quantity": request.get("quantity"),
         }
     )
+    product_value = str(request.get("product_type") or "").strip().casefold()
+    resolved_product = PRODUCT_ALIASES.get(product_value) if product_value else None
+    required_fields = REQUIRED_FIELDS
+    if resolved_product == "bedspread":
+        required_fields = ("product_type", "quantity")
+        if request.get("width_cm") in (None, "") or request.get("height_cm") in (
+            None,
+            "",
+        ):
+            message = (
+                "Размер покрывала не указан. Ширина и длина не подставляются."
+            )
+            return _unavailable(
+                "BEDSPREAD_SIZE_MISSING",
+                message,
+                message=message,
+                details={"missing": ["ширина", "длина"]},
+            )
     missing = [
         field
-        for field in REQUIRED_FIELDS
+        for field in required_fields
         if field not in request or request[field] in (None, "")
     ]
     if missing:
@@ -388,9 +406,14 @@ def _calculate(
             )
     else:
         requested_day_fabric = None
+    requested_model = request.get("model")
     audit.update(
         {
-            "model": str(request["model"]).strip(),
+            "model": (
+                str(requested_model).strip()
+                if isinstance(requested_model, str) and requested_model.strip()
+                else None
+            ),
             "width_cm": float(width_cm),
             "height_cm": float(height_cm),
             "quantity": quantity,

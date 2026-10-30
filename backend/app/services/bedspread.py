@@ -182,16 +182,31 @@ def _stitch_options() -> list[dict[str, Any]]:
     ]
 
 
-def _stitch_by_name(name: str) -> dict[str, Any] | None:
+def _bare_five_by_five(name: str) -> bool:
+    """«стёжка 5×5» names the size and not the geometry."""
+    text = _normalize_token(name).replace("стежка", "")
+    return text.replace(" ", "") == "5x5"
+
+
+def _standard_square_stitch() -> dict[str, Any] | None:
+    record = _stitch_by_name("Квадрат 5х5 см", allow_bare_square=False)
+    if record is None or Decimal(str(record.get("tariff_rub"))) != Decimal("180"):
+        return None
+    return record
+
+
+def _stitch_by_name(name: str, *, allow_bare_square: bool = True) -> dict[str, Any] | None:
     expected = _normalize_token(name)
     matches = [
         record
         for record in _stitch_options()
         if _normalize_token(str(record["variant"])) == expected
     ]
-    if len(matches) != 1:
-        return None
-    return matches[0]
+    if len(matches) == 1:
+        return matches[0]
+    if allow_bare_square and _bare_five_by_five(name):
+        return _standard_square_stitch()
+    return None
 
 
 def _filling_options() -> list[dict[str, Any]]:
@@ -827,6 +842,389 @@ def _price_plaid(
     }
 
 
+def _finish_quilted(
+    *,
+    audit: dict[str, Any],
+    model_name: str | None,
+    recipe_status: str | None,
+    fabric: dict[str, Any],
+    width_cm: Decimal,
+    height_cm: Decimal,
+    quantity: int,
+    configuration: dict[str, str | None],
+    extra_operations: list[str],
+    filling: dict[str, Any],
+    lining: dict[str, Any],
+    stitch: dict[str, Any],
+    stitch_binding: str,
+    bare_square: bool,
+    embroidery_operation: dict[str, Any] | None,
+    repeated_embroidery: bool,
+    applied_defaults: tuple[str, ...],
+) -> dict[str, Any]:
+    consumption = calculate_bedspread_consumption(
+        width_cm=width_cm,
+        height_cm=height_cm,
+        quantity=quantity,
+        fabric_width_cm=Decimal(str(fabric["width_cm"])),
+    )
+    if consumption.status != "success" or consumption.consumption_m is None:
+        return _unavailable(
+            consumption.reason_code or "BEDSPREAD_FABRIC_TOO_NARROW",
+            consumption.reason or "Ткань не подходит по ширине.",
+            details={
+                "model": model_name,
+                "fabric": fabric["name"],
+                "fabric_width_cm": fabric["width_cm"],
+            },
+        )
+
+    width_m = width_cm / Decimal("100")
+    height_m = height_cm / Decimal("100")
+    area = width_m * height_m * Decimal(quantity)
+    perimeter = Decimal("2") * (width_m + height_m) * Decimal(quantity)
+    fabric_cost = consumption.consumption_m * Decimal(str(fabric["rrc_price_rub_per_m"]))
+    lines = [
+        _line(
+            operation_id=str(filling["draft_id"]),
+            group="Толщина покрывала",
+            variant=str(filling["variant"]),
+            unit="М2",
+            calculation_basis="площадь готового покрывала",
+            tariff=Decimal(str(filling["tariff_rub"])),
+            basis=area,
+            formula="area",
+        ),
+        _line(
+            operation_id=str(lining["draft_id"]),
+            group="Подкладка покрывала",
+            variant=str(lining["variant"]),
+            unit="М2",
+            calculation_basis="площадь готового покрывала",
+            tariff=Decimal(str(lining["tariff_rub"])),
+            basis=area,
+            formula="area",
+        ),
+        _line(
+            operation_id=str(stitch["draft_id"]),
+            group="Стежка покрывала",
+            variant=str(stitch["variant"]),
+            unit="М2",
+            calculation_basis="площадь готового покрывала",
+            tariff=Decimal(str(stitch["tariff_rub"])),
+            basis=area,
+            formula="area",
+        ),
+        _line(
+            operation_id="BSD-SEW-BASE",
+            group="Пошив покрывала с подкладкой",
+            variant="Базовый периметр",
+            unit="МП",
+            calculation_basis="периметр готового покрывала",
+            tariff=SEWING_TARIFF,
+            basis=perimeter,
+            formula="2*(width+height)",
+        ),
+    ]
+    if embroidery_operation is not None:
+        formula = str(embroidery_operation["formula"])
+        if formula == "area":
+            basis = area
+            basis_name = "площадь готового покрывала"
+        elif formula == "height":
+            basis = height_m * Decimal(quantity)
+            basis_name = "высота изделия"
+        else:
+            return _unavailable(
+                "BEDSPREAD_EMBROIDERY_UNCONFIRMED",
+                f"Формула вышивки «{embroidery_operation['variant']}» не подтверждена для покрывала.",
+                details={"model": model_name, "formula": formula},
+            )
+        lines.append(
+            _line(
+                operation_id=str(embroidery_operation["id"]),
+                group=str(embroidery_operation["group"]),
+                variant=str(embroidery_operation["variant"]),
+                unit=str(embroidery_operation["unit"]),
+                calculation_basis=basis_name,
+                tariff=Decimal(str(embroidery_operation["tariff_rub"])),
+                basis=basis,
+                formula=formula,
+            )
+        )
+    lines.append(
+        _line(
+            operation_id="BSD-PACK",
+            group="Упаковка покрывала",
+            variant="Чехол из ПВХ или спандбонда",
+            unit="ШТ",
+            calculation_basis="за изделие",
+            tariff=PACKAGING_TARIFF,
+            basis=Decimal(quantity),
+            formula="quantity",
+        )
+    )
+    operation_cost = sum(
+        (Decimal(str(line["cost_rub"])) for line in lines),
+        Decimal("0"),
+    )
+    explanation = (
+        f"{consumption.explanation} "
+        "Наволочки, декоративные планки и фурнитура в стоимость не входят."
+    )
+    if filling.get("filling_multiplier") == 2:
+        explanation += (
+            " Синтепон 300 г/м²: отдельного тарифа нет, начислен тариф "
+            "200 г/м² дважды."
+        )
+    if stitch_binding == "default_stitch_assumed":
+        explanation += (
+            " Стёжка «Квадрат 5х5 см», 180 ₽/м², подставлена как "
+            "default_stitch_assumed: рисунок в карточке не задан, "
+            "использован тариф стандартной стёжки «Ибица»."
+        )
+    elif stitch_binding == "confirmed":
+        explanation += (
+            f" Использована подтверждённая стёжка модели «{stitch['variant']}», "
+            f"{stitch['tariff_rub']} ₽/м². Вторая стёжка не начислена."
+        )
+    elif stitch_binding == "explicit":
+        explanation += " Использована стёжка, названная в запросе. Вторая стёжка не начислена."
+    if bare_square:
+        explanation += (
+            " Стёжка «5×5» без геометрии принята как «Квадрат 5х5 см», 180 ₽/м²."
+        )
+    if applied_defaults:
+        explanation += " По умолчанию: " + ", ".join(applied_defaults) + "."
+    if repeated_embroidery:
+        explanation += " Повторно названная вышивка второй раз не начислена."
+    request_payload = {
+        "product_type": "bedspread",
+        "model": model_name,
+        "width_cm": float(width_cm),
+        "height_cm": float(height_cm),
+        "quantity": quantity,
+        "configuration": {
+            "heading": configuration.get("heading"),
+            "mechanism": configuration.get("mechanism"),
+            "lining": str(lining["variant"]),
+            "mounting": configuration.get("mounting"),
+        },
+        "face_fabric": fabric["name"],
+        "stitch": stitch["variant"],
+        "filling": filling["variant"],
+        "extra_operations": extra_operations,
+    }
+    audit["explanation"] = explanation
+    result = {
+        "status": "success",
+        "request": request_payload,
+        "fabric": {
+            "name": fabric["name"],
+            "article": fabric.get("base_article"),
+            "width_cm": fabric["width_cm"],
+            "price_type": "RRC",
+            "price_rub_per_m": fabric["rrc_price_rub_per_m"],
+            "status": fabric.get("status"),
+            "cost_rub": money(fabric_cost),
+        },
+        "day_fabric": None,
+        "consumption": {
+            **consumption.to_dict(),
+            "explanation": explanation,
+        },
+        "operations": {
+            "base": lines,
+            "additional": [],
+            "omitted": [
+                "декоративные наволочки",
+                "декоративные планки и вставки",
+                "фурнитура без отдельного правила",
+            ],
+        },
+        "pricing": build_pricing(
+            fabric_cost=fabric_cost,
+            operation_cost=operation_cost,
+            extras_cost=Decimal("0"),
+        ),
+    }
+    if model_name is not None:
+        result["model"] = {
+            "name": model_name,
+            "status": recipe_status,
+            "recipe_code": "BEDSPREAD_QUILTED",
+        }
+    return result
+
+
+def _known_option_message(kind: str, value: str, options: str) -> str:
+    return f"{kind} «{value}» не найдена. {options}"
+
+
+def _price_modeless_bedspread(
+    request: dict[str, Any],
+    audit: dict[str, Any],
+    *,
+    width_cm: Decimal,
+    height_cm: Decimal,
+    quantity: int,
+    configuration: dict[str, str | None],
+    extra_operations: list[str],
+) -> dict[str, Any]:
+    """Standard quilt when the request has no bedspread model."""
+    requested_face = request.get("face_fabric")
+    if requested_face is not None and not isinstance(requested_face, str):
+        return _unavailable("MISSING_RULE", "Поле face_fabric должно быть строкой или null.")
+    if isinstance(requested_face, str):
+        requested_face = requested_face.strip() or None
+    if not requested_face:
+        message = (
+            "Лицевая ткань не указана. Другая ткань вместо неё не подставляется."
+        )
+        return _unavailable(
+            "BEDSPREAD_FACE_FABRIC_REQUIRED",
+            message,
+            details={"missing": ["лицевая ткань"]},
+        )
+    fabric = _find_fabric(requested_face)
+    if fabric is None:
+        message = (
+            f"Ткань «{requested_face}» не найдена в каталоге. "
+            "Другая ткань вместо неё не подставляется."
+        )
+        return _unavailable(
+            "FABRIC_NOT_FOUND",
+            message,
+            details={"fabric": requested_face},
+        )
+    if fabric.get("width_cm") in (None, "") or fabric.get("rrc_price_rub_per_m") in (
+        None,
+        "",
+    ):
+        message = (
+            f"У ткани «{fabric['name']}» не заполнены ширина или розничная цена. "
+            "Приблизительный расчёт не выполняется."
+        )
+        return _unavailable(
+            "BEDSPREAD_FABRIC_DATA_MISSING",
+            message,
+            details={"fabric": fabric["name"]},
+        )
+
+    stitch_name = request.get("stitch")
+    if stitch_name is not None and not isinstance(stitch_name, str):
+        return _unavailable("MISSING_RULE", "Поле stitch должно быть строкой или null.")
+    if isinstance(stitch_name, str):
+        stitch_name = stitch_name.strip() or None
+    bare_square = stitch_name is not None and _bare_five_by_five(stitch_name)
+    applied_defaults: list[str] = []
+    if stitch_name is None:
+        stitch = _standard_square_stitch()
+        stitch_binding = "modeless_default"
+        applied_defaults.append("стёжка «Квадрат 5х5 см», 180 ₽/м²")
+    else:
+        stitch = _stitch_by_name(stitch_name)
+        stitch_binding = "explicit"
+    if stitch is None:
+        if stitch_name is None:
+            message = (
+                "Стандартная стёжка «Квадрат 5х5 см» с тарифом 180 ₽/м² "
+                "не найдена в прайсе."
+            )
+        else:
+            message = _known_option_message(
+                "Стёжка",
+                stitch_name,
+                "Другой рисунок вместо неё не подставляется.",
+            )
+        return _unavailable(
+            "BEDSPREAD_STITCH_NOT_FOUND",
+            message,
+            details={"field": "stitch", "requested_value": stitch_name},
+        )
+
+    filling_name = request.get("filling")
+    if filling_name is not None and not isinstance(filling_name, str):
+        return _unavailable("MISSING_RULE", "Поле filling должно быть строкой или null.")
+    if isinstance(filling_name, str):
+        filling_name = filling_name.strip() or None
+    if filling_name is None:
+        applied_defaults.append("синтепон 100 г/м²")
+    filling = _filling_record(filling_name)
+    if filling is None:
+        return _unavailable(
+            "BEDSPREAD_FILLING_NOT_FOUND",
+            _known_option_message(
+                "Плотность синтепона",
+                str(filling_name),
+                "Доступны 100 и 200 г/м².",
+            ),
+            details={
+                "field": "filling",
+                "requested_value": filling_name,
+                "available_options": ["100 г/м²", "200 г/м²"],
+            },
+        )
+
+    lining_name = configuration.get("lining")
+    if lining_name is not None and not isinstance(lining_name, str):
+        return _unavailable(
+            "MISSING_RULE",
+            "Поле configuration.lining должно быть строкой или null.",
+        )
+    if isinstance(lining_name, str):
+        lining_name = lining_name.strip() or None
+    if lining_name is None:
+        applied_defaults.append("подкладка «Анна»")
+    lining = _lining_record(lining_name)
+    if lining is None:
+        return _unavailable(
+            "BEDSPREAD_LINING_NOT_FOUND",
+            _known_option_message(
+                "Подкладка",
+                str(lining_name),
+                "Доступны «Анна», «Сканди» и «Бойл».",
+            ),
+            details={
+                "field": "lining",
+                "requested_value": lining_name,
+                "available_options": ["Анна", "Сканди", "Бойл"],
+            },
+        )
+
+    for extra in extra_operations:
+        return _unavailable(
+            "BEDSPREAD_EXTRA_NOT_SUPPORTED",
+            (
+                f"Операция «{extra}» не входит в расчёт покрывала. "
+                "Наволочки, декоративные планки и фурнитура без отдельного правила не добавляются."
+            ),
+            details={"requested_value": extra},
+        )
+
+    audit["bedspread_model"] = None
+    audit["bedspread_status"] = "стандартная формула"
+    return _finish_quilted(
+        audit=audit,
+        model_name=None,
+        recipe_status=None,
+        fabric=fabric,
+        width_cm=width_cm,
+        height_cm=height_cm,
+        quantity=quantity,
+        configuration=configuration,
+        extra_operations=extra_operations,
+        filling=filling,
+        lining=lining,
+        stitch=stitch,
+        stitch_binding=stitch_binding,
+        bare_square=bare_square,
+        embroidery_operation=None,
+        repeated_embroidery=False,
+        applied_defaults=tuple(applied_defaults),
+    )
+
+
 def calculate_bedspread(
     request: dict[str, Any],
     audit: dict[str, Any],
@@ -838,6 +1236,16 @@ def calculate_bedspread(
     extra_operations: list[str],
 ) -> dict[str, Any]:
     requested_name = str(request.get("model") or "").strip()
+    if not requested_name:
+        return _price_modeless_bedspread(
+            request,
+            audit,
+            width_cm=width_cm,
+            height_cm=height_cm,
+            quantity=quantity,
+            configuration=configuration,
+            extra_operations=extra_operations,
+        )
     notice = _not_calculated_bedspread(requested_name)
     if notice:
         return _unavailable("BEDSPREAD_NOT_CALCULATED", notice)
@@ -1128,188 +1536,22 @@ def calculate_bedspread(
             },
         )
 
-    consumption = calculate_bedspread_consumption(
+    return _finish_quilted(
+        audit=audit,
+        model_name=model["model"],
+        recipe_status=classification["calculation_status"],
+        fabric=fabric,
         width_cm=width_cm,
         height_cm=height_cm,
         quantity=quantity,
-        fabric_width_cm=Decimal(str(fabric["width_cm"])),
+        configuration=configuration,
+        extra_operations=extra_operations,
+        filling=filling,
+        lining=lining,
+        stitch=stitch,
+        stitch_binding=stitch_binding,
+        bare_square=_bare_five_by_five(stitch_name) if stitch_name else False,
+        embroidery_operation=embroidery_operation,
+        repeated_embroidery=repeated_embroidery,
+        applied_defaults=(),
     )
-    if consumption.status != "success" or consumption.consumption_m is None:
-        return _unavailable(
-            consumption.reason_code or "BEDSPREAD_FABRIC_TOO_NARROW",
-            consumption.reason or "Ткань не подходит по ширине.",
-            details={
-                "model": model["model"],
-                "fabric": fabric["name"],
-                "fabric_width_cm": fabric["width_cm"],
-            },
-        )
-
-    width_m = width_cm / Decimal("100")
-    height_m = height_cm / Decimal("100")
-    area = width_m * height_m * Decimal(quantity)
-    perimeter = Decimal("2") * (width_m + height_m) * Decimal(quantity)
-    fabric_cost = consumption.consumption_m * Decimal(str(fabric["rrc_price_rub_per_m"]))
-    lines = [
-        _line(
-            operation_id=str(filling["draft_id"]),
-            group="Толщина покрывала",
-            variant=str(filling["variant"]),
-            unit="М2",
-            calculation_basis="площадь готового покрывала",
-            tariff=Decimal(str(filling["tariff_rub"])),
-            basis=area,
-            formula="area",
-        ),
-        _line(
-            operation_id=str(lining["draft_id"]),
-            group="Подкладка покрывала",
-            variant=str(lining["variant"]),
-            unit="М2",
-            calculation_basis="площадь готового покрывала",
-            tariff=Decimal(str(lining["tariff_rub"])),
-            basis=area,
-            formula="area",
-        ),
-        _line(
-            operation_id=str(stitch["draft_id"]),
-            group="Стежка покрывала",
-            variant=str(stitch["variant"]),
-            unit="М2",
-            calculation_basis="площадь готового покрывала",
-            tariff=Decimal(str(stitch["tariff_rub"])),
-            basis=area,
-            formula="area",
-        ),
-        _line(
-            operation_id="BSD-SEW-BASE",
-            group="Пошив покрывала с подкладкой",
-            variant="Базовый периметр",
-            unit="МП",
-            calculation_basis="периметр готового покрывала",
-            tariff=SEWING_TARIFF,
-            basis=perimeter,
-            formula="2*(width+height)",
-        ),
-    ]
-    if embroidery_operation is not None:
-        formula = str(embroidery_operation["formula"])
-        if formula == "area":
-            basis = area
-            basis_name = "площадь готового покрывала"
-        elif formula == "height":
-            basis = height_m * Decimal(quantity)
-            basis_name = "высота изделия"
-        else:
-            return _unavailable(
-                "BEDSPREAD_EMBROIDERY_UNCONFIRMED",
-                f"Формула вышивки «{embroidery_operation['variant']}» не подтверждена для покрывала.",
-                details={"model": model["model"], "formula": formula},
-            )
-        lines.append(
-            _line(
-                operation_id=str(embroidery_operation["id"]),
-                group=str(embroidery_operation["group"]),
-                variant=str(embroidery_operation["variant"]),
-                unit=str(embroidery_operation["unit"]),
-                calculation_basis=basis_name,
-                tariff=Decimal(str(embroidery_operation["tariff_rub"])),
-                basis=basis,
-                formula=formula,
-            )
-        )
-    lines.append(
-        _line(
-            operation_id="BSD-PACK",
-            group="Упаковка покрывала",
-            variant="Чехол из ПВХ или спандбонда",
-            unit="ШТ",
-            calculation_basis="за изделие",
-            tariff=PACKAGING_TARIFF,
-            basis=Decimal(quantity),
-            formula="quantity",
-        )
-    )
-    operation_cost = sum(
-        (Decimal(str(line["cost_rub"])) for line in lines),
-        Decimal("0"),
-    )
-    explanation = (
-        f"{consumption.explanation} "
-        "Наволочки, декоративные планки и фурнитура в стоимость не входят."
-    )
-    if filling.get("filling_multiplier") == 2:
-        explanation += (
-            " Синтепон 300 г/м²: отдельного тарифа нет, начислен тариф "
-            "200 г/м² дважды."
-        )
-    if stitch_binding == "default_stitch_assumed":
-        explanation += (
-            " Стёжка «Квадрат 5х5 см», 180 ₽/м², подставлена как "
-            "default_stitch_assumed: рисунок в карточке не задан, "
-            "использован тариф стандартной стёжки «Ибица»."
-        )
-    elif stitch_binding == "confirmed":
-        explanation += (
-            f" Использована подтверждённая стёжка модели «{stitch['variant']}», "
-            f"{stitch['tariff_rub']} ₽/м². Вторая стёжка не начислена."
-        )
-    elif stitch_binding == "explicit":
-        explanation += " Использована стёжка, названная в запросе. Вторая стёжка не начислена."
-    if repeated_embroidery:
-        explanation += " Повторно названная вышивка второй раз не начислена."
-    request_payload = {
-        "product_type": "bedspread",
-        "model": model["model"],
-        "width_cm": float(width_cm),
-        "height_cm": float(height_cm),
-        "quantity": quantity,
-        "configuration": {
-            "heading": configuration.get("heading"),
-            "mechanism": configuration.get("mechanism"),
-            "lining": str(lining["variant"]),
-            "mounting": configuration.get("mounting"),
-        },
-        "face_fabric": fabric["name"],
-        "stitch": stitch["variant"],
-        "filling": filling["variant"],
-        "extra_operations": extra_operations,
-    }
-    audit["explanation"] = explanation
-    return {
-        "status": "success",
-        "request": request_payload,
-        "model": {
-            "name": model["model"],
-            "status": classification["calculation_status"],
-            "recipe_code": "BEDSPREAD_QUILTED",
-        },
-        "fabric": {
-            "name": fabric["name"],
-            "article": fabric.get("base_article"),
-            "width_cm": fabric["width_cm"],
-            "price_type": "RRC",
-            "price_rub_per_m": fabric["rrc_price_rub_per_m"],
-            "status": fabric.get("status"),
-            "cost_rub": money(fabric_cost),
-        },
-        "day_fabric": None,
-        "consumption": {
-            **consumption.to_dict(),
-            "explanation": explanation,
-        },
-        "operations": {
-            "base": lines,
-            "additional": [],
-            "omitted": [
-                "декоративные наволочки",
-                "декоративные планки и вставки",
-                "фурнитура без отдельного правила",
-            ],
-        },
-        "pricing": build_pricing(
-            fabric_cost=fabric_cost,
-            operation_cost=operation_cost,
-            extras_cost=Decimal("0"),
-        ),
-    }

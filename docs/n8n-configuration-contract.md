@@ -121,15 +121,23 @@ Add these rules to the parser prompt:
     Plural `покрывала` without a count leaves quantity missing.
 21. `из ткани <название>` goes to `face_fabric`, not to `model` and not to
     `extra_operations`. A bedspread without another fabric keeps
-    `face_fabric: null`; the backend uses the confirmed default.
+    `face_fabric: null`; the backend uses the confirmed default. If the
+    message names a fabric but no bedspread model, `model` stays null. Do
+    not copy the fabric name into `model`.
 22. A named stitch (`ромб 10×10`, `квадрат 5×5`, `Аура` and the other
     bedspread stitch names) goes to `stitch`. Do not invent a stitch when
     the user did not name one: leave `stitch` null. The backend then uses
     the model's standard stitch, including a marked `default_stitch_assumed`
-    when the card is quilted but names no pattern. `синтепон 200` or `синтепон 100` goes to
+    when the card is quilted but names no pattern. `стёжка 5×5` and `5×5`
+    without `квадрат` or `ромб` go to `stitch: "5×5"`. Do not ask which
+    geometry. The backend reads that as «Квадрат 5×5», 180 ₽/м².
+    `синтепон 200` or `синтепон 100` goes to
     `filling`. `подкладка Сканди`, `подкладка Анна` or `подкладка Бойл`
     goes to `configuration.lining`. If lining is not named, leave it null:
     the backend applies `Анна`, or `Бойл` when that is the model's lining.
+    A bedspread with no model and no named lining, filling or stitch still
+    leaves those fields null. The backend applies Анна, синтепон 100 г/м²
+    and «Квадрат 5×5». Do not ask for them.
 23. Do not put pillowcases, planks, ribbons or the model embroidery into
     `extra_operations` for a bedspread. The backend adds confirmed
     embroidery itself and will stop if an unsupported extra arrives.
@@ -143,6 +151,10 @@ Add these rules to the parser prompt:
 26. A bedspread follow-up such as `ромб 10×10` is not a clarification of the
     stored curtain or bedspread. It is incomplete on its own. Leave the
     missing model and size null and do not fill them from the session.
+27. Do not ask a clarifying question for a bedspread. Either the fields
+    above are filled from the current message, or they stay null and the
+    backend returns `unavailable` with a concrete reason. Do not invent a
+    model, a size or a substitute fabric.
 
 Prompt examples:
 
@@ -221,6 +233,18 @@ Prompt examples:
 - `Покрывало Софт 300×270 из ткани шириной 280 см` → model `Софт`,
   width `300`, height `270`, `face_fabric: null`. The width remark does
   not create a new fabric. Do not add a stitch.
+- `Покрывало 230×250 из ткани Софт` → `model: null`, `face_fabric: "Софт"`,
+  width `230`, height `250`, quantity `1`, `stitch: null`, `filling: null`,
+  `configuration.lining: null`. Do not invent model `Софт`.
+- `Покрывало 230×250 из ткани Софт, стёжка 5×5` → the same, with
+  `stitch: "5×5"`.
+- `Покрывало 230×250 из ткани Софт, ромб 10×10, синтепон 200, подкладка Бойл`
+  → `model: null`, `face_fabric: "Софт"`, `stitch: "Ромб 10×10"`,
+  `filling: "200"`, `configuration.lining: "Бойл"`.
+- `Покрывало из ткани Софт` → `model: null`, `face_fabric: "Софт"`,
+  `width_cm: null`, `height_cm: null`. Do not invent 230×250.
+- `Покрывало 230×250 из ткани НетТакой` → `face_fabric: "НетТакой"`,
+  `model: null`. Do not replace the fabric.
 
 ## Session merge
 
@@ -240,14 +264,18 @@ returns `product_type: "bedspread"`:
    Table. Pass them only in the current API payload, and omit each one when
    it is null.
 5. If the current message has a model and both sizes, send it as-is. A
-   missing stitch stays null. Show the backend `message` unchanged. That
-   message already asks for a new complete request.
-6. If the current message has no model, no both sizes, or a plural form
-   without a quantity, do not call the API with stored values. Reply with
-   one complete example and leave the session unchanged:
-   - no size: `Для расчёта покрывала укажите размер в новом полном запросе. Например: Покрывало Софт 230×250, ромб 10×10`
-   - no model: `Для расчёта покрывала укажите модель в новом полном запросе. Например: Покрывало Софт 230×250, ромб 10×10`
-   - plural without a count: `Для расчёта покрывала укажите количество в новом полном запросе. Например: Покрывало Софт 230×250, ромб 10×10`
+   missing stitch stays null. Show the backend `message` unchanged.
+6. The `If` node does not ask the user to complete a bedspread. It does not
+   reuse the stored curtain model, size or quantity.
+   - Model null, both sizes and `face_fabric` present, quantity known:
+     `POST /api/calculate` with `model` omitted or null.
+   - Width or height null: still `POST`, with that field null. Show the
+     backend `unavailable` message. Do not ask for a size.
+   - Model null and `face_fabric` null: still `POST`. Show the backend
+     message. Do not ask for a model or a fabric.
+   - Plural without a count: do not invent quantity `1` and do not call the
+     API. Reply exactly `Количество покрывал не указано.` Do not add an
+     example request.
 
 ```text
 stored: curtain, model=Вандер, mechanism=Эконом, width=140, height=270, quantity=2

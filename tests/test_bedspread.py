@@ -817,6 +817,131 @@ class BedspreadCalculationTests(unittest.TestCase):
         self.assertEqual(lining["cost"], 1150)
         self.assertEqual(payload["retail_price"], 7265.5)
 
+    def test_bedspread_without_model_uses_standard_quilt_defaults(self) -> None:
+        payload = self.calculate(
+            product_type="bedspread",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="Софт",
+        )
+        report = readiness_report()
+
+        self.assertEqual(payload["status"], "success")
+        self.assertNotIn("model", payload["normalized_request"])
+        self.assertEqual(payload["fabric"]["name"], "Софт")
+        self.assertEqual(payload["fabric"]["consumption_m"], 2.7)
+        self.assertEqual(payload["fabric"]["cost"], 2673)
+        square = self.component(payload, "BSD-STITCH-Квадрат 5х5 см")
+        self.assertEqual(square["tariff"], 180)
+        self.assertEqual(square["cost"], 1035)
+        self.assertEqual(
+            self.component(payload, "BSD-LIN-Подкладка «Анна»")["tariff"],
+            450,
+        )
+        self.assertEqual(
+            self.component(payload, "BSD-FILL-100 г/м2 (Легкое)")["tariff"],
+            80,
+        )
+        self.assertEqual(payload["retail_price"], 8875.5)
+        self.assertIn("По умолчанию", payload["explanation"])
+        self.assertEqual(len(report), 45)
+        self.assertNotIn(None, {item["model"] for item in report})
+
+    def test_bare_five_by_five_stitch_means_square(self) -> None:
+        for stitch in ("5×5", "стёжка 5×5", "5х5"):
+            with self.subTest(stitch=stitch):
+                payload = self.calculate(
+                    product_type="bedspread",
+                    width_cm=230,
+                    height_cm=250,
+                    quantity=1,
+                    face_fabric="Софт",
+                    stitch=stitch,
+                )
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(
+                    self.component(payload, "BSD-STITCH-Квадрат 5х5 см")["tariff"],
+                    180,
+                )
+                self.assertEqual(payload["retail_price"], 8875.5)
+                self.assertIn("без геометрии", payload["explanation"])
+                self.assertNotIn("По умолчанию: стёжка", payload["explanation"])
+
+    def test_modeless_request_keeps_named_materials(self) -> None:
+        payload = self.calculate(
+            product_type="bedspread",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="Софт",
+            stitch="Ромб 10×10",
+            filling="200",
+            configuration={"lining": "Бойл"},
+        )
+
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(
+            self.component(payload, "BSD-STITCH-Ромб 10х10 см")["tariff"],
+            150,
+        )
+        self.assertEqual(
+            self.component(payload, "BSD-FILL-200 г/м2 (Среднее)")["tariff"],
+            150,
+        )
+        self.assertEqual(
+            self.component(payload, "BSD-LIN-Подкладка «Бойл»")["tariff"],
+            200,
+        )
+        self.assertEqual(payload["retail_price"], 7668)
+        self.assertNotIn("По умолчанию", payload["explanation"])
+
+    def test_modeless_bedspread_does_not_invent_fabric_or_size(self) -> None:
+        unknown_fabric = self.calculate(
+            product_type="bedspread",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="НетТакой",
+        )
+        missing_fabric = self.calculate(
+            product_type="bedspread",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+        )
+        missing_size = self.calculate(
+            product_type="bedspread",
+            height_cm=250,
+            quantity=1,
+            face_fabric="Софт",
+        )
+        zoe = self.calculate(
+            product_type="bedspread",
+            model="Зоуи",
+            width_cm=230,
+            height_cm=250,
+            quantity=1,
+            face_fabric="Софт",
+        )
+
+        self.assertEqual(unknown_fabric["reason_code"], "FABRIC_NOT_FOUND")
+        self.assertIn("не найдена в каталоге", unknown_fabric["message"])
+        self.assertIn("не подставляется", unknown_fabric["message"])
+        self.assertEqual(
+            missing_fabric["reason_code"],
+            "BEDSPREAD_FACE_FABRIC_REQUIRED",
+        )
+        self.assertEqual(missing_size["reason_code"], "BEDSPREAD_SIZE_MISSING")
+        self.assertIn("не подставляются", missing_size["message"])
+        self.assertEqual(
+            zoe["reason_code"],
+            "BEDSPREAD_INDIVIDUAL_CALCULATION_EXCLUDED",
+        )
+        for payload in (unknown_fabric, missing_fabric, missing_size, zoe):
+            self.assertNotIn("retail_price", payload)
+            self.assertNotIn("укажите", payload["message"].casefold())
+
     def test_curtain_request_is_unchanged(self) -> None:
         payload = self.calculate(
             product_type="curtain",

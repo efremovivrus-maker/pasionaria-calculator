@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal, Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class CalculationConfiguration(BaseModel):
@@ -26,9 +26,9 @@ class CalculationConfiguration(BaseModel):
 
 class CalculationRequest(BaseModel):
     product_type: Literal["curtain", "roman", "bedspread"]
-    model: str = Field(min_length=1)
-    width_cm: float = Field(gt=0)
-    height_cm: float = Field(gt=0)
+    model: Optional[str] = None
+    width_cm: Optional[float] = None
+    height_cm: Optional[float] = None
     quantity: int = Field(ge=1)
     configuration: CalculationConfiguration = Field(
         default_factory=CalculationConfiguration
@@ -39,6 +39,27 @@ class CalculationRequest(BaseModel):
     filling: Optional[str] = None
     extra_operations: list[str] = Field(default_factory=list)
     raw_request: Optional[str] = None
+
+    @field_validator("model")
+    @classmethod
+    def strip_model(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        stripped = value.strip()
+        return stripped or None
+
+    @model_validator(mode="after")
+    def require_named_product_fields(self) -> "CalculationRequest":
+        if self.product_type != "bedspread":
+            if not self.model:
+                raise ValueError("Model is required")
+            if self.width_cm is None or self.height_cm is None:
+                raise ValueError("Dimensions are required")
+        if self.width_cm is not None and self.width_cm <= 0:
+            raise ValueError("Width must be positive")
+        if self.height_cm is not None and self.height_cm <= 0:
+            raise ValueError("Height must be positive")
+        return self
 
     @field_validator("day_fabric", "face_fabric", "stitch", "filling")
     @classmethod
@@ -81,7 +102,7 @@ class CalculationRequest(BaseModel):
 
 class NormalizedRequest(BaseModel):
     product_type: Literal["curtain", "roman", "bedspread"]
-    model: str
+    model: Optional[str] = None
     width_cm: float
     height_cm: float
     quantity: int
