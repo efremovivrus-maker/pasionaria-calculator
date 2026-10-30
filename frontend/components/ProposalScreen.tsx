@@ -28,7 +28,7 @@ import {
 } from "@/lib/proposal";
 
 const fieldClass =
-  "mt-2 w-full border border-stone-300 bg-transparent px-3 py-2 text-sm font-normal normal-case tracking-normal text-stone-950 outline-none focus:border-stone-800";
+  "mt-1.5 w-full border border-stone-300 bg-transparent px-3 py-1.5 text-sm font-normal normal-case tracking-normal text-stone-950 outline-none focus:border-stone-800";
 
 export function ProposalScreen() {
   const {
@@ -48,11 +48,15 @@ export function ProposalScreen() {
   } = useProposal();
   const [confirmClear, setConfirmClear] = useState(false);
   const [pdfState, setPdfState] = useState<"idle" | "working" | "failed">("idle");
+  const [coverOpen, setCoverOpen] = useState(false);
+  const [addingRoom, setAddingRoom] = useState(false);
   const [roomName, setRoomName] = useState("");
+  const [addingManual, setAddingManual] = useState(false);
   const [manualTitle, setManualTitle] = useState("");
   const [manualQuantity, setManualQuantity] = useState("1");
   const [manualPrice, setManualPrice] = useState("");
   const [manualType, setManualType] = useState<"product" | "service">("product");
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const totals = computeProposalTotals(proposal);
   const discount = proposal.discount;
   const discountReady = proposalDiscountValid(discount, totals.subtotal);
@@ -65,6 +69,12 @@ export function ProposalScreen() {
     manualQuantityValue > 0 &&
     manualPriceValue !== null &&
     manualPriceValue >= 0;
+
+  useEffect(() => {
+    if (proposal.cover.text.trim()) {
+      setCoverOpen(true);
+    }
+  }, [proposal.cover.text]);
 
   function commitClientPrice(item: ProposalItem, next: number) {
     const shown = clientUnitPrice(item, proposal.roundingStep, proposal.roundingMode);
@@ -83,13 +93,11 @@ export function ProposalScreen() {
     }
     addRoom(name);
     setRoomName("");
+    setAddingRoom(false);
   }
 
   function saveManualItem() {
-    if (
-      manualQuantityValue === null ||
-      manualPriceValue === null
-    ) {
+    if (manualQuantityValue === null || manualPriceValue === null) {
       return;
     }
     const manualItem = createManualItem({
@@ -106,11 +114,13 @@ export function ProposalScreen() {
     setManualQuantity("1");
     setManualPrice("");
     setManualType("product");
+    setAddingManual(false);
   }
 
   function clearProposal() {
     clearItems();
     setConfirmClear(false);
+    setCoverOpen(false);
   }
 
   async function createPdf() {
@@ -124,46 +134,94 @@ export function ProposalScreen() {
     }
   }
 
+  const roundingModeLabel =
+    proposal.roundingMode === "nearest" ? "ближайшее значение" : "вверх";
+  const roundingSummary = `Округление: до ${formatRubles(proposal.roundingStep)} · ${roundingModeLabel}`;
+
+  const discountSummary = !discount.enabled
+    ? "Скидка: не применяется"
+    : discountReady && totals.discountAmount > 0
+      ? discount.kind === "percent"
+        ? `Скидка ${parseEditableNumber(discount.value) ?? ""}% · −${formatProposalMoney(totals.discountAmount)}`
+        : `Скидка · −${formatProposalMoney(totals.discountAmount)}`
+      : "Скидка: укажите размер";
+
+  const finalTotal =
+    discount.enabled && discountReady ? totals.finalTotal : totals.subtotal;
+
   return (
-    <main className="mx-auto flex w-full max-w-[1040px] flex-1 flex-col px-5 pb-10 pt-12 sm:px-8 sm:pt-16 lg:px-10">
+    <main className="mx-auto flex w-full max-w-[1040px] flex-1 flex-col px-5 pb-10 pt-6 sm:px-8 sm:pt-8 lg:px-10">
       <button
         type="button"
         onClick={closeProposal}
-        className="self-start text-sm text-stone-700 underline decoration-stone-300 underline-offset-4 transition-colors hover:text-stone-950"
+        className="self-start text-xs text-stone-600 underline decoration-stone-300 underline-offset-2 transition-colors hover:text-stone-950"
       >
-        Вернуться к расчётам
+        ← Вернуться к расчётам
       </button>
 
-      <h1 className="mt-6 font-editorial text-[2.6rem] leading-none text-stone-950 sm:text-[3.4rem]">
-        Коммерческое предложение
-      </h1>
+      <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
+        <h1 className="font-editorial text-[1.65rem] leading-tight text-stone-950 sm:text-[2.15rem]">
+          Коммерческое предложение
+        </h1>
+        {proposal.items.length > 0 ? (
+          confirmClear ? (
+            <div
+              role="alertdialog"
+              aria-labelledby="clear-kp-heading"
+              className="max-w-md border border-stone-300 bg-[#f8f6f0] px-4 py-3 text-sm text-stone-800"
+            >
+              <p id="clear-kp-heading" className="leading-relaxed">
+                Удалить всё содержимое КП? Будут удалены все позиции, помещения, скидка, данные
+                клиента и сопроводительное сообщение. Это действие нельзя отменить.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={clearProposal}
+                  className="min-h-9 bg-stone-950 px-3 text-xs font-semibold text-[#f7f4ec] hover:bg-[#6d7565]"
+                >
+                  Очистить
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmClear(false)}
+                  className="min-h-9 border border-stone-400 px-3 text-xs text-stone-800 hover:border-stone-800"
+                >
+                  Отмена
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmClear(true)}
+              className="inline-flex min-h-9 items-center gap-1.5 border border-stone-300 px-2.5 text-xs text-stone-700 transition-colors hover:border-stone-700 hover:text-stone-950"
+            >
+              <TrashIcon />
+              Очистить КП
+            </button>
+          )
+        ) : null}
+      </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
         <DocumentField
           label="Адресат КП"
           value={proposal.recipient ?? ""}
-          onChange={(value) =>
-            updateDocument({ recipient: value.trim() ? value : null })
-          }
+          onChange={(value) => updateDocument({ recipient: value.trim() ? value : null })}
         />
         <DocumentField
           label="Автор КП"
           value={proposal.author ?? ""}
-          onChange={(value) =>
-            updateDocument({ author: value.trim() ? value : null })
-          }
+          onChange={(value) => updateDocument({ author: value.trim() ? value : null })}
         />
-        <div className="sm:col-span-2">
-          <DocumentField
-            label="Название объекта / адрес"
-            value={proposal.objectName ?? ""}
-            onChange={(value) =>
-              updateDocument({ objectName: value.trim() ? value : null })
-            }
-          />
-        </div>
         <DocumentField
-          label="Дата КП"
+          label="Объект / адрес"
+          value={proposal.objectName ?? ""}
+          onChange={(value) => updateDocument({ objectName: value.trim() ? value : null })}
+        />
+        <DocumentField
+          label="Дата"
           type="date"
           value={proposal.issuedOn}
           onChange={(value) => {
@@ -174,11 +232,13 @@ export function ProposalScreen() {
         />
       </div>
 
-      <fieldset className="mt-8 border border-stone-300 px-4 py-4">
-        <legend className="px-2 text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
-          Округлять цены до
-        </legend>
-        <div className="flex flex-wrap gap-x-5 gap-y-2">
+      <CollapsibleSection
+        className="mt-5"
+        summary={`Настройки цен · ${roundingSummary}`}
+        panelLabel="Настройки цен"
+      >
+        <p className="text-xs text-stone-600">{roundingSummary}</p>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
           {ROUNDING_STEPS.map((step) => (
             <label key={step} className="inline-flex items-center gap-2 text-sm">
               <input
@@ -192,7 +252,7 @@ export function ProposalScreen() {
             </label>
           ))}
         </div>
-        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
           <label className="inline-flex items-center gap-2 text-sm">
             <input
               type="radio"
@@ -218,48 +278,174 @@ export function ProposalScreen() {
           type="button"
           disabled={proposal.items.length === 0}
           onClick={() => applyRounding(proposal.roundingStep, proposal.roundingMode)}
-          className="mt-4 min-h-10 border border-stone-800 px-4 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50 disabled:cursor-not-allowed disabled:border-stone-300 disabled:text-stone-400"
+          className="mt-3 min-h-9 border border-stone-800 px-3 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50 disabled:cursor-not-allowed disabled:border-stone-300 disabled:text-stone-400"
         >
           Округлить цены
         </button>
         <p className="mt-2 text-xs leading-5 text-stone-500">
           Округляется цена за единицу от исходной стоимости.
         </p>
-      </fieldset>
+      </CollapsibleSection>
 
-      <form
-        className="mt-8 flex flex-col gap-3 border border-stone-300 bg-[#f8f6f0] px-4 py-4 sm:flex-row sm:items-end"
-        onSubmit={(event) => {
-          event.preventDefault();
-          saveRoom();
-        }}
-      >
-        <label className="block flex-1 text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
-          Новое помещение
-          <input
-            value={roomName}
-            onChange={(event) => setRoomName(event.target.value)}
-            placeholder="Гостиная, спальня, детская"
-            className={fieldClass}
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={!roomName.trim()}
-          className="min-h-11 bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors hover:bg-[#6d7565] disabled:cursor-not-allowed disabled:bg-stone-300"
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
+          Состав КП
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setAddingRoom(true);
+              setAddingManual(false);
+            }}
+            className="min-h-9 border border-stone-300 px-2.5 text-xs font-medium text-stone-800 transition-colors hover:border-stone-800"
+          >
+            + Помещение
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setAddingManual(true);
+              setAddingRoom(false);
+            }}
+            className="min-h-9 border border-stone-300 px-2.5 text-xs font-medium text-stone-800 transition-colors hover:border-stone-800"
+          >
+            + Добавить позицию
+          </button>
+        </div>
+      </div>
+
+      {addingRoom ? (
+        <form
+          className="mt-3 flex flex-col gap-2 border border-stone-300 bg-[#f8f6f0] px-3 py-3 sm:flex-row sm:items-end"
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveRoom();
+          }}
         >
-          Добавить помещение
-        </button>
-      </form>
+          <label className="block flex-1 text-xs text-stone-600">
+            Название помещения
+            <input
+              aria-label="Название нового помещения"
+              value={roomName}
+              onChange={(event) => setRoomName(event.target.value)}
+              placeholder="Гостиная, спальня"
+              className={fieldClass}
+              autoFocus
+            />
+          </label>
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={!roomName.trim()}
+              className="min-h-9 bg-stone-950 px-3 text-xs font-semibold text-[#f7f4ec] disabled:bg-stone-300"
+            >
+              Сохранить
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAddingRoom(false);
+                setRoomName("");
+              }}
+              className="min-h-9 border border-stone-300 px-3 text-xs text-stone-700"
+            >
+              Отмена
+            </button>
+          </div>
+        </form>
+      ) : null}
 
-      {proposal.items.length === 0 && (
-        <p className="mt-8 text-base text-stone-600">
+      {addingManual ? (
+        <form
+          className="mt-3 border border-stone-300 px-3 py-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveManualItem();
+          }}
+        >
+          <fieldset className="flex flex-wrap gap-x-4 gap-y-1">
+            <legend className="sr-only">Тип произвольной позиции</legend>
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="manual-item-type"
+                value="product"
+                checked={manualType === "product"}
+                onChange={() => setManualType("product")}
+              />
+              Изделие
+            </label>
+            <label className="inline-flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="manual-item-type"
+                value="service"
+                checked={manualType === "service"}
+                onChange={() => setManualType("service")}
+              />
+              Услуга
+            </label>
+          </fieldset>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="block text-xs text-stone-600 sm:col-span-2">
+              Наименование
+              <input
+                aria-label="Название произвольной позиции"
+                value={manualTitle}
+                onChange={(event) => setManualTitle(event.target.value)}
+                placeholder="Монтаж, доставка"
+                className={fieldClass}
+              />
+            </label>
+            <label className="block text-xs text-stone-600">
+              Количество
+              <input
+                aria-label="Количество произвольной позиции"
+                inputMode="decimal"
+                value={manualQuantity}
+                onChange={(event) => setManualQuantity(event.target.value)}
+                className={fieldClass}
+              />
+            </label>
+            <label className="block text-xs text-stone-600">
+              Цена за единицу
+              <input
+                aria-label="Цена произвольной позиции"
+                inputMode="decimal"
+                value={manualPrice}
+                onChange={(event) => setManualPrice(event.target.value)}
+                className={fieldClass}
+              />
+            </label>
+          </div>
+          <div className="mt-2 flex gap-2">
+            <button
+              type="submit"
+              disabled={!canAddManual}
+              className="min-h-9 bg-stone-950 px-3 text-xs font-semibold text-[#f7f4ec] disabled:bg-stone-300"
+            >
+              Добавить
+            </button>
+            <button
+              type="button"
+              onClick={() => setAddingManual(false)}
+              className="min-h-9 border border-stone-300 px-3 text-xs text-stone-700"
+            >
+              Отмена
+            </button>
+          </div>
+        </form>
+      ) : null}
+
+      {proposal.items.length === 0 && proposal.rooms.length === 0 ? (
+        <p className="mt-4 text-sm text-stone-600">
           В коммерческом предложении пока нет позиций.
         </p>
-      )}
+      ) : null}
 
       {(proposal.items.length > 0 || proposal.rooms.length > 0) && (
-        <div className="mt-8 space-y-6">
+        <div className="mt-4 space-y-4">
           {unassigned.length > 0 && (
             <RoomGroup
               title={UNASSIGNED_ROOM_LABEL}
@@ -271,13 +457,17 @@ export function ProposalScreen() {
               )}
             >
               {unassigned.map((item) => (
-                <ItemCard
+                <ItemRow
                   key={item.id}
                   item={item}
                   position={proposal.items.findIndex((entry) => entry.id === item.id) + 1}
                   rooms={proposal.rooms}
                   canMoveUp={canMove(unassigned, item.id, "up")}
                   canMoveDown={canMove(unassigned, item.id, "down")}
+                  expanded={expandedItemId === item.id}
+                  onToggleExpand={() =>
+                    setExpandedItemId((current) => (current === item.id ? null : item.id))
+                  }
                   onTitle={(title) => updateItem(item.id, { title })}
                   onQuantity={(quantity) => updateItem(item.id, { quantity })}
                   onPrice={(unitPrice) => commitClientPrice(item, unitPrice)}
@@ -313,13 +503,17 @@ export function ProposalScreen() {
                 }
               >
                 {roomItems.map((item) => (
-                  <ItemCard
+                  <ItemRow
                     key={item.id}
                     item={item}
                     position={proposal.items.findIndex((entry) => entry.id === item.id) + 1}
                     rooms={proposal.rooms}
                     canMoveUp={canMove(roomItems, item.id, "up")}
                     canMoveDown={canMove(roomItems, item.id, "down")}
+                    expanded={expandedItemId === item.id}
+                    onToggleExpand={() =>
+                      setExpandedItemId((current) => (current === item.id ? null : item.id))
+                    }
                     onTitle={(title) => updateItem(item.id, { title })}
                     onQuantity={(quantity) => updateItem(item.id, { quantity })}
                     onPrice={(unitPrice) => commitClientPrice(item, unitPrice)}
@@ -337,99 +531,26 @@ export function ProposalScreen() {
         </div>
       )}
 
-      <form
-        className="mt-8 border border-stone-300 px-4 py-4"
-        onSubmit={(event) => {
-          event.preventDefault();
-          saveManualItem();
-        }}
+      <CollapsibleSection
+        className="mt-6"
+        summary={`${discountSummary} · Изменить`}
+        panelLabel="Скидка на КП"
       >
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
-          Произвольная позиция
-        </p>
-        <fieldset className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-          <legend className="sr-only">Тип произвольной позиции</legend>
-          <label className="inline-flex items-center gap-2 text-sm text-stone-800">
-            <input
-              type="radio"
-              name="manual-item-type"
-              value="product"
-              checked={manualType === "product"}
-              onChange={() => setManualType("product")}
-            />
-            Изделие
-          </label>
-          <label className="inline-flex items-center gap-2 text-sm text-stone-800">
-            <input
-              type="radio"
-              name="manual-item-type"
-              value="service"
-              checked={manualType === "service"}
-              onChange={() => setManualType("service")}
-            />
-            Услуга
-          </label>
-        </fieldset>
-        <div className="mt-3 grid gap-3 sm:grid-cols-[1.4fr_0.6fr_0.8fr_auto] sm:items-end">
-          <label className="block text-xs text-stone-600">
-            Название
-            <input
-              aria-label="Название произвольной позиции"
-              value={manualTitle}
-              onChange={(event) => setManualTitle(event.target.value)}
-              placeholder="Монтаж карниза, доставка"
-              className={fieldClass}
-            />
-          </label>
-          <label className="block text-xs text-stone-600">
-            Количество
-            <input
-              aria-label="Количество произвольной позиции"
-              inputMode="decimal"
-              value={manualQuantity}
-              onChange={(event) => setManualQuantity(event.target.value)}
-              className={fieldClass}
-            />
-          </label>
-          <label className="block text-xs text-stone-600">
-            Цена за единицу
-            <input
-              aria-label="Цена произвольной позиции"
-              inputMode="decimal"
-              value={manualPrice}
-              onChange={(event) => setManualPrice(event.target.value)}
-              className={fieldClass}
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={!canAddManual}
-            className="min-h-11 bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors hover:bg-[#6d7565] disabled:cursor-not-allowed disabled:bg-stone-300"
-          >
-            Добавить позицию
-          </button>
-        </div>
-      </form>
-
-      <section className="mt-8 border-t border-stone-800 pt-6">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
-          Скидка на КП
-        </h2>
-        <label className="mt-4 flex items-start gap-3 text-sm text-stone-800">
+        <label className="flex items-start gap-3 text-sm text-stone-800">
           <input
             type="checkbox"
-            className="mt-1"
+            className="mt-0.5"
             checked={discount.enabled}
             onChange={(event) => updateDiscount({ enabled: event.target.checked })}
           />
           <span>Применить скидку ко всей стоимости предложения</span>
         </label>
         {discount.enabled ? (
-          <div className="mt-4 grid gap-4 border border-stone-200 px-4 py-4 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 border border-stone-200 px-3 py-3 sm:grid-cols-2">
             <fieldset>
               <legend className="text-xs text-stone-600">Тип скидки</legend>
-              <div className="mt-2 flex flex-wrap gap-4">
-                <label className="inline-flex items-center gap-2 text-sm text-stone-800">
+              <div className="mt-1.5 flex flex-wrap gap-3">
+                <label className="inline-flex items-center gap-2 text-sm">
                   <input
                     type="radio"
                     name="proposal-discount-kind"
@@ -438,7 +559,7 @@ export function ProposalScreen() {
                   />
                   Процент
                 </label>
-                <label className="inline-flex items-center gap-2 text-sm text-stone-800">
+                <label className="inline-flex items-center gap-2 text-sm">
                   <input
                     type="radio"
                     name="proposal-discount-kind"
@@ -474,88 +595,98 @@ export function ProposalScreen() {
             ) : null}
           </div>
         ) : null}
-        <div className="mt-6 space-y-2 text-sm text-stone-800">
+      </CollapsibleSection>
+
+      <section
+        aria-label="Итог коммерческого предложения"
+        className="mt-6 border border-stone-800 bg-[#f8f6f0] px-4 py-4 sm:px-5"
+      >
+        <div className="space-y-1.5 text-sm text-stone-800">
+          <div className="flex justify-between gap-4">
+            <span>Стоимость до скидки</span>
+            <span className="tabular-nums">{formatProposalMoney(totals.subtotal)}</span>
+          </div>
           {discount.enabled && totals.discountAmount > 0 && discountReady ? (
-            <>
-              <div className="flex justify-between gap-4">
-                <span>Стоимость изделий и услуг</span>
-                <span>{formatProposalMoney(totals.subtotal)}</span>
-              </div>
-              <div className="flex justify-between gap-4">
-                <span>
-                  {discount.kind === "percent"
-                    ? `Скидка ${parseEditableNumber(discount.value) ?? ""}%`
-                    : "Скидка"}
-                </span>
-                <span>−{formatProposalMoney(totals.discountAmount)}</span>
-              </div>
-            </>
+            <div className="flex justify-between gap-4">
+              <span>
+                {discount.kind === "percent"
+                  ? `Скидка ${parseEditableNumber(discount.value) ?? ""}%`
+                  : "Скидка"}
+              </span>
+              <span className="tabular-nums">−{formatProposalMoney(totals.discountAmount)}</span>
+            </div>
           ) : null}
-          <div className="flex items-baseline justify-between gap-6 pt-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
-              {discount.enabled && totals.discountAmount > 0 && discountReady
-                ? "Итого к оплате"
-                : "Итого"}
-            </p>
-            <p className="font-editorial text-[2.4rem] leading-none text-stone-950 sm:text-[3rem]">
-              {formatProposalMoney(
-                discount.enabled && discountReady ? totals.finalTotal : totals.subtotal,
-              )}
-            </p>
+          <div className="flex items-baseline justify-between gap-4 border-t border-stone-400 pt-3">
+            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-stone-700">
+              Итого к оплате
+            </span>
+            <span className="font-editorial text-2xl tabular-nums text-stone-950 sm:text-[2rem]">
+              {formatProposalMoney(finalTotal)}
+            </span>
           </div>
         </div>
-      </section>
-
-      <div className="mt-8 flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={() => void createPdf()}
-          disabled={pdfState === "working"}
-          className="min-h-11 bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors hover:bg-[#6d7565] disabled:cursor-wait disabled:bg-stone-400"
-        >
-          {pdfState === "working" ? "Формируется PDF…" : "Сформировать PDF"}
-        </button>
-        <ProposalCoverMessage />
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <button
+            type="button"
+            onClick={() => void createPdf()}
+            disabled={pdfState === "working"}
+            className="min-h-11 flex-1 bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors hover:bg-[#6d7565] disabled:cursor-wait disabled:bg-stone-400 sm:flex-none sm:min-w-[11rem]"
+          >
+            {pdfState === "working" ? "Формируется PDF…" : "Скачать PDF"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setCoverOpen(true)}
+            className="min-h-11 flex-1 border border-stone-800 px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50 sm:flex-none sm:min-w-[11rem]"
+          >
+            Сопроводительное сообщение
+          </button>
+        </div>
         {pdfState === "failed" ? (
-          <p role="alert" className="w-full text-sm text-stone-700">
+          <p role="alert" className="mt-3 text-sm text-stone-700">
             Не удалось сформировать PDF. Попробуйте ещё раз.
           </p>
         ) : null}
-      </div>
+      </section>
 
-      {proposal.items.length > 0 &&
-        (confirmClear ? (
-          <div className="mt-8 border border-stone-300 bg-[#f8f6f0] px-5 py-5">
-            <p className="text-sm text-stone-800">
-              Удалить все позиции из коммерческого предложения?
-            </p>
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={clearProposal}
-                className="min-h-11 bg-stone-950 px-5 text-sm font-semibold text-[#f7f4ec] transition-colors hover:bg-[#6d7565]"
-              >
-                Очистить
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmClear(false)}
-                className="min-h-11 border border-stone-800 px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50"
-              >
-                Отмена
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmClear(true)}
-            className="mt-8 min-h-11 self-start border border-stone-800 px-5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-900 hover:text-stone-50"
-          >
-            Очистить КП
-          </button>
-        ))}
+      <ProposalCoverMessage open={coverOpen} />
     </main>
+  );
+}
+
+function CollapsibleSection({
+  summary,
+  panelLabel,
+  children,
+  className = "",
+}: {
+  summary: string;
+  panelLabel: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const panelId = `${panelLabel.replace(/\s+/g, "-")}-panel`;
+
+  return (
+    <div className={`border border-stone-300 ${className}`}>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((current) => !current)}
+        className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm text-stone-800 transition-colors hover:bg-[#f8f6f0]"
+      >
+        <span>{summary}</span>
+        <ChevronIcon open={open} />
+      </button>
+      {open ? (
+        <div id={panelId} className="disclosure-panel border-t border-stone-200 px-3 pb-3 pt-2">
+          <span className="sr-only">{panelLabel}</span>
+          {children}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -571,7 +702,7 @@ function DocumentField({
   type?: "text" | "date";
 }) {
   return (
-    <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
+    <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-stone-600">
       {label}
       <input
         type={type}
@@ -599,25 +730,20 @@ function RoomGroup({
 }) {
   return (
     <section aria-label={title} className="border border-stone-300">
-      <div className="flex flex-col gap-3 border-b border-stone-300 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-        {heading ?? (
-          <h2 className="text-lg font-medium text-stone-950">{title}</h2>
-        )}
-        {items.length > 0 && (
-          <p className="text-sm text-stone-600">
-            Сумма помещения{" "}
-            <span className="font-medium tabular-nums text-stone-950">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 px-3 py-2">
+        {heading ?? <h3 className="text-sm font-medium text-stone-950">{title}</h3>}
+        {items.length > 0 ? (
+          <p className="text-xs text-stone-600">
+            <span className="tabular-nums font-medium text-stone-900">
               {formatProposalMoney(total)}
             </span>
           </p>
-        )}
+        ) : null}
       </div>
       {items.length > 0 ? (
-        <ul>{children}</ul>
+        <ul className="divide-y divide-stone-200">{children}</ul>
       ) : (
-        <p className="px-4 py-4 text-sm text-stone-500">
-          В помещении пока нет позиций.
-        </p>
+        <p className="px-3 py-1.5 text-xs text-stone-500">Нет позиций</p>
       )}
     </section>
   );
@@ -633,32 +759,33 @@ function RoomName({
   onRemove: () => void;
 }) {
   return (
-    <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-      <label className="block flex-1 text-xs font-semibold uppercase tracking-[0.14em] text-stone-600">
-        Помещение
-        <DraftInput
-          value={room.name}
-          ariaLabel={`Название помещения ${room.name}`}
-          onCommit={onRename}
-        />
-      </label>
+    <div className="flex flex-1 flex-wrap items-center gap-2">
+      <DraftInput
+        value={room.name}
+        ariaLabel={`Название помещения ${room.name}`}
+        onCommit={onRename}
+        className="max-w-[14rem] text-sm font-medium"
+      />
       <button
         type="button"
         onClick={onRemove}
-        className="min-h-10 self-start border border-stone-300 px-3 text-sm text-stone-700 transition-colors hover:border-stone-800 hover:text-stone-950 sm:self-end"
+        aria-label={`Удалить помещение ${room.name}`}
+        className="inline-flex min-h-8 min-w-8 items-center justify-center border border-stone-300 text-stone-600 transition-colors hover:border-stone-800 hover:text-stone-950"
       >
-        Удалить помещение
+        <TrashIcon />
       </button>
     </div>
   );
 }
 
-function ItemCard({
+function ItemRow({
   item,
   position,
   rooms,
   canMoveUp,
   canMoveDown,
+  expanded,
+  onToggleExpand,
   onTitle,
   onQuantity,
   onPrice,
@@ -674,6 +801,8 @@ function ItemCard({
   rooms: ProposalRoom[];
   canMoveUp: boolean;
   canMoveDown: boolean;
+  expanded: boolean;
+  onToggleExpand: () => void;
   onTitle: (title: string) => void;
   onQuantity: (quantity: number) => void;
   onPrice: (unitPrice: number) => void;
@@ -685,113 +814,147 @@ function ItemCard({
   onRemove: () => void;
 }) {
   const dimensions = formatDimensions(item.widthCm, item.heightCm);
-  const siblings = rooms;
   const shownPrice = clientUnitPrice(item, roundingStep, roundingMode);
   const shownAmount = clientLineAmount(item, roundingStep, roundingMode);
+  const roomLabel =
+    item.room === null
+      ? null
+      : (rooms.find((room) => room.id === item.room)?.name ?? null);
 
   return (
-    <li className="border-t border-stone-300 px-4 py-4 first:border-t-0">
-      <DraftInput
-        value={item.title}
-        ariaLabel={`Название позиции ${position}`}
-        onCommit={onTitle}
-        className="text-base font-medium"
-      />
-      {dimensions && (
-        <p className="mt-1 text-sm text-stone-600">{dimensions}</p>
-      )}
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <NumberField
-          label={`Количество позиции ${position}`}
-          visibleLabel="Количество"
-          value={item.quantity}
-          onCommit={onQuantity}
-          allowZero={false}
-        />
-        <NumberField
-          label={`Цена за единицу позиции ${position}`}
-          visibleLabel="Цена за единицу"
-          value={shownPrice}
-          onCommit={onPrice}
-          allowZero
-        />
-        <p className="self-end pb-2 text-sm text-stone-600">
-          Сумма{" "}
-          <span className="font-medium tabular-nums text-stone-950">
-            {formatProposalMoney(shownAmount)}
-          </span>
-        </p>
-      </div>
-      {roundMoney(shownPrice) !== roundMoney(item.originalUnitPrice) && (
-        <p className="mt-2 text-xs text-stone-500">
-          Исходная цена {formatRubles(item.originalUnitPrice)}
-        </p>
-      )}
-      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-1 flex-col gap-3 sm:flex-row">
-          {item.productType === null && (
-            <label className="block text-xs text-stone-600 sm:min-w-40">
-              Тип
-              <select
-                aria-label={`Тип позиции ${position}`}
-                value={item.itemType}
-                onChange={(event) =>
-                  onType(event.target.value === "service" ? "service" : "product")
-                }
-                className={fieldClass}
-              >
-                <option value="product">Изделие</option>
-                <option value="service">Услуга</option>
-              </select>
-            </label>
-          )}
-          <label className="block flex-1 text-xs text-stone-600 sm:min-w-56">
-          Помещение
-          <select
-            aria-label={`Помещение позиции ${position}`}
-            value={item.room ?? ""}
-            onChange={(event) => onRoom(event.target.value || null)}
-            className={fieldClass}
-          >
-            <option value="">{UNASSIGNED_ROOM_LABEL}</option>
-            {siblings.map((room) => (
-              <option key={room.id} value={room.id}>
-                {room.name}
-              </option>
-            ))}
-          </select>
-          </label>
+    <li className="px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2 gap-y-1">
+        <button
+          type="button"
+          aria-expanded={expanded}
+          aria-label={
+            expanded ? `Свернуть позицию ${position}` : `Развернуть позицию ${position}`
+          }
+          onClick={onToggleExpand}
+          className="inline-flex min-h-8 min-w-8 shrink-0 items-center justify-center border border-stone-200 text-stone-600 hover:border-stone-500"
+        >
+          <ChevronIcon open={expanded} />
+        </button>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-stone-950">{item.title}</p>
+          <p className="text-xs text-stone-600">
+            {[dimensions, `${item.quantity} шт.`, roomLabel].filter(Boolean).join(" · ")}
+          </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
+        <div className="w-[5.5rem] shrink-0">
+          <CompactNumberField
+            label={`Цена за единицу позиции ${position}`}
+            value={shownPrice}
+            onCommit={onPrice}
+            allowZero
+          />
+        </div>
+        <p className="w-[5.5rem] shrink-0 text-right text-sm tabular-nums text-stone-950">
+          {formatProposalMoney(shownAmount)}
+        </p>
+        <div className="flex shrink-0 gap-0.5">
+          <IconButton
+            label={`Выше позиции ${position}`}
             disabled={!canMoveUp}
             onClick={() => onMove("up")}
-            aria-label={`Выше позиции ${position}`}
-            className="min-h-10 border border-stone-300 px-3 text-sm text-stone-700 transition-colors hover:border-stone-800 hover:text-stone-950 disabled:cursor-not-allowed disabled:text-stone-300"
           >
-            Выше
-          </button>
-          <button
-            type="button"
+            <ArrowUpIcon />
+          </IconButton>
+          <IconButton
+            label={`Ниже позиции ${position}`}
             disabled={!canMoveDown}
             onClick={() => onMove("down")}
-            aria-label={`Ниже позиции ${position}`}
-            className="min-h-10 border border-stone-300 px-3 text-sm text-stone-700 transition-colors hover:border-stone-800 hover:text-stone-950 disabled:cursor-not-allowed disabled:text-stone-300"
           >
-            Ниже
-          </button>
-          <button
-            type="button"
-            onClick={onRemove}
-            aria-label={`Удалить позицию ${position}`}
-            className="min-h-10 border border-stone-300 px-3 text-sm text-stone-700 transition-colors hover:border-stone-800 hover:text-stone-950"
-          >
-            Удалить
-          </button>
+            <ArrowDownIcon />
+          </IconButton>
+          <IconButton label={`Удалить позицию ${position}`} onClick={onRemove}>
+            <TrashIcon />
+          </IconButton>
         </div>
       </div>
+      {expanded ? (
+        <div className="mt-2 border-t border-stone-100 pt-2 pl-10">
+          <DraftInput
+            value={item.title}
+            ariaLabel={`Название позиции ${position}`}
+            onCommit={onTitle}
+            className="text-sm font-medium"
+          />
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <NumberField
+              label={`Количество позиции ${position}`}
+              visibleLabel="Количество"
+              value={item.quantity}
+              onCommit={onQuantity}
+              allowZero={false}
+            />
+            {roundMoney(shownPrice) !== roundMoney(item.originalUnitPrice) && (
+              <p className="self-end pb-1 text-xs text-stone-500 sm:col-span-2">
+                Исходная цена {formatRubles(item.originalUnitPrice)}
+              </p>
+            )}
+          </div>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+            {item.productType === null && (
+              <label className="block text-xs text-stone-600 sm:min-w-36">
+                Тип
+                <select
+                  aria-label={`Тип позиции ${position}`}
+                  value={item.itemType}
+                  onChange={(event) =>
+                    onType(event.target.value === "service" ? "service" : "product")
+                  }
+                  className={fieldClass}
+                >
+                  <option value="product">Изделие</option>
+                  <option value="service">Услуга</option>
+                </select>
+              </label>
+            )}
+            <label className="block flex-1 text-xs text-stone-600">
+              Помещение
+              <select
+                aria-label={`Помещение позиции ${position}`}
+                value={item.room ?? ""}
+                onChange={(event) => onRoom(event.target.value || null)}
+                className={fieldClass}
+              >
+                <option value="">{UNASSIGNED_ROOM_LABEL}</option>
+                {rooms.map((room) => (
+                  <option key={room.id} value={room.id}>
+                    {room.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
+      ) : null}
     </li>
+  );
+}
+
+function IconButton({
+  label,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  disabled?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="inline-flex min-h-8 min-w-8 items-center justify-center border border-stone-200 text-stone-600 transition-colors hover:border-stone-700 hover:text-stone-950 disabled:cursor-not-allowed disabled:opacity-30"
+    >
+      {children}
+    </button>
   );
 }
 
@@ -888,6 +1051,52 @@ function NumberField({
   );
 }
 
+function CompactNumberField({
+  label,
+  value,
+  onCommit,
+  allowZero,
+}: {
+  label: string;
+  value: number;
+  onCommit: (value: number) => void;
+  allowZero: boolean;
+}) {
+  const [draft, setDraft] = useState(formatEditableNumber(value));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!focused) {
+      setDraft(formatEditableNumber(value));
+    }
+  }, [focused, value]);
+
+  function commit(next: string) {
+    const parsed = parseEditableNumber(next);
+    if (parsed === null || parsed < 0 || (!allowZero && parsed <= 0)) {
+      setDraft(formatEditableNumber(value));
+      return;
+    }
+    onCommit(parsed);
+    setDraft(formatEditableNumber(parsed));
+  }
+
+  return (
+    <input
+      aria-label={label}
+      inputMode="decimal"
+      value={draft}
+      onFocus={() => setFocused(true)}
+      onChange={(event) => setDraft(event.target.value)}
+      onBlur={(event) => {
+        setFocused(false);
+        commit(event.target.value);
+      }}
+      className="w-full border border-stone-300 bg-transparent px-2 py-1 text-right text-sm tabular-nums text-stone-950 outline-none focus:border-stone-800"
+    />
+  );
+}
+
 function canMove(
   items: ProposalItem[],
   itemId: string,
@@ -898,4 +1107,65 @@ function canMove(
     return false;
   }
   return direction === "up" ? index > 0 : index < items.length - 1;
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+    >
+      <path
+        d="M3 5l4 4 4-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg aria-hidden width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path
+        d="M2.5 4h9M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M5 4v7.5a1 1 0 001 1h2a1 1 0 001-1V4"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowUpIcon() {
+  return (
+    <svg aria-hidden width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path
+        d="M7 10V4M4.5 6.5L7 4l2.5 2.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ArrowDownIcon() {
+  return (
+    <svg aria-hidden width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path
+        d="M7 4v6M4.5 7.5L7 10l2.5-2.5"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
 }

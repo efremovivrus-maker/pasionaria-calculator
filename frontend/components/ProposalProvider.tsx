@@ -243,10 +243,7 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
         }));
       },
       clearItems: () => {
-        setProposal((current) => ({
-          ...current,
-          items: [],
-        }));
+        setProposal(emptyProposal());
       },
     }),
     [proposal, view, kpCountPulse, kpToastOpen, dismissKpToast, goToCalculator, showKpAddedToast],

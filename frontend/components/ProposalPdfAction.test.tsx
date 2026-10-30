@@ -62,7 +62,7 @@ describe("proposal pdf action", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Сформировать PDF" }));
+    fireEvent.click(screen.getByRole("button", { name: "Скачать PDF" }));
 
     await waitFor(() => {
       expect(downloadProposalPdf).toHaveBeenCalledTimes(1);
@@ -81,7 +81,7 @@ describe("proposal pdf action", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }),
     );
-    fireEvent.click(screen.getByRole("button", { name: "Сформировать PDF" }));
+    fireEvent.click(screen.getByRole("button", { name: "Скачать PDF" }));
 
     expect(
       await screen.findByRole("alert"),

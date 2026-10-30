@@ -90,6 +90,10 @@ button {
   background: #6d7565;
 }
 
+.disclosure-panel {
+  animation: reveal 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes kp-count-pop {
   0% {
     transform: scale(1);

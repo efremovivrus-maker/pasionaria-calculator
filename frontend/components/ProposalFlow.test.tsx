@@ -174,10 +174,8 @@ describe("commercial proposal", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     );
-    expect(
-      within(screen.getByRole("list")).getAllByDisplayValue("Покрывало «Софт»"),
-    ).toHaveLength(2);
-    fireEvent.click(screen.getByRole("button", { name: "Вернуться к расчётам" }));
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    fireEvent.click(screen.getByRole("button", { name: /Вернуться к расчётам/ }));
     expect(
       screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     ).toBeTruthy();
@@ -194,22 +192,15 @@ describe("commercial proposal", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     );
-    expect(screen.getByDisplayValue("Шторы «Вандер»")).toBeTruthy();
-    expect(text(screen.getByText("Итого").parentElement?.textContent)).toContain(
-      "27 400",
-    );
+    expect(screen.getByText("Шторы «Вандер»")).toBeTruthy();
+    const totals = () => screen.getByLabelText("Итог коммерческого предложения");
+    expect(text(totals().textContent)).toContain("27 400");
     fireEvent.click(screen.getByRole("button", { name: "Удалить позицию 1" }));
-    expect(
-      within(screen.getByRole("list")).queryByDisplayValue("Шторы «Вандер»"),
-    ).toBeNull();
-    expect(text(screen.getByText("Итого").parentElement?.textContent)).toContain(
-      "17 400",
-    );
-    expect(
-      within(screen.getByRole("list")).getAllByDisplayValue("Покрывало «Софт»"),
-    ).toHaveLength(2);
+    expect(screen.queryByText("Шторы «Вандер»")).toBeNull();
+    expect(text(totals().textContent)).toContain("17 400");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
 
-    fireEvent.click(screen.getByRole("button", { name: "Вернуться к расчётам" }));
+    fireEvent.click(screen.getByRole("button", { name: /Вернуться к расчётам/ }));
     await submitCalculation("Римская штора Вандер 165 × 180");
     expect(await screen.findByText("Римская штора «Вандер»")).toBeTruthy();
     expect(text(screen.getByText(/4\s*555/).textContent)).toContain("4 555");
@@ -281,7 +272,7 @@ describe("commercial proposal", () => {
     fireEvent.click(open);
     fireEvent.click(screen.getByRole("button", { name: "Очистить КП" }));
     fireEvent.click(screen.getByRole("button", { name: "Отмена" }));
-    expect(screen.getByDisplayValue("Покрывало «Софт»")).toBeTruthy();
+    expect(screen.getByText("Покрывало «Софт»")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Очистить КП" }));
     fireEvent.click(screen.getByRole("button", { name: "Очистить" }));

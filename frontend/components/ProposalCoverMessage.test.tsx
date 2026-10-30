@@ -70,8 +70,9 @@ describe("cover message editor", () => {
 
     const view = render(<AppShell />);
     fireEvent.click(await screen.findByRole("button", { name: "Коммерческое предложение, 1 позиция" }));
-    fireEvent.click(screen.getByRole("button", { name: "Создать сопроводительное сообщение" }));
+    fireEvent.click(screen.getByRole("button", { name: "Сопроводительное сообщение" }));
     fireEvent.click(screen.getByRole("checkbox", { name: "Рассчитать стоимость монтажа и вывеса штор." }));
+    fireEvent.click(screen.getByRole("button", { name: "Дополнительные настройки" }));
     fireEvent.change(screen.getByLabelText("Пожелания к сообщению"), {
       target: { value: "Без срочности" },
     });
@@ -89,7 +90,7 @@ describe("cover message editor", () => {
     expect(JSON.stringify(request)).not.toContain("operationId");
 
     fireEvent.change(message, { target: { value: "Анна, отправили предложение." } });
-    fireEvent.click(screen.getByRole("button", { name: "Копировать сообщение" }));
+    fireEvent.click(screen.getByRole("button", { name: "Копировать" }));
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("Анна, отправили предложение."));
 
     fireEvent.change(screen.getByLabelText("Адресат КП"), { target: { value: "Иван" } });
