@@ -84,19 +84,40 @@ def _not_supported(
     )
 
 
+def resolve_mechanism_name(mechanism: str) -> str:
+    """Map a requested mechanism to one catalog comparison key.
+
+    A bare day-night phrase, regardless of case, hyphens or spaces, is
+    «День-ночь Стандарт». An explicit «эконом» or «стандарт» on that phrase
+    selects that day-night variant. Names that are not day-night are only
+    normalized, so plain «Эконом» and «Стандарт» stay the ordinary mechanisms.
+    """
+    cleaned = re.sub(r"[,.;:]+", " ", mechanism)
+    normalized = _normalize_option(cleaned)
+    family = "день ночь"
+    if not normalized.startswith(family):
+        return normalized
+    rest = normalized[len(family) :].strip()
+    if rest in {"", "стандарт"}:
+        return "день ночь стандарт"
+    if rest == "эконом":
+        return "день ночь эконом"
+    return normalized
+
+
 def find_exact_mechanism(
     mechanism: str | None,
     operations: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
-    """Return a mechanism only when the requested name matches one variant."""
+    """Return the one catalog mechanism for a requested name."""
     if not mechanism:
         return None
-    normalized = _normalize_option(mechanism)
+    expected = resolve_mechanism_name(mechanism)
     return next(
         (
             operation
             for operation in _group_variants(operations, "Механизм")
-            if _normalize_option(str(operation["variant"])) == normalized
+            if _normalize_option(str(operation["variant"])) == expected
         ),
         None,
     )
@@ -145,17 +166,9 @@ def apply_configuration(
                     "Механизмы римской шторы не применяются к шторам.",
                 ),
             )
-        normalized_mechanism = _normalize_option(mechanism)
+        normalized_mechanism = resolve_mechanism_name(mechanism)
         mechanism_options = _group_variants(operations, "Механизм")
-        selected = next(
-            (
-                operation
-                for operation in mechanism_options
-                if _normalize_option(str(operation["variant"]))
-                == normalized_mechanism
-            ),
-            None,
-        )
+        selected = find_exact_mechanism(mechanism, operations)
         if selected is None:
             matching_family = [
                 operation

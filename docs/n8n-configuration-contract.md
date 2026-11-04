@@ -71,21 +71,28 @@ Add these rules to the parser prompt:
    message. This is required for safe session merging.
 7. Do not invent catalog values. Preserve the user's wording when an option
    needs backend validation.
-8. If the user explicitly uses a singular product form (`штора` or
-   `римская штора`) and does not specify a quantity, set `quantity: 1` and
-   include `quantity` in `inferred_fields`, not in `fields_present`.
-9. Do not infer quantity for plural or set forms such as `шторы`,
-   `римские шторы` or `комплект штор`. Keep `quantity` null and include it in
-   `missing_fields`.
+8. If the user does not state how many products to make, leave `quantity` null
+   and do not ask. The backend sets `quantity` to 1 for a curtain, a Roman
+   blind and a bedspread. `шторы`, `римские шторы` and `комплект штор` are
+   one product: do not turn one set into two items because a set has two
+   panels, and do not put `quantity` in `missing_fields`.
+9. `на три окна`, `на N окон` and `несколько` without an explicit product
+   count (`2 шт`, `3 комплекта`) are ambiguous. Do not invent a number, do
+   not call the API, and do not ask «Сколько штор нужно?». Ask how many
+   products are needed. The backend refuses the same phrase when
+   `raw_request` contains it and the text has no explicit product count.
 10. An explicit quantity (`2 шт`, `2 римские шторы`, `3 комплекта`, etc.)
     always wins and is listed in `fields_present`; do not also list it in
     `inferred_fields`.
 11. Generic wording `на подкладке` produces
     `configuration.lining: "Подкладка"`; do not ask for a concrete lining
     variant unless the user explicitly names one.
-12. Preserve the selected Roman mechanism kind. Normalize differences in
-    case, spaces and the hyphen in `день-ночь`, but do not reduce
-    `День-ночь Эконом` or `День-ночь Стандарт` to a base mechanism.
+12. Pass a day-night phrase through unchanged. Do not ask the user to choose
+    «Эконом» or «Стандарт», and do not rewrite the phrase in the parser.
+    The backend maps it: a bare «день-ночь» becomes «День-ночь Стандарт»;
+    an explicit «эконом» or «стандарт» on that phrase selects that
+    day-night variant. Case, spaces and hyphens do not matter. Plain
+    «Эконом» or «Стандарт» without day-night stays the ordinary mechanism.
 13. Put an explicitly named day fabric only into `day_fabric`. Never copy it
     into `model` and never invent `Вита`: the backend applies that default
     when `day_fabric` is null and the mechanism is day-night.
@@ -117,8 +124,9 @@ Add these rules to the parser prompt:
     also exists as a curtain, such as `Софт` or `Ибица`. The word
     `покрывало` is not part of the model name.
 20. For a bedspread, `width_cm` is the first size and `height_cm` is the
-    second size. Singular `покрывало` without a count infers `quantity: 1`.
-    Plural `покрывала` without a count leaves quantity missing.
+    second size. A bedspread without a stated count omits `quantity`; the
+    backend uses 1. Do not ask how many bedspreads, and do not reply
+    `Количество покрывал не указано.`
 21. `из ткани <название>` goes to `face_fabric`, not to `model` and not to
     `extra_operations`. A bedspread without another fabric keeps
     `face_fabric: null`; the backend uses the confirmed default. If the
@@ -176,12 +184,12 @@ Prompt examples:
   and `fields_present` includes `day_fabric`.
 - `шторы Ибица на люверсах с вышивкой Лея 140x270 2 шт` → model
   `Ибица`, heading `Люверсы`, extras `["Лея"]`.
-- `римская штора Вандер` → `quantity: 1`,
-  `inferred_fields: ["quantity"]`.
-- `штора Вандер` → `quantity: 1`,
-  `inferred_fields: ["quantity"]`.
-- `комплект штор Вандер` → `quantity: null`; quantity remains missing.
-- `шторы Вандер` → `quantity: null`; quantity remains missing.
+- `римская штора Вандер` → omit `quantity`. The backend uses 1.
+- `штора Вандер` and `шторы Вандер` → omit `quantity`. The backend uses 1.
+  One curtain set is not two products.
+- `комплект штор Вандер` → omit `quantity`. The backend uses 1.
+- `шторы Вандер на три окна` → do not call the API and do not guess 1 or 3.
+- `шторы Вандер 140×270, 2 шт` → `quantity: 2`.
 - `шторы Мэри` and `штора Мэри с вышивкой Мэри` → model `Мэри`,
   `extra_operations: []`. The backend includes the embroidery once.
 - `комплект Софт с тюлем` → model `Софт`,
@@ -189,7 +197,7 @@ Prompt examples:
 - `Блэкаут шторы Мириам 140x270` and
   `Блэкаут шторы с подхватами Мириам 140x270` → model `Мириам`, width `140`,
   height `270`, empty configuration (`lining: null`), `extra_operations: []`.
-  Quantity stays missing because the plural form has no count.
+  Omit quantity; the backend uses 1. The plural name is one set.
   Do not ask whether the model is `Блэкаут` and do not add tiebacks.
   Parser output:
 
@@ -217,7 +225,7 @@ Prompt examples:
   hide or drop that response. Correct the prompt so the extra is not sent.
 - `шторы Майа`, `шторы Майя` and `штора Мая` → model `Майа`, not `Майкл`.
 - `Покрывало Софт 230×250` → `product_type: "bedspread"`, model `Софт`,
-  width `230`, height `250`, quantity `1` inferred, `face_fabric: null`,
+  width `230`, height `250`, quantity omitted, `face_fabric: null`,
   `stitch: null`, `filling: null`, `configuration.lining: null`,
   `extra_operations: []`. The parser does not invent a stitch. The backend
   applies the model default.
@@ -273,14 +281,13 @@ returns `product_type: "bedspread"`:
      backend `unavailable` message. Do not ask for a size.
    - Model null and `face_fabric` null: still `POST`. Show the backend
      message. Do not ask for a model or a fabric.
-   - Plural without a count: do not invent quantity `1` and do not call the
-     API. Reply exactly `Количество покрывал не указано.` Do not add an
-     example request.
+   - A bedspread without a count still calls the API with `quantity` omitted.
+     The backend uses 1. Do not reply `Количество покрывал не указано.`
 
 ```text
 stored: curtain, model=Вандер, mechanism=Эконом, width=140, height=270, quantity=2
 message: Покрывало Софт 230×250
-sent: product_type=bedspread, model=Софт, width=230, height=250, quantity=1, stitch=null
+sent: product_type=bedspread, model=Софт, width=230, height=250, quantity omitted, stitch=null
 not sent: mechanism=Эконом, width=140, height=270, quantity=2
 session after the reply: still Вандер, Эконом, 140×270, quantity=2
 

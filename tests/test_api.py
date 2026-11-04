@@ -35,6 +35,81 @@ class CalculationApiTests(unittest.TestCase):
             places=2,
         )
 
+    def test_missing_quantity_is_one_item_for_every_product(self) -> None:
+        requests = (
+            {
+                "product_type": "roman",
+                "model": "Вандер",
+                "width_cm": 155,
+                "height_cm": 175,
+                "raw_request": "Римская штора Вандер 155×175",
+            },
+            {
+                "product_type": "curtain",
+                "model": "Вандер",
+                "width_cm": 140,
+                "height_cm": 270,
+                "raw_request": "Шторы Вандер 140×270",
+            },
+            {
+                "product_type": "bedspread",
+                "model": "Софт",
+                "width_cm": 230,
+                "height_cm": 250,
+                "raw_request": "Покрывало Софт 230×250",
+            },
+        )
+        for body in requests:
+            with self.subTest(product=body["product_type"]):
+                payload = self.client.post("/api/calculate", json=body).json()
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(payload["normalized_request"]["quantity"], 1)
+
+    def test_explicit_quantity_is_not_replaced(self) -> None:
+        payload = self.client.post(
+            "/api/calculate",
+            json={
+                "product_type": "curtain",
+                "model": "Вандер",
+                "width_cm": 140,
+                "height_cm": 270,
+                "quantity": 2,
+                "raw_request": "Шторы Вандер 140×270, 2 шт.",
+            },
+        ).json()
+        omitted = self.client.post(
+            "/api/calculate",
+            json={
+                "product_type": "curtain",
+                "model": "Вандер",
+                "width_cm": 140,
+                "height_cm": 270,
+                "raw_request": "Шторы Вандер 140×270, 2 шт.",
+            },
+        ).json()
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(payload["normalized_request"]["quantity"], 2)
+        self.assertEqual(omitted["status"], "success")
+        self.assertEqual(omitted["normalized_request"]["quantity"], 2)
+
+    def test_ambiguous_quantity_is_not_guessed(self) -> None:
+        for quantity in (None, 1):
+            with self.subTest(quantity=quantity):
+                body = {
+                    "product_type": "curtain",
+                    "model": "Вандер",
+                    "width_cm": 140,
+                    "height_cm": 270,
+                    "raw_request": "Шторы Вандер на три окна",
+                }
+                if quantity is not None:
+                    body["quantity"] = quantity
+                payload = self.client.post("/api/calculate", json=body).json()
+                self.assertEqual(payload["status"], "unavailable")
+                self.assertEqual(payload["reason_code"], "QUANTITY_AMBIGUOUS")
+                self.assertNotIn("retail_price", payload)
+                self.assertNotIn("Сколько штор", payload["message"])
+
     def test_healthcheck(self) -> None:
         response = self.client.get("/health")
 
@@ -197,29 +272,90 @@ class CalculationApiTests(unittest.TestCase):
                 self.assertEqual(mechanisms[0]["tariff"], tariff)
                 self.assert_components_match_retail(payload)
 
-    def test_bare_day_night_mechanism_is_ambiguous(self) -> None:
+    def test_bare_day_night_selects_standard(self) -> None:
+        for requested in ("день ночь", "День-ночь", "  ДЕНЬ-НОЧЬ  ", "день-ночь стандарт"):
+            with self.subTest(requested=requested):
+                response = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "roman",
+                        "model": "Вандер",
+                        "width_cm": 120,
+                        "height_cm": 200,
+                        "quantity": 1,
+                        "configuration": {"mechanism": requested},
+                    },
+                )
+                payload = response.json()
+                mechanisms = [
+                    component
+                    for component in payload["components"]
+                    if component.get("operation_id") == "OP_127"
+                ]
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(len(mechanisms), 1)
+                self.assertIn("День-ночь Стандарт", mechanisms[0]["name"])
+                self.assertEqual(payload["day_fabric"]["name"], "Вита")
+                self.assertEqual(
+                    payload["normalized_request"]["day_fabric"],
+                    "Вита",
+                )
+
+    def test_explicit_day_night_level_is_kept(self) -> None:
+        cases = (
+            ("день-ночь эконом", "OP_126", "День-ночь Эконом"),
+            ("ДЕНЬ НОЧЬ ЭКОНОМ", "OP_126", "День-ночь Эконом"),
+            ("день ночь стандарт", "OP_127", "День-ночь Стандарт"),
+        )
+        for requested, operation_id, display_name in cases:
+            with self.subTest(requested=requested):
+                response = self.client.post(
+                    "/api/calculate",
+                    json={
+                        "product_type": "roman",
+                        "model": "Вандер",
+                        "width_cm": 120,
+                        "height_cm": 200,
+                        "quantity": 1,
+                        "configuration": {"mechanism": requested},
+                    },
+                )
+                payload = response.json()
+                mechanisms = [
+                    component
+                    for component in payload["components"]
+                    if component.get("operation_id") == operation_id
+                ]
+                self.assertEqual(payload["status"], "success")
+                self.assertEqual(len(mechanisms), 1)
+                self.assertIn(display_name, mechanisms[0]["name"])
+
+    def test_named_day_fabric_survives_default_day_night(self) -> None:
         response = self.client.post(
             "/api/calculate",
             json={
                 "product_type": "roman",
                 "model": "Вандер",
-                "width_cm": 120,
-                "height_cm": 200,
-                "quantity": 1,
+                "width_cm": 155,
+                "height_cm": 175,
                 "configuration": {"mechanism": "день ночь"},
+                "day_fabric": "Иви",
+                "raw_request": "римская вандер, день ночь, 155×175, день — Иви",
             },
         )
-
         payload = response.json()
-        self.assertEqual(payload["status"], "unavailable")
-        self.assertEqual(
-            payload["reason_code"],
-            "CONFIGURATION_NOT_SUPPORTED",
-        )
-        self.assertEqual(
-            payload["details"]["available_options"],
-            ["День-ночь Эконом", "День-ночь Стандарт"],
-        )
+        mechanisms = [
+            component
+            for component in payload["components"]
+            if component.get("operation_id") == "OP_127"
+        ]
+        self.assertEqual(payload["status"], "success")
+        self.assertEqual(payload["normalized_request"]["quantity"], 1)
+        self.assertEqual(len(mechanisms), 1)
+        self.assertEqual(payload["day_fabric"]["name"], "Иви")
+        self.assertEqual(payload["day_fabric"]["price_per_m"], 1420)
+        self.assertEqual(payload["normalized_request"]["day_fabric"], "Иви")
+        self.assert_components_match_retail(payload)
 
     def test_generic_eyelets_alias_matches_exact_no_layer_variant(self) -> None:
         request = {

@@ -16,6 +16,7 @@ from .configuration import (
 from .fabric_calculator import calculate_fabric_consumption
 from .model_matching import normalize_model_name, resolve_model
 from .pricing import build_pricing, money
+from .quantity_rule import resolve_quantity
 
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -294,7 +295,24 @@ def _expand_day_night_operations(
 def _calculate(
     request: dict[str, Any],
     audit: dict[str, Any],
+    raw_request: Any = None,
 ) -> dict[str, Any]:
+    supplied = request.get("quantity")
+    text = raw_request if isinstance(raw_request, str) else None
+    if supplied in (None, "") or (
+        isinstance(supplied, int) and not isinstance(supplied, bool)
+    ):
+        resolved_quantity, quantity_message = resolve_quantity(
+            None if supplied in (None, "") else supplied,
+            text,
+        )
+        if quantity_message:
+            return _unavailable(
+                "QUANTITY_AMBIGUOUS",
+                quantity_message,
+                message=quantity_message,
+            )
+        request = {**request, "quantity": resolved_quantity}
     audit.update(
         {
             "product_type": request.get("product_type"),
@@ -880,7 +898,7 @@ def calculate(
     """Calculate and always attempt to append one independent audit record."""
     audit: dict[str, Any] = {}
     try:
-        result = _calculate(request, audit)
+        result = _calculate(request, audit, raw_request)
     except Exception as error:
         error_result = {
             "status": "error",

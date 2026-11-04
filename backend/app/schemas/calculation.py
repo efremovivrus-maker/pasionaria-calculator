@@ -29,7 +29,7 @@ class CalculationRequest(BaseModel):
     model: Optional[str] = None
     width_cm: Optional[float] = None
     height_cm: Optional[float] = None
-    quantity: int = Field(ge=1)
+    quantity: Optional[int] = Field(default=None, ge=1)
     configuration: CalculationConfiguration = Field(
         default_factory=CalculationConfiguration
     )

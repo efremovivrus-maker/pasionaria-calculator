@@ -6,8 +6,8 @@
       "expected": {
         "product_type": "roman",
         "model": "Вандер",
-        "quantity": 1,
-        "quantity_source": "inferred_singular",
+        "quantity": null,
+        "quantity_source": "backend_default",
         "quantity_missing": false
       }
     },
@@ -16,8 +16,8 @@
       "expected": {
         "product_type": "curtain",
         "model": "Вандер",
-        "quantity": 1,
-        "quantity_source": "inferred_singular",
+        "quantity": null,
+        "quantity_source": "backend_default",
         "quantity_missing": false
       }
     },
@@ -27,8 +27,8 @@
         "product_type": "curtain",
         "model": "Вандер",
         "quantity": null,
-        "quantity_source": "missing",
-        "quantity_missing": true
+        "quantity_source": "backend_default",
+        "quantity_missing": false
       }
     },
     {
@@ -37,7 +37,37 @@
         "product_type": "curtain",
         "model": "Вандер",
         "quantity": null,
-        "quantity_source": "missing",
+        "quantity_source": "backend_default",
+        "quantity_missing": false
+      }
+    },
+    {
+      "input": "Покрывало Софт 230×250",
+      "expected": {
+        "product_type": "bedspread",
+        "model": "Софт",
+        "quantity": null,
+        "quantity_source": "backend_default",
+        "quantity_missing": false
+      }
+    },
+    {
+      "input": "Шторы Вандер 140×270, 2 шт.",
+      "expected": {
+        "product_type": "curtain",
+        "model": "Вандер",
+        "quantity": 2,
+        "quantity_source": "explicit",
+        "quantity_missing": false
+      }
+    },
+    {
+      "input": "Шторы Вандер на три окна",
+      "expected": {
+        "product_type": "curtain",
+        "model": "Вандер",
+        "quantity": null,
+        "quantity_source": "ambiguous",
         "quantity_missing": true
       }
     },
