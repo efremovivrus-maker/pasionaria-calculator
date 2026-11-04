@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   catalogModelsFor,
+  dedupeMediaOffers,
   matchProductMedia,
   offersForCalculatorModel,
   offersForExactModel,
@@ -33,6 +34,25 @@ const offers: MediaOffer[] = [
 ];
 
 describe("media catalog matching", () => {
+  it("collapses repeated photos of one color and keeps different variants", () => {
+    const shared = "http://pro.pasionaria.ru/white.jpg";
+    const samePhoto = (id: string): MediaOffer => ({
+      ...offer(id, 'Комплект штор "Вандер"', "Белый"),
+      cover: shared,
+      images: [shared, shared],
+    });
+    const alternate = offer("detail", 'Комплект штор "Вандер"', "Белый");
+    const collapsed = dedupeMediaOffers([
+      samePhoto("size-1"),
+      samePhoto("size-2"),
+      alternate,
+      offer("beige", 'Комплект штор "Вандер"', "Бежевый"),
+      offer("roman", 'Римская штора "Вандер"', "Белый"),
+    ]);
+    expect(collapsed.map((item) => item.offer_id)).toEqual(["size-1", "detail", "beige", "roman"]);
+    expect(collapsed[0].images).toEqual([shared]);
+  });
+
   it("returns only an exact model and keeps every color variant", () => {
     expect(offersForExactModel(offers, "Вандер").map((offer) => offer.offer_id)).toEqual(["1"]);
     expect(offersForExactModel(offers, "Декоративная ткань \"Вандер\"")).toHaveLength(1);

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { deleteKpPhoto, KP_PHOTO_MAX_BYTES, readKpPhoto, saveKpPhoto } from "@/lib/kpPhotoStore";
+import { normalizeMediaName } from "@/lib/mediaMatch";
 import { catalogPhotoMatchesColor } from "@/lib/proposalDocument";
 import type { ProposalItem } from "@/lib/proposal";
 
@@ -17,6 +18,53 @@ type MediaOffer = {
   images: string[];
 };
 
+type PendingPhoto = {
+  offerId: string;
+  image: string;
+  color: string | null;
+};
+
+export function ProposalItemThumb({ item }: { item: ProposalItem }) {
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!item.sessionPhotoId) {
+      setUploadPreview(null);
+      return;
+    }
+    let cancelled = false;
+    let objectUrl: string | null = null;
+    void readKpPhoto(item.sessionPhotoId).then((blob) => {
+      if (cancelled || !blob) {
+        return;
+      }
+      objectUrl = URL.createObjectURL(blob);
+      setUploadPreview(objectUrl);
+    });
+    return () => {
+      cancelled = true;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [item.sessionPhotoId]);
+
+  const catalogBlocked =
+    Boolean(item.mediaImageUrl) && !item.sessionPhotoId && !catalogPhotoMatchesColor(item);
+  const src = uploadPreview
+    ? uploadPreview
+    : item.mediaImageUrl && !catalogBlocked
+      ? `/api/media/image?url=${encodeURIComponent(item.mediaImageUrl)}`
+      : null;
+  if (!src) {
+    return null;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt="" className="h-10 w-10 shrink-0 border border-stone-200 object-contain" />
+  );
+}
+
 export function ProposalItemDetails({
   item,
   position,
@@ -28,6 +76,9 @@ export function ProposalItemDetails({
 }) {
   const [colors, setColors] = useState<string[]>([]);
   const [offers, setOffers] = useState<MediaOffer[] | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pending, setPending] = useState<PendingPhoto | null>(null);
+  const [colorFilter, setColorFilter] = useState("");
   const [matchStatus, setMatchStatus] = useState<string | null>(null);
   const [mediaNote, setMediaNote] = useState<string | null>(null);
   const [mediaError, setMediaError] = useState<string | null>(null);
@@ -260,7 +311,12 @@ export function ProposalItemDetails({
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
-          onClick={() => void loadPhotos()}
+          onClick={() => {
+            setPickerOpen(true);
+            setPending(null);
+            setColorFilter("");
+            void loadPhotos();
+          }}
           className="min-h-9 border border-stone-300 px-2.5 text-xs text-stone-800 hover:border-stone-800"
         >
           Выбрать фото
@@ -307,56 +363,182 @@ export function ProposalItemDetails({
           Для выбранного цвета нет фотографии этого изделия. Другой цвет не подставлен.
         </p>
       ) : null}
-      {offers && offers.length === 0 && matchStatus === "none" ? (
-        <p className="text-xs text-stone-500">
-          Нет точного совпадения модели в медиакаталоге.
-        </p>
+      {pickerOpen ? (
+        <PhotoPicker
+          item={item}
+          offers={offers}
+          status={matchStatus}
+          note={mediaNote}
+          error={mediaError}
+          colorFilter={colorFilter}
+          pending={pending}
+          onFilter={setColorFilter}
+          onPending={setPending}
+          onClose={() => setPickerOpen(false)}
+          onConfirm={(photo) => {
+            if (item.sessionPhotoId) {
+              void deleteKpPhoto(item.sessionPhotoId);
+            }
+            onChange({
+              mediaOfferId: photo.offerId,
+              mediaImageUrl: photo.image,
+              mediaColor: photo.color,
+              sessionPhotoId: null,
+            });
+            setPickerOpen(false);
+          }}
+        />
       ) : null}
-      {offers && offers.length > 0 ? (
-        <ul className="grid gap-2 sm:grid-cols-2">
-          {offers.map((offer) => (
-            <li key={offer.offerId} className="border border-stone-200 p-2">
-              <p className="text-xs text-stone-700">
-                {[offer.color, offer.model].filter(Boolean).join(" · ")}
-              </p>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {(offer.images.length > 0 ? offer.images : offer.cover ? [offer.cover] : []).map(
-                  (image, index) => (
-                    <button
-                      key={image}
-                      type="button"
-                      aria-label={
-                        index === 0
-                          ? `Заглавное фото ${offer.color ?? offer.model}`
-                          : `Фото ${index + 1} ${offer.color ?? offer.model}`
-                      }
-                      onClick={() => {
-                        if (item.sessionPhotoId) {
-                          void deleteKpPhoto(item.sessionPhotoId);
-                        }
-                        onChange({
-                          mediaOfferId: offer.offerId,
-                          mediaImageUrl: image,
-                          mediaColor: offer.color,
-                          sessionPhotoId: null,
-                        });
-                      }}
-                      className="h-12 w-12 border border-stone-200"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`/api/media/image?url=${encodeURIComponent(image)}`}
-                        alt=""
-                        className="h-full w-full object-contain"
-                      />
-                    </button>
-                  ),
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+    </div>
+  );
+}
+
+function PhotoPicker({
+  item,
+  offers,
+  status,
+  note,
+  error,
+  colorFilter,
+  pending,
+  onFilter,
+  onPending,
+  onClose,
+  onConfirm,
+}: {
+  item: ProposalItem;
+  offers: MediaOffer[] | null;
+  status: string | null;
+  note: string | null;
+  error: string | null;
+  colorFilter: string;
+  pending: PendingPhoto | null;
+  onFilter: (color: string) => void;
+  onPending: (photo: PendingPhoto) => void;
+  onClose: () => void;
+  onConfirm: (photo: PendingPhoto) => void;
+}) {
+  const lockedColor = item.fabricColor?.trim() ?? "";
+  const colors = lockedColor
+    ? []
+    : [...new Set((offers ?? []).map((offer) => offer.color?.trim()).filter((color): color is string => Boolean(color)))];
+  const visible = (offers ?? []).filter((offer) => {
+    if (lockedColor || !colorFilter.trim()) {
+      return true;
+    }
+    return offer.color !== null && normalizeMediaName(offer.color) === normalizeMediaName(colorFilter);
+  });
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-stone-950/40 p-3 sm:items-center">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Фотографии ${item.model ?? item.title}`}
+        className="flex max-h-[90vh] w-full max-w-3xl flex-col border border-stone-300 bg-[#f8f6f0]"
+      >
+        <div className="flex items-start justify-between gap-3 border-b border-stone-200 px-4 py-3">
+          <div>
+            <h2 className="text-sm font-medium text-stone-950">Выбор фотографии</h2>
+            <p className="mt-1 text-xs text-stone-600">{item.title}</p>
+          </div>
+          <button type="button" onClick={onClose} className="text-xs text-stone-600 underline">
+            Закрыть
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+          {lockedColor ? <p className="text-xs text-stone-700">Цвет: {lockedColor}</p> : null}
+          {!lockedColor && colors.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => onFilter("")}
+                className={`min-h-8 border px-2 text-xs ${colorFilter ? "border-stone-300 text-stone-700" : "border-stone-900 text-stone-950"}`}
+              >
+                Все цвета
+              </button>
+              {colors.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={() => onFilter(color)}
+                  className={`min-h-8 border px-2 text-xs ${normalizeMediaName(colorFilter) === normalizeMediaName(color) ? "border-stone-900 text-stone-950" : "border-stone-300 text-stone-700"}`}
+                >
+                  {color}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {offers === null && !error ? (
+            <p className="mt-3 text-xs text-stone-500">Загрузка фотографий…</p>
+          ) : null}
+          {error ? <p className="mt-3 text-xs text-stone-600">{error}</p> : null}
+          {note ? <p className="mt-3 text-xs text-stone-600">{note}</p> : null}
+          {offers && visible.length === 0 && status === "none" ? (
+            <p className="mt-3 text-xs text-stone-500">Нет точного совпадения модели в медиакаталоге.</p>
+          ) : null}
+          {visible.length > 0 ? (
+            <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {visible.flatMap((offer) => {
+                const seen = new Set<string>();
+                return (offer.images.length > 0 ? offer.images : offer.cover ? [offer.cover] : []).flatMap(
+                  (image) => {
+                    if (seen.has(image)) {
+                      return [];
+                    }
+                    seen.add(image);
+                    const selected = pending?.image === image && pending.offerId === offer.offerId;
+                    return [
+                      <li key={`${offer.offerId}:${image}`}>
+                        <button
+                          type="button"
+                          aria-pressed={selected}
+                          aria-label={`Фото ${offer.color ?? offer.model}`}
+                          onClick={() => onPending({ offerId: offer.offerId, image, color: offer.color })}
+                          className={`w-full border p-2 text-left ${selected ? "border-stone-950" : "border-stone-200"}`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={`/api/media/image?url=${encodeURIComponent(image)}`}
+                            alt=""
+                            className="h-36 w-full object-contain"
+                          />
+                          <p className="mt-1 text-xs text-stone-700">
+                            {[offer.color, offer.model].filter(Boolean).join(" · ")}
+                          </p>
+                        </button>
+                      </li>,
+                    ];
+                  },
+                );
+              })}
+            </ul>
+          ) : null}
+        </div>
+        <div className="flex justify-end gap-2 border-t border-stone-200 px-4 py-3">
+          <button type="button" onClick={onClose} className="min-h-9 border border-stone-300 px-3 text-xs">
+            Отмена
+          </button>
+          <button
+            type="button"
+            disabled={!pending}
+            onClick={() => pending && onConfirm(pending)}
+            className="min-h-9 border border-stone-900 px-3 text-xs text-stone-950 disabled:opacity-40"
+          >
+            Использовать фото
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import {
+  dedupeMediaOffers,
   matchProductMedia,
   type MediaMatch,
   type MediaOffer,
@@ -99,7 +100,10 @@ export function searchMediaByModel(
   color: string | null = null,
 ): MediaMatch {
   const match = matchProductMedia(loadMediaOffers(), model, productType, color);
-  const groups = match.groups.map((group) => ({ ...group, offers: group.offers.slice(0, 40) }));
+  const groups = match.groups.map((group) => ({
+    ...group,
+    offers: dedupeMediaOffers(group.offers).slice(0, 40),
+  }));
   return {
     ...match,
     groups,

@@ -77,6 +77,7 @@ beforeEach(() => {
           originalUnitPrice: 4555,
           unitPrice: 4555,
           room: null,
+          fabricColor: "Коричневый",
         },
         {
           id: "soft-1",
@@ -119,6 +120,9 @@ describe("proposal editor", () => {
     fireEvent.click(
       await screen.findByRole("button", { name: "Коммерческое предложение, 3 позиции" }),
     );
+    expect(screen.getByText(/Коричневый/)).toBeTruthy();
+    expect(screen.getByText(/130 × 280 см/)).toBeTruthy();
+    expect(screen.queryByRole("dialog")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: /Настройки цен/i }));
     expect((radio("100") as HTMLInputElement).checked).toBe(true);

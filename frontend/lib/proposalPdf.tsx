@@ -188,9 +188,9 @@ const styles = StyleSheet.create({
     color: "#5c564c",
   },
   photo: {
-    width: 72,
-    height: 72,
-    marginTop: 6,
+    width: 78,
+    height: 78,
+    marginRight: 10,
     objectFit: "contain",
   },
   cell: {
@@ -401,7 +401,7 @@ function lineHeight(section: ProposalPdfSection, line: ProposalPdfLine): number 
     height += 8 + Math.max(1, Math.ceil(line.confirmation.length / 42)) * 12;
   }
   if (line.imageSrc) {
-    height += 84;
+    height = Math.max(height, itemPad * 2 + 86);
   }
   return Math.ceil(height * 1.45);
 }
@@ -680,7 +680,8 @@ function ColumnHeader() {
 
 function ItemRow({ line }: { line: ProposalPdfLine }) {
   return (
-    <View style={styles.item}>
+    <View style={styles.item} wrap={false}>
+      {line.imageSrc ? <Image src={line.imageSrc} style={styles.photo} /> : null}
       <View style={styles.nameColumn}>
         <Text style={styles.itemTitle}>{line.title}</Text>
         {line.detailLines.map((detailLine, index) => (
@@ -691,7 +692,6 @@ function ItemRow({ line }: { line: ProposalPdfLine }) {
         {line.confirmation ? (
           <Text style={styles.confirmation}>{line.confirmation}</Text>
         ) : null}
-        {line.imageSrc ? <Image src={line.imageSrc} style={styles.photo} /> : null}
       </View>
       <Text style={[styles.cell, styles.qtyColumn]}>{line.quantityLabel}</Text>
       <Text style={[styles.cell, styles.priceColumn]}>{line.unitPriceLabel}</Text>

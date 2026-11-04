@@ -586,4 +586,78 @@ describe("proposal pdf", () => {
       expect(pdf.length).toBeGreaterThan(1_000);
     }
   }, 20_000);
+
+  it("lays out a photo beside the text and keeps a plain item compact", async () => {
+    const photo =
+      "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigD//2Q==";
+    const proposal = {
+      ...emptyProposal(),
+      recipient: "Макет",
+      issuedOn: "2026-11-04",
+      discount: { enabled: true, kind: "percent" as const, value: "10", until: "2026-11-30" },
+      rooms: [
+        { id: "living", name: "Гостиная" },
+        { id: "bedroom", name: "Спальня" },
+      ],
+      items: [
+        item({
+          id: "with-photo",
+          title: "Шторы «Вандер»",
+          productType: "curtain",
+          model: "Вандер",
+          widthCm: 130,
+          heightCm: 280,
+          quantity: 2,
+          unitPrice: 4600,
+          originalUnitPrice: 4600,
+          room: "living",
+          fabricColor: "Коричневый",
+          mediaColor: "Коричневый",
+          mediaImageUrl: photo,
+          configuration: { ...emptyConfiguration(), fabricName: "Вандер", heading: "люверсы" },
+        }),
+        item({
+          id: "plain",
+          title: "Покрывало «Софт»",
+          productType: "bedspread",
+          model: "Софт",
+          widthCm: 230,
+          heightCm: 250,
+          quantity: 1,
+          unitPrice: 8800,
+          originalUnitPrice: 8800,
+          room: "bedroom",
+          fabricColor: "Синий",
+          configuration: { ...emptyConfiguration(), fabricName: "Софт", stitch: "Ромб 10×10 см" },
+        }),
+        item({
+          id: "wrong-color",
+          title: "Римская штора «Вандер»",
+          productType: "roman",
+          model: "Вандер",
+          widthCm: 160,
+          heightCm: 180,
+          quantity: 1,
+          unitPrice: 1000,
+          originalUnitPrice: 1000,
+          room: "bedroom",
+          fabricColor: "Синий",
+          mediaColor: "Белый",
+          mediaImageUrl: photo,
+          configuration: { ...emptyConfiguration(), fabricName: "Вандер", mechanism: "Стандарт" },
+        }),
+      ],
+    };
+    const pdf = await renderToBuffer(<ProposalPdfDocument proposal={proposal} />);
+    writeFileSync(path.join(root, "drafts/pasionaria-kp-layout-sample.pdf"), pdf);
+    const pages = pagesOf(pdf);
+    const text = compact(pages.join("\n"));
+    expect(text).toContain(compact("Цвет: Коричневый"));
+    expect(text).toContain(compact("Цвет: Синий"));
+    expect(text).toContain(compact("Скидка 10%"));
+    expect(text).toContain("17100");
+    expect(pagesContaining(pages, "Шторы «Вандер»")).toEqual(pagesContaining(pages, "Гостиная"));
+    expect(pagesContaining(pages, "Покрывало «Софт»")).toEqual(pagesContaining(pages, "Спальня"));
+    expect(pdf.toString("latin1").split("/Subtype /Image").length - 1).toBe(1);
+  });
 });

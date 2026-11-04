@@ -13,6 +13,28 @@ export function exactModelKey(value: string): string {
 }
 
 /** Exact catalog model only. Quoted product titles are not treated as the same name. */
+export function dedupeMediaOffers(offers: MediaOffer[]): MediaOffer[] {
+  const groups = new Map<string, MediaOffer>();
+  for (const offer of offers) {
+    const parsed = parseCatalogTitle(offer.model);
+    const category = parsed ? normalizeMediaName(parsed.category) : normalizeMediaName(offer.model);
+    const color = offer.color ? normalizeMediaName(offer.color) : "";
+    const images = [...new Set(offer.images.filter(Boolean))];
+    const cover = images[0] ?? offer.cover;
+    const signature = [...images].sort().join("|");
+    const key = `${category}\n${color}\n${signature}`;
+    if (groups.has(key)) {
+      continue;
+    }
+    groups.set(key, {
+      ...offer,
+      cover,
+      images: images.length > 0 ? images : cover ? [cover] : [],
+    });
+  }
+  return [...groups.values()];
+}
+
 export function offersForExactModel(offers: MediaOffer[], model: string): MediaOffer[] {
   const key = exactModelKey(model);
   if (!key) {

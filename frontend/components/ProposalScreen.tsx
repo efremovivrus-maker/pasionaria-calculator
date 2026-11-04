@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { ProposalCoverMessage } from "@/components/ProposalCoverMessage";
-import { ProposalItemDetails } from "@/components/ProposalItemDetails";
+import { ProposalItemDetails, ProposalItemThumb } from "@/components/ProposalItemDetails";
 import { useProposal } from "@/components/ProposalProvider";
 import { formatProposalMoney } from "@/lib/proposalDocument";
 import {
@@ -840,11 +840,16 @@ function ItemRow({
         >
           <ChevronIcon open={expanded} />
         </button>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-stone-950">{item.title}</p>
-          <p className="text-xs text-stone-600">
-            {[dimensions, `${item.quantity} шт.`, roomLabel].filter(Boolean).join(" · ")}
-          </p>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <ProposalItemThumb item={item} />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-stone-950">{item.title}</p>
+            <p className="text-xs text-stone-600">
+              {[item.fabricColor?.trim(), dimensions, `${item.quantity} шт.`, roomLabel]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          </div>
         </div>
         <div className="w-[5.5rem] shrink-0">
           <CompactNumberField

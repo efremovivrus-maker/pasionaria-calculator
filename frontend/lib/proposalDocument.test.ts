@@ -63,6 +63,7 @@ describe("proposal pdf model", () => {
       fabricColor: "Синий",
     });
     expect(proposalImageSrc(photo)).toBeNull();
+    expect(clientPdfDetailLines(photo).at(-1)).toBe("Цвет: Синий");
     expect(
       proposalImageSrc({ ...photo, fabricColor: "белый" }),
     ).toContain("/api/media/image?url=");
