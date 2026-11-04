@@ -36,7 +36,22 @@ type ProposalDocumentPatch = Partial<
 >;
 
 type ProposalItemPatch = Partial<
-  Pick<ProposalItem, "title" | "quantity" | "unitPrice" | "room" | "itemType">
+  Pick<
+    ProposalItem,
+    | "title"
+    | "quantity"
+    | "unitPrice"
+    | "originalUnitPrice"
+    | "room"
+    | "itemType"
+    | "configuration"
+    | "fabricColor"
+    | "fabricColorCustom"
+    | "mediaOfferId"
+    | "mediaImageUrl"
+    | "mediaColor"
+    | "sessionPhotoId"
+  >
 >;
 
 type ProposalContextValue = {

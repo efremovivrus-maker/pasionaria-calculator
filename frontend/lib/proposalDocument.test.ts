@@ -16,6 +16,7 @@ import {
   clientCharacteristics,
   clientPdfDetailLines,
   formatProposalDate,
+  proposalImageSrc,
   formatProposalMoney,
   itemNeedsConfirmation,
   proposalPdfFilename,
@@ -39,6 +40,11 @@ function item(
     originalUnitPrice: 1000,
     unitPrice: 1000,
     room: null,
+    fabricColor: null,
+    fabricColorCustom: false,
+    mediaOfferId: null,
+    mediaImageUrl: null,
+    sessionPhotoId: null,
     ...overrides,
     configuration: {
       ...emptyConfiguration(),
@@ -48,6 +54,27 @@ function item(
 }
 
 describe("proposal pdf model", () => {
+  it("omits a catalog photo whose color differs from the selected fabric color", () => {
+    const photo = item({
+      id: "photo",
+      title: "Шторы",
+      mediaImageUrl: "http://pro.pasionaria.ru/vander.jpg",
+      mediaColor: "Белый",
+      fabricColor: "Синий",
+    });
+    expect(proposalImageSrc(photo)).toBeNull();
+    expect(
+      proposalImageSrc({ ...photo, fabricColor: "белый" }),
+    ).toContain("/api/media/image?url=");
+    expect(
+      proposalImageSrc({
+        ...photo,
+        sessionPhotoId: "local",
+        mediaImageUrl: "data:image/png;base64,aaa",
+      }),
+    ).toBe("data:image/png;base64,aaa");
+  });
+
   it("formats the issue date and file name", () => {
     expect(formatProposalDate("2026-10-30")).toBe("30 октября 2026");
     expect(
@@ -474,5 +501,22 @@ describe("proposal pdf model", () => {
     expect(clientCharacteristics(modelOnlyEmbroidery)).toEqual([
       { label: "Ткань", value: "Мириам" },
     ]);
+
+    const colored = item({
+      id: "color",
+      title: "Шторы «Вандер»",
+      productType: "curtain",
+      fabricColor: "Пыльная роза",
+      fabricColorCustom: true,
+      configuration: { ...emptyConfiguration(), fabricName: "Вандер" },
+    });
+    expect(clientPdfDetailLines(colored).at(-1)).toBe("Цвет: Пыльная роза · Вне каталога");
+    const sameModelOtherColor = item({
+      ...colored,
+      id: "color-2",
+      fabricColor: "Белый",
+      fabricColorCustom: false,
+    });
+    expect(clientPdfDetailLines(sameModelOtherColor).at(-1)).toBe("Цвет: Белый");
   });
 });

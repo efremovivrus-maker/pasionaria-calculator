@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { ProposalCoverMessage } from "@/components/ProposalCoverMessage";
+import { ProposalItemDetails } from "@/components/ProposalItemDetails";
 import { useProposal } from "@/components/ProposalProvider";
 import { formatProposalMoney } from "@/lib/proposalDocument";
 import {
@@ -477,6 +478,7 @@ export function ProposalScreen() {
                   onRoom={(room) => updateItem(item.id, { room })}
                   onMove={(direction) => moveItem(item.id, direction)}
                   onRemove={() => removeItem(item.id)}
+                  onPatch={(patch) => updateItem(item.id, patch)}
                 />
               ))}
             </RoomGroup>
@@ -523,6 +525,7 @@ export function ProposalScreen() {
                     onRoom={(roomId) => updateItem(item.id, { room: roomId })}
                     onMove={(direction) => moveItem(item.id, direction)}
                     onRemove={() => removeItem(item.id)}
+                    onPatch={(patch) => updateItem(item.id, patch)}
                   />
                 ))}
               </RoomGroup>
@@ -795,6 +798,7 @@ function ItemRow({
   onRoom,
   onMove,
   onRemove,
+  onPatch,
 }: {
   item: ProposalItem;
   position: number;
@@ -812,6 +816,7 @@ function ItemRow({
   onRoom: (room: string | null) => void;
   onMove: (direction: "up" | "down") => void;
   onRemove: () => void;
+  onPatch: (patch: Partial<ProposalItem>) => void;
 }) {
   const dimensions = formatDimensions(item.widthCm, item.heightCm);
   const shownPrice = clientUnitPrice(item, roundingStep, roundingMode);
@@ -928,6 +933,9 @@ function ItemRow({
               </select>
             </label>
           </div>
+          {item.itemType !== "service" ? (
+            <ProposalItemDetails item={item} position={position} onChange={onPatch} />
+          ) : null}
         </div>
       ) : null}
     </li>

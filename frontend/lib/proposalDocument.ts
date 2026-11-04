@@ -11,6 +11,7 @@ import {
   type RoundingMode,
   type RoundingStep,
 } from "@/lib/proposal";
+import { normalizeMediaName } from "@/lib/mediaMatch";
 
 export const CLIENT_CONFIRMATION_NOTE =
   "Стоимость предварительная и подлежит подтверждению после согласования технологии изготовления.";
@@ -55,6 +56,7 @@ export type ProposalPdfLine = {
   dimensions: string | null;
   fabric: string | null;
   detailLines: string[];
+  imageSrc: string | null;
   quantity: number;
   quantityLabel: string;
   unitPriceLabel: string;
@@ -275,7 +277,41 @@ export function clientPdfDetailLines(item: ProposalItem): string[] {
   if (secondary) {
     lines.push(secondary);
   }
+  const color = item.fabricColor?.trim();
+  if (color) {
+    lines.push(
+      item.fabricColorCustom ? `Цвет: ${color} · Вне каталога` : `Цвет: ${color}`,
+    );
+  }
   return lines;
+}
+
+export function catalogPhotoMatchesColor(item: ProposalItem): boolean {
+  const selected = item.fabricColor?.trim();
+  const photo = item.mediaColor?.trim();
+  if (!selected || !photo) {
+    return true;
+  }
+  return normalizeMediaName(selected) === normalizeMediaName(photo);
+}
+
+export function proposalImageSrc(item: ProposalItem): string | null {
+  if (item.itemType === "service") {
+    return null;
+  }
+  if (!item.sessionPhotoId && item.mediaImageUrl && !catalogPhotoMatchesColor(item)) {
+    return null;
+  }
+  if (item.mediaImageUrl?.startsWith("data:")) {
+    return item.mediaImageUrl;
+  }
+  if (item.sessionPhotoId) {
+    return null;
+  }
+  if (item.mediaImageUrl) {
+    return `/api/media/image?url=${encodeURIComponent(item.mediaImageUrl)}`;
+  }
+  return null;
 }
 
 export function proposalPdfModel(proposal: CommercialProposal): ProposalPdfModel {
@@ -388,6 +424,7 @@ function toLine(
     dimensions: formatDimensions(item.widthCm, item.heightCm),
     fabric: item.itemType === "service" ? null : clientFabric(item),
     detailLines: item.itemType === "service" ? [] : clientPdfDetailLines(item),
+    imageSrc: item.itemType === "service" ? null : proposalImageSrc(item),
     quantity: item.quantity,
     quantityLabel: formatQuantity(item.quantity),
     unitPriceLabel: formatProposalMoney(unitPrice),

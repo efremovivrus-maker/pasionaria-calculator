@@ -44,6 +44,12 @@ export type ProposalItem = {
   originalUnitPrice: number;
   unitPrice: number;
   room: string | null;
+  fabricColor?: string | null;
+  fabricColorCustom?: boolean;
+  mediaOfferId?: string | null;
+  mediaImageUrl?: string | null;
+  mediaColor?: string | null;
+  sessionPhotoId?: string | null;
 };
 
 export type ProposalRoom = {
@@ -414,6 +420,12 @@ export function createManualItem(input: {
     originalUnitPrice: price,
     unitPrice: price,
     room: null,
+    fabricColor: null,
+    fabricColorCustom: false,
+    mediaOfferId: null,
+    mediaImageUrl: null,
+    mediaColor: null,
+    sessionPhotoId: null,
   };
 }
 
@@ -490,6 +502,12 @@ export function createProposalItem(
     originalUnitPrice: unitPrice,
     unitPrice,
     room: null,
+    fabricColor: null,
+    fabricColorCustom: false,
+    mediaOfferId: null,
+    mediaImageUrl: null,
+    mediaColor: null,
+    sessionPhotoId: null,
   };
 }
 
@@ -696,6 +714,12 @@ function parseItem(value: unknown, roomIds: Set<string>): ProposalItem[] {
       originalUnitPrice,
       unitPrice,
       room: roomIds.has(text(source.room) ?? "") ? text(source.room) : null,
+      fabricColor: text(source.fabricColor),
+      fabricColorCustom: source.fabricColorCustom === true,
+      mediaOfferId: text(source.mediaOfferId),
+      mediaImageUrl: text(source.mediaImageUrl),
+      mediaColor: text(source.mediaColor),
+      sessionPhotoId: text(source.sessionPhotoId),
     },
   ];
 }

@@ -303,6 +303,11 @@ function pricedItem(overrides: Partial<ProposalItem>): ProposalItem {
     originalUnitPrice: 5000,
     unitPrice: 5000,
     room: null,
+    fabricColor: null,
+    fabricColorCustom: false,
+    mediaOfferId: null,
+    mediaImageUrl: null,
+    sessionPhotoId: null,
     ...overrides,
   };
 }

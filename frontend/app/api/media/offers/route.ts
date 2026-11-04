@@ -1,0 +1,29 @@
+import { searchMediaByModel } from "@/lib/mediaCatalog.server";
+
+export const runtime = "nodejs";
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const model = url.searchParams.get("model")?.trim() ?? "";
+  const productType = url.searchParams.get("productType");
+  const color = url.searchParams.get("color");
+  if (!model) {
+    return Response.json({ status: "none", offers: [] });
+  }
+  try {
+    const match = searchMediaByModel(model, productType, color);
+    return Response.json({
+      status: match.status,
+      offers: match.offers.map((offer) => ({
+        offerId: offer.offer_id,
+        model: offer.model,
+        article: offer.article,
+        color: offer.color,
+        cover: offer.cover,
+        images: offer.images.slice(0, 8),
+      })),
+    });
+  } catch {
+    return Response.json({ status: "none", offers: [], error: "catalog_unavailable" }, { status: 503 });
+  }
+}

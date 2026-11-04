@@ -1,4 +1,4 @@
-import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 import {
   proposalPdfModel,
@@ -186,6 +186,12 @@ const styles = StyleSheet.create({
     fontSize: 8,
     lineHeight: 1.4,
     color: "#5c564c",
+  },
+  photo: {
+    width: 72,
+    height: 72,
+    marginTop: 6,
+    objectFit: "contain",
   },
   cell: {
     paddingTop: 1,
@@ -393,6 +399,9 @@ function lineHeight(section: ProposalPdfSection, line: ProposalPdfLine): number 
   }
   if (line.confirmation) {
     height += 8 + Math.max(1, Math.ceil(line.confirmation.length / 42)) * 12;
+  }
+  if (line.imageSrc) {
+    height += 84;
   }
   return Math.ceil(height * 1.45);
 }
@@ -682,6 +691,7 @@ function ItemRow({ line }: { line: ProposalPdfLine }) {
         {line.confirmation ? (
           <Text style={styles.confirmation}>{line.confirmation}</Text>
         ) : null}
+        {line.imageSrc ? <Image src={line.imageSrc} style={styles.photo} /> : null}
       </View>
       <Text style={[styles.cell, styles.qtyColumn]}>{line.quantityLabel}</Text>
       <Text style={[styles.cell, styles.priceColumn]}>{line.unitPriceLabel}</Text>
