@@ -12,24 +12,31 @@ export function exactModelKey(value: string): string {
   return value.trim().toLocaleLowerCase("ru");
 }
 
-/** Exact catalog model only. Quoted product titles are not treated as the same name. */
+/**
+ * One card per product category, model and color.
+ *
+ * Stable rule: offers are scanned in catalog order. The first offer for a
+ * category + model + color is kept. Its cover is the first XML picture.
+ * Later SKUs of the same combination and the remaining pictures are dropped.
+ * Color comparison uses normalizeColorName; the kept offer still carries the
+ * catalog's original color spelling.
+ */
 export function dedupeMediaOffers(offers: MediaOffer[]): MediaOffer[] {
   const groups = new Map<string, MediaOffer>();
   for (const offer of offers) {
     const parsed = parseCatalogTitle(offer.model);
     const category = parsed ? normalizeMediaName(parsed.category) : normalizeMediaName(offer.model);
-    const color = offer.color ? normalizeMediaName(offer.color) : "";
-    const images = [...new Set(offer.images.filter(Boolean))];
-    const cover = images[0] ?? offer.cover;
-    const signature = [...images].sort().join("|");
-    const key = `${category}\n${color}\n${signature}`;
+    const modelName = parsed ? normalizeMediaName(parsed.name) : "";
+    const color = offer.color ? normalizeColorName(offer.color) : "";
+    const key = `${category}\n${modelName}\n${color}`;
     if (groups.has(key)) {
       continue;
     }
+    const cover = offer.cover || offer.images.find((image) => image) || null;
     groups.set(key, {
       ...offer,
       cover,
-      images: images.length > 0 ? images : cover ? [cover] : [],
+      images: cover ? [cover] : [],
     });
   }
   return [...groups.values()];
@@ -105,6 +112,37 @@ export function normalizeMediaName(value: string): string {
     .toLocaleLowerCase("ru");
 }
 
+/** Color comparison only. Model and category matching stay on normalizeMediaName. */
+export function normalizeColorName(value: string): string {
+  return normalizeMediaName(value.normalize("NFC")).replaceAll("ё", "е");
+}
+
+export function uniqueColorLabels(colors: readonly (string | null | undefined)[]): string[] {
+  const seen = new Set<string>();
+  const labels: string[] = [];
+  for (const color of colors) {
+    const label = color?.trim();
+    if (!label) {
+      continue;
+    }
+    const key = normalizeColorName(label);
+    if (!key || seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    labels.push(label);
+  }
+  return labels;
+}
+
+export function catalogColorLabel(value: string, colors: readonly string[]): string | null {
+  const key = normalizeColorName(value);
+  if (!key) {
+    return null;
+  }
+  return colors.find((color) => normalizeColorName(color) === key) ?? null;
+}
+
 export function parseCatalogTitle(model: string): { category: string; name: string } | null {
   const compact = model.trim().replace(/\s+/g, " ");
   const match = /^(.*)\s+[«"]([^»"]+)[»"]$/.exec(compact);
@@ -161,13 +199,13 @@ export function matchProductMedia(
   if (groups.length === 0) {
     return empty;
   }
-  const colorKey = color?.trim() ? normalizeMediaName(color) : "";
+  const colorKey = color?.trim() ? normalizeColorName(color) : "";
   if (colorKey) {
     groups = groups
       .map((group) => ({
         ...group,
         offers: group.offers.filter(
-          (offer) => offer.color !== null && normalizeMediaName(offer.color) === colorKey,
+          (offer) => offer.color !== null && normalizeColorName(offer.color) === colorKey,
         ),
       }))
       .filter((group) => group.offers.length > 0);

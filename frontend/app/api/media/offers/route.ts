@@ -8,22 +8,26 @@ export async function GET(request: Request) {
   const productType = url.searchParams.get("productType");
   const color = url.searchParams.get("color");
   if (!model) {
-    return Response.json({ status: "none", offers: [] });
+    return Response.json({ status: "none", offers: [], colors: [] });
   }
   try {
     const match = searchMediaByModel(model, productType, color);
     return Response.json({
       status: match.status,
+      colors: match.colors,
       offers: match.offers.map((offer) => ({
         offerId: offer.offer_id,
         model: offer.model,
         article: offer.article,
         color: offer.color,
         cover: offer.cover,
-        images: offer.images.slice(0, 8),
+        images: offer.cover ? [offer.cover] : [],
       })),
     });
   } catch {
-    return Response.json({ status: "none", offers: [], error: "catalog_unavailable" }, { status: 503 });
+    return Response.json(
+      { status: "none", offers: [], colors: [], error: "catalog_unavailable" },
+      { status: 503 },
+    );
   }
 }

@@ -11,7 +11,7 @@ import {
   type RoundingMode,
   type RoundingStep,
 } from "@/lib/proposal";
-import { normalizeMediaName } from "@/lib/mediaMatch";
+import { normalizeColorName } from "@/lib/mediaMatch";
 
 export const CLIENT_CONFIRMATION_NOTE =
   "Стоимость предварительная и подлежит подтверждению после согласования технологии изготовления.";
@@ -292,7 +292,7 @@ export function catalogPhotoMatchesColor(item: ProposalItem): boolean {
   if (!selected || !photo) {
     return true;
   }
-  return normalizeMediaName(selected) === normalizeMediaName(photo);
+  return normalizeColorName(selected) === normalizeColorName(photo);
 }
 
 export function proposalImageSrc(item: ProposalItem): string | null {

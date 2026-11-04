@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   dedupeMediaOffers,
   matchProductMedia,
+  uniqueColorLabels,
   type MediaMatch,
   type MediaOffer,
   type ModelMediaMapEntry,
@@ -94,12 +95,9 @@ export function loadModelMediaMap(): ModelMediaMapEntry[] {
   }
 }
 
-export function searchMediaByModel(
-  model: string,
-  productType: string | null = null,
-  color: string | null = null,
-): MediaMatch {
-  const match = matchProductMedia(loadMediaOffers(), model, productType, color);
+export type MediaSearchResult = MediaMatch & { colors: string[] };
+
+function presentMedia(match: MediaMatch): MediaMatch {
   const groups = match.groups.map((group) => ({
     ...group,
     offers: dedupeMediaOffers(group.offers).slice(0, 40),
@@ -109,4 +107,19 @@ export function searchMediaByModel(
     groups,
     offers: groups.flatMap((group) => group.offers),
   };
+}
+
+export function searchMediaByModel(
+  model: string,
+  productType: string | null = null,
+  color: string | null = null,
+): MediaSearchResult {
+  const catalog = loadMediaOffers();
+  const unfiltered = presentMedia(matchProductMedia(catalog, model, productType, null));
+  const colors = uniqueColorLabels(unfiltered.offers.map((offer) => offer.color));
+  const requested = color?.trim() ? color : null;
+  const match = requested
+    ? presentMedia(matchProductMedia(catalog, model, productType, requested))
+    : unfiltered;
+  return { ...match, colors };
 }

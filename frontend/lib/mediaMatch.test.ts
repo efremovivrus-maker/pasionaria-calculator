@@ -3,10 +3,13 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { searchMediaByModel } from "./mediaCatalog.server";
 import {
+  catalogColorLabel,
   catalogModelsFor,
   dedupeMediaOffers,
   matchProductMedia,
+  normalizeColorName,
   offersForCalculatorModel,
   offersForExactModel,
   type MediaOffer,
@@ -34,23 +37,27 @@ const offers: MediaOffer[] = [
 ];
 
 describe("media catalog matching", () => {
-  it("collapses repeated photos of one color and keeps different variants", () => {
+  it("keeps the first cover for each category, model and color", () => {
     const shared = "http://pro.pasionaria.ru/white.jpg";
     const samePhoto = (id: string): MediaOffer => ({
       ...offer(id, 'Комплект штор "Вандер"', "Белый"),
       cover: shared,
-      images: [shared, shared],
+      images: [shared, "http://pro.pasionaria.ru/detail.jpg"],
     });
-    const alternate = offer("detail", 'Комплект штор "Вандер"', "Белый");
     const collapsed = dedupeMediaOffers([
       samePhoto("size-1"),
       samePhoto("size-2"),
-      alternate,
+      offer("detail", 'Комплект штор "Вандер"', "белый"),
       offer("beige", 'Комплект штор "Вандер"', "Бежевый"),
       offer("roman", 'Римская штора "Вандер"', "Белый"),
+      offer("green", 'Римская штора "Вандер"', "Зелёный"),
+      offer("green-2", 'Римская штора "Вандер"', "зеленый"),
     ]);
-    expect(collapsed.map((item) => item.offer_id)).toEqual(["size-1", "detail", "beige", "roman"]);
-    expect(collapsed[0].images).toEqual([shared]);
+    expect(collapsed.map((item) => item.offer_id)).toEqual(["size-1", "beige", "roman", "green"]);
+    expect(collapsed[0]).toMatchObject({ color: "Белый", cover: shared, images: [shared] });
+    expect(collapsed[3]).toMatchObject({ color: "Зелёный", images: ["http://pro.pasionaria.ru/green.jpg"] });
+    expect(normalizeColorName("Зелёный")).toBe(normalizeColorName("зеленый"));
+    expect(catalogColorLabel("  бирюзовый ", ["Коричневый", "Бирюзовый"])).toBe("Бирюзовый");
   });
 
   it("returns only an exact model and keeps every color variant", () => {
@@ -176,7 +183,34 @@ describe("media catalog matching", () => {
     const vanderRoman = matchProductMedia(offers, "Вандер", "roman", "Коричневый");
     expect(vanderRoman.status).toBe("automatic");
     expect(vanderRoman.offers.every((item) => item.color === "Коричневый")).toBe(true);
+    const turquoise = matchProductMedia(offers, "Вандер", "roman", "бирюзовый");
+    expect(turquoise.status).toBe("automatic");
+    expect(turquoise.offers.length).toBeGreaterThan(0);
+    expect(turquoise.offers.every((item) => item.color === "Бирюзовый")).toBe(true);
+    expect(dedupeMediaOffers(turquoise.offers)).toHaveLength(1);
+    const romanCards = dedupeMediaOffers(matchProductMedia(offers, "Вандер", "roman", null).offers);
+    const romanColors = romanCards.map((item) => normalizeColorName(item.color ?? ""));
+    expect(new Set(romanColors).size).toBe(romanColors.length);
     expect(matchProductMedia(offers, "Вандер", "roman", "Нет такого цвета").status).toBe("color-missing");
+
+    const published = searchMediaByModel("Вандер", "roman", "бирюзовый");
+    expect(published.status).toBe("automatic");
+    expect(published.offers).toHaveLength(1);
+    expect(published.offers[0].color).toBe("Бирюзовый");
+    expect(published.offers[0].cover).toMatch(/^http/);
+    expect(published.offers[0].images).toEqual([published.offers[0].cover]);
+    expect(published.colors).toContain("Бирюзовый");
+    expect(searchMediaByModel("Вандер", "roman", "Бирюзовый").offers[0].offer_id).toBe(
+      published.offers[0].offer_id,
+    );
+    const missingColor = searchMediaByModel("Вандер", "roman", "Нет такого цвета");
+    expect(missingColor).toMatchObject({ status: "color-missing", offers: [] });
+    expect(missingColor.colors).toContain("Бирюзовый");
+    expect(searchMediaByModel("Леви+", "curtain", "бирюзовый").status).toBe("none");
+    const curtains = searchMediaByModel("Вандер", "curtain", "бирюзовый");
+    expect(curtains.status).toBe("automatic");
+    expect(curtains.offers).toHaveLength(1);
+    expect(searchMediaByModel("Софт", "bedspread", null).status).toBe("automatic");
 
     expect(matchProductMedia(offers, "Софт", "bedspread", null).groups[0]?.category).toBe(
       "Покрывало с наволочками",

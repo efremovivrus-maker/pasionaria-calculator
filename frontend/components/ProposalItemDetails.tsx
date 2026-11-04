@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { deleteKpPhoto, KP_PHOTO_MAX_BYTES, readKpPhoto, saveKpPhoto } from "@/lib/kpPhotoStore";
-import { normalizeMediaName } from "@/lib/mediaMatch";
+import { catalogColorLabel, normalizeColorName } from "@/lib/mediaMatch";
 import { catalogPhotoMatchesColor } from "@/lib/proposalDocument";
 import type { ProposalItem } from "@/lib/proposal";
 
@@ -65,7 +65,7 @@ export function ProposalItemThumb({ item }: { item: ProposalItem }) {
   );
 }
 
-export function ProposalItemDetails({
+export function ProposalItemColorField({
   item,
   position,
   onChange,
@@ -75,6 +75,96 @@ export function ProposalItemDetails({
   onChange: (patch: Partial<ProposalItem>) => void;
 }) {
   const [colors, setColors] = useState<string[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const colorValue = item.fabricColor ?? "";
+  const canonical = catalogColorLabel(colorValue, colors);
+  const outside = Boolean(item.model) && loaded && Boolean(colorValue.trim()) && !canonical;
+
+  useEffect(() => {
+    if (!item.model || item.itemType === "service") {
+      setColors([]);
+      setLoaded(true);
+      return;
+    }
+    const controller = new AbortController();
+    const params = new URLSearchParams({ model: item.model });
+    if (item.productType) {
+      params.set("productType", item.productType);
+    }
+    setLoaded(false);
+    void fetch(`/api/media/offers?${params.toString()}`, { signal: controller.signal })
+      .then((response) => response.json())
+      .then((payload: { colors?: string[] }) => {
+        setColors(payload.colors ?? []);
+        setLoaded(true);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        setColors([]);
+        setLoaded(true);
+      });
+    return () => controller.abort();
+  }, [item.itemType, item.model, item.productType]);
+
+  useEffect(() => {
+    if (!loaded || !item.model) {
+      return;
+    }
+    const trimmed = item.fabricColor?.trim() ?? "";
+    if (!trimmed) {
+      return;
+    }
+    const match = catalogColorLabel(trimmed, colors);
+    if (!match) {
+      return;
+    }
+    if (item.fabricColor !== match || item.fabricColorCustom) {
+      onChange({ fabricColor: match, fabricColorCustom: false });
+    }
+  }, [colors, item.fabricColor, item.fabricColorCustom, item.model, loaded, onChange]);
+
+  return (
+    <div className="mt-2">
+      <label className="block text-xs text-stone-600">
+        Цвет ткани
+        <input
+          aria-label={`Цвет ткани позиции ${position}`}
+          list={`model-colors-${item.id}`}
+          value={colorValue}
+          onChange={(event) => {
+            const next = event.target.value;
+            const match = catalogColorLabel(next, colors);
+            const value = match ?? next;
+            onChange({
+              fabricColor: value.trim() ? value : null,
+              fabricColorCustom: Boolean(item.model) && loaded && Boolean(next.trim()) && !match,
+            });
+          }}
+          className={fieldClass}
+        />
+        <datalist id={`model-colors-${item.id}`}>
+          {colors.map((color) => (
+            <option key={color} value={color} />
+          ))}
+        </datalist>
+      </label>
+      {outside ? <p className="mt-1 text-xs text-stone-500">Вне каталога</p> : null}
+    </div>
+  );
+}
+
+export function ProposalItemDetails({
+  item,
+  position,
+  onChange,
+}: {
+  item: ProposalItem;
+  position: number;
+  onChange: (patch: Partial<ProposalItem>) => void;
+}) {
+  const [catalogColors, setCatalogColors] = useState<string[]>([]);
   const [offers, setOffers] = useState<MediaOffer[] | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pending, setPending] = useState<PendingPhoto | null>(null);
@@ -82,33 +172,13 @@ export function ProposalItemDetails({
   const [matchStatus, setMatchStatus] = useState<string | null>(null);
   const [mediaNote, setMediaNote] = useState<string | null>(null);
   const [mediaError, setMediaError] = useState<string | null>(null);
-  const photosRequested = useRef(false);
   const [fabrics, setFabrics] = useState<string[]>([]);
   const [dayState, setDayState] = useState<string | null>(null);
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
   const dayNight =
     item.productType === "roman" &&
     /день[-\s]?ночь/i.test(item.configuration.mechanism ?? "");
-  const colorValue = item.fabricColor ?? "";
-  const knownColor = colors.some(
-    (color) => color.toLocaleLowerCase("ru") === colorValue.trim().toLocaleLowerCase("ru"),
-  );
-
-  useEffect(() => {
-    const fabric = item.configuration.faceFabric || item.configuration.fabricName;
-    if (!fabric) {
-      setColors([]);
-      return;
-    }
-    const controller = new AbortController();
-    void fetch(`/api/fabric-colors?fabric=${encodeURIComponent(fabric)}`, {
-      signal: controller.signal,
-    })
-      .then((response) => response.json())
-      .then((payload: { colors?: string[] }) => setColors(payload.colors ?? []))
-      .catch(() => setColors([]));
-    return () => controller.abort();
-  }, [item.configuration.faceFabric, item.configuration.fabricName]);
+  const requestId = useRef(0);
 
   useEffect(() => {
     if (!dayNight) {
@@ -144,12 +214,13 @@ export function ProposalItemDetails({
     };
   }, [item.sessionPhotoId]);
 
-  const loadPhotos = useCallback(async () => {
-    photosRequested.current = true;
+  const loadPhotos = useCallback(async (color: string) => {
+    const id = ++requestId.current;
     setMediaError(null);
     setMediaNote(null);
     if (!item.model) {
       setMatchStatus("none");
+      setCatalogColors([]);
       setOffers([]);
       return;
     }
@@ -157,25 +228,32 @@ export function ProposalItemDetails({
     if (item.productType) {
       params.set("productType", item.productType);
     }
-    if (item.fabricColor?.trim()) {
-      params.set("color", item.fabricColor.trim());
+    const requested = color.trim();
+    if (requested) {
+      params.set("color", requested);
     }
     const response = await fetch(`/api/media/offers?${params.toString()}`);
     const payload = (await response.json()) as {
       offers?: MediaOffer[];
+      colors?: string[];
       status?: string;
       error?: string;
     };
+    if (id !== requestId.current) {
+      return;
+    }
     if (!response.ok) {
       setMediaError("Каталог фотографий сейчас недоступен.");
       setMatchStatus("none");
+      setCatalogColors([]);
       setOffers([]);
       return;
     }
     const status = payload.status ?? "none";
     setMatchStatus(status);
+    setCatalogColors(payload.colors ?? []);
     if (status === "color-missing") {
-      setMediaNote("Для выбранного цвета нет фотографии этого изделия. Другой цвет не подставлен.");
+      setMediaNote(`Для цвета «${requested}» нет фотографии этого изделия. Другой цвет не подставлен.`);
       setOffers([]);
       return;
     }
@@ -183,14 +261,20 @@ export function ProposalItemDetails({
       setMediaNote("Несколько категорий изделия. Выберите фото вручную.");
     }
     setOffers(payload.offers ?? []);
-  }, [item.fabricColor, item.model, item.productType]);
+  }, [item.model, item.productType]);
 
   useEffect(() => {
-    if (!photosRequested.current) {
+    if (!pickerOpen) {
       return;
     }
-    void loadPhotos();
-  }, [loadPhotos]);
+    const color = item.fabricColor?.trim() ?? "";
+    setColorFilter(color);
+    void loadPhotos(color);
+  }, [item.fabricColor, item.model, item.productType, loadPhotos, pickerOpen]);
+
+  useEffect(() => {
+    setMediaNote(null);
+  }, [item.fabricColor, item.model]);
 
   async function uploadPhoto(file: File) {
     if (file.size > KP_PHOTO_MAX_BYTES) {
@@ -261,34 +345,6 @@ export function ProposalItemDetails({
 
   return (
     <div className="mt-3 space-y-3 border-t border-stone-100 pt-3">
-      <label className="block text-xs text-stone-600">
-        Цвет ткани
-        <input
-          aria-label={`Цвет ткани позиции ${position}`}
-          list={`fabric-colors-${item.id}`}
-          value={colorValue}
-          onChange={(event) => {
-            const next = event.target.value;
-            const custom = !colors.some(
-              (color) => color.toLocaleLowerCase("ru") === next.trim().toLocaleLowerCase("ru"),
-            );
-            onChange({
-              fabricColor: next.trim() ? next : null,
-              fabricColorCustom: Boolean(next.trim()) && custom,
-            });
-          }}
-          className={fieldClass}
-        />
-        <datalist id={`fabric-colors-${item.id}`}>
-          {colors.map((color) => (
-            <option key={color} value={color} />
-          ))}
-        </datalist>
-      </label>
-      {colorValue.trim() && !knownColor ? (
-        <p className="text-xs text-stone-500">Вне каталога</p>
-      ) : null}
-
       {dayNight ? (
         <label className="block text-xs text-stone-600">
           Дневная ткань
@@ -312,10 +368,8 @@ export function ProposalItemDetails({
         <button
           type="button"
           onClick={() => {
-            setPickerOpen(true);
             setPending(null);
-            setColorFilter("");
-            void loadPhotos();
+            setPickerOpen(true);
           }}
           className="min-h-9 border border-stone-300 px-2.5 text-xs text-stone-800 hover:border-stone-800"
         >
@@ -357,7 +411,7 @@ export function ProposalItemDetails({
         <img src={preview} alt="" className="h-16 w-16 object-contain" />
       ) : null}
       {mediaError ? <p className="text-xs text-stone-600">{mediaError}</p> : null}
-      {mediaNote ? <p className="text-xs text-stone-600">{mediaNote}</p> : null}
+      {mediaNote && !pickerOpen ? <p className="text-xs text-stone-600">{mediaNote}</p> : null}
       {catalogColorMismatch ? (
         <p className="text-xs text-stone-600">
           Для выбранного цвета нет фотографии этого изделия. Другой цвет не подставлен.
@@ -367,12 +421,17 @@ export function ProposalItemDetails({
         <PhotoPicker
           item={item}
           offers={offers}
+          colors={catalogColors}
           status={matchStatus}
           note={mediaNote}
           error={mediaError}
           colorFilter={colorFilter}
           pending={pending}
-          onFilter={setColorFilter}
+          onFilter={(color) => {
+            setColorFilter(color);
+            setPending(null);
+            void loadPhotos(color);
+          }}
           onPending={setPending}
           onClose={() => setPickerOpen(false)}
           onConfirm={(photo) => {
@@ -396,6 +455,7 @@ export function ProposalItemDetails({
 function PhotoPicker({
   item,
   offers,
+  colors,
   status,
   note,
   error,
@@ -408,6 +468,7 @@ function PhotoPicker({
 }: {
   item: ProposalItem;
   offers: MediaOffer[] | null;
+  colors: string[];
   status: string | null;
   note: string | null;
   error: string | null;
@@ -418,16 +479,16 @@ function PhotoPicker({
   onClose: () => void;
   onConfirm: (photo: PendingPhoto) => void;
 }) {
-  const lockedColor = item.fabricColor?.trim() ?? "";
-  const colors = lockedColor
-    ? []
-    : [...new Set((offers ?? []).map((offer) => offer.color?.trim()).filter((color): color is string => Boolean(color)))];
-  const visible = (offers ?? []).filter((offer) => {
-    if (lockedColor || !colorFilter.trim()) {
-      return true;
-    }
-    return offer.color !== null && normalizeMediaName(offer.color) === normalizeMediaName(colorFilter);
-  });
+  const requested = colorFilter.trim();
+  const visible =
+    status === "color-missing" || status === "none"
+      ? []
+      : (offers ?? []).filter((offer) => {
+          if (!requested) {
+            return true;
+          }
+          return offer.color !== null && normalizeColorName(offer.color) === normalizeColorName(requested);
+        });
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -445,38 +506,41 @@ function PhotoPicker({
         role="dialog"
         aria-modal="true"
         aria-label={`Фотографии ${item.model ?? item.title}`}
-        className="flex max-h-[90vh] w-full max-w-3xl flex-col border border-stone-300 bg-[#f8f6f0]"
+        className="flex max-h-[85vh] w-full max-w-lg flex-col border border-stone-300 bg-[#f8f6f0]"
       >
-        <div className="flex items-start justify-between gap-3 border-b border-stone-200 px-4 py-3">
+        <div className="flex items-start justify-between gap-3 border-b border-stone-200 px-3 py-2.5">
           <div>
             <h2 className="text-sm font-medium text-stone-950">Выбор фотографии</h2>
-            <p className="mt-1 text-xs text-stone-600">{item.title}</p>
+            <p className="mt-0.5 text-xs text-stone-600">{item.title}</p>
           </div>
           <button type="button" onClick={onClose} className="text-xs text-stone-600 underline">
             Закрыть
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
-          {lockedColor ? <p className="text-xs text-stone-700">Цвет: {lockedColor}</p> : null}
-          {!lockedColor && colors.length > 0 ? (
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
+          {colors.length > 0 ? (
             <div className="flex flex-wrap gap-1.5">
               <button
                 type="button"
                 onClick={() => onFilter("")}
-                className={`min-h-8 border px-2 text-xs ${colorFilter ? "border-stone-300 text-stone-700" : "border-stone-900 text-stone-950"}`}
+                className={`min-h-8 border px-2 text-xs ${requested ? "border-stone-300 text-stone-700" : "border-stone-900 text-stone-950"}`}
               >
                 Все цвета
               </button>
-              {colors.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => onFilter(color)}
-                  className={`min-h-8 border px-2 text-xs ${normalizeMediaName(colorFilter) === normalizeMediaName(color) ? "border-stone-900 text-stone-950" : "border-stone-300 text-stone-700"}`}
-                >
-                  {color}
-                </button>
-              ))}
+              {colors.map((color) => {
+                const active = normalizeColorName(requested) === normalizeColorName(color);
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => onFilter(color)}
+                    className={`min-h-8 border px-2 text-xs ${active ? "border-stone-900 text-stone-950" : "border-stone-300 text-stone-700"}`}
+                  >
+                    {color}
+                  </button>
+                );
+              })}
             </div>
           ) : null}
           {offers === null && !error ? (
@@ -484,48 +548,43 @@ function PhotoPicker({
           ) : null}
           {error ? <p className="mt-3 text-xs text-stone-600">{error}</p> : null}
           {note ? <p className="mt-3 text-xs text-stone-600">{note}</p> : null}
-          {offers && visible.length === 0 && status === "none" ? (
+          {offers && status === "none" ? (
             <p className="mt-3 text-xs text-stone-500">Нет точного совпадения модели в медиакаталоге.</p>
           ) : null}
           {visible.length > 0 ? (
-            <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <ul className={`mt-3 grid gap-3 ${visible.length > 1 ? "sm:grid-cols-2" : "grid-cols-1"}`}>
               {visible.flatMap((offer) => {
-                const seen = new Set<string>();
-                return (offer.images.length > 0 ? offer.images : offer.cover ? [offer.cover] : []).flatMap(
-                  (image) => {
-                    if (seen.has(image)) {
-                      return [];
-                    }
-                    seen.add(image);
-                    const selected = pending?.image === image && pending.offerId === offer.offerId;
-                    return [
-                      <li key={`${offer.offerId}:${image}`}>
-                        <button
-                          type="button"
-                          aria-pressed={selected}
-                          aria-label={`Фото ${offer.color ?? offer.model}`}
-                          onClick={() => onPending({ offerId: offer.offerId, image, color: offer.color })}
-                          className={`w-full border p-2 text-left ${selected ? "border-stone-950" : "border-stone-200"}`}
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={`/api/media/image?url=${encodeURIComponent(image)}`}
-                            alt=""
-                            className="h-36 w-full object-contain"
-                          />
-                          <p className="mt-1 text-xs text-stone-700">
-                            {[offer.color, offer.model].filter(Boolean).join(" · ")}
-                          </p>
-                        </button>
-                      </li>,
-                    ];
-                  },
-                );
+                const image = offer.cover;
+                if (!image) {
+                  return [];
+                }
+                const selected = pending
+                  ? pending.offerId === offer.offerId && pending.image === image
+                  : item.mediaOfferId === offer.offerId && item.mediaImageUrl === image;
+                return [
+                  <li key={offer.offerId}>
+                    <button
+                      type="button"
+                      aria-pressed={selected}
+                      aria-label={`Фото ${offer.color ?? offer.model}`}
+                      onClick={() => onPending({ offerId: offer.offerId, image, color: offer.color })}
+                      className={`w-full border bg-white p-2 text-left ${selected ? "border-stone-950" : "border-stone-200"}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`/api/media/image?url=${encodeURIComponent(image)}`}
+                        alt=""
+                        className="h-64 w-full object-contain"
+                      />
+                      <p className="mt-1 text-xs text-stone-700">{offer.color ?? offer.model}</p>
+                    </button>
+                  </li>,
+                ];
               })}
             </ul>
           ) : null}
         </div>
-        <div className="flex justify-end gap-2 border-t border-stone-200 px-4 py-3">
+        <div className="flex justify-end gap-2 border-t border-stone-200 px-3 py-2.5">
           <button type="button" onClick={onClose} className="min-h-9 border border-stone-300 px-3 text-xs">
             Отмена
           </button>

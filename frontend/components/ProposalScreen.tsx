@@ -3,7 +3,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { ProposalCoverMessage } from "@/components/ProposalCoverMessage";
-import { ProposalItemDetails, ProposalItemThumb } from "@/components/ProposalItemDetails";
+import {
+  ProposalItemColorField,
+  ProposalItemDetails,
+  ProposalItemThumb,
+} from "@/components/ProposalItemDetails";
 import { useProposal } from "@/components/ProposalProvider";
 import { formatProposalMoney } from "@/lib/proposalDocument";
 import {
@@ -904,6 +908,9 @@ function ItemRow({
               </p>
             )}
           </div>
+          {item.itemType !== "service" ? (
+            <ProposalItemColorField item={item} position={position} onChange={onPatch} />
+          ) : null}
           <div className="mt-2 flex flex-col gap-2 sm:flex-row">
             {item.productType === null && (
               <label className="block text-xs text-stone-600 sm:min-w-36">
