@@ -13,6 +13,7 @@ import { Message } from "@/components/Message";
 import { useProposal } from "@/components/ProposalProvider";
 import { ResultCard } from "@/components/ResultCard";
 import { ThinkingState } from "@/components/ThinkingState";
+import { rememberCalculation } from "@/lib/account/browser";
 import {
   CalculationResponseError,
   sendChatMessage,
@@ -114,10 +115,23 @@ export function CalculatorChat() {
             ),
           },
         ]);
+        rememberCalculation({
+          kind: "unavailable",
+          rawRequest: trimmed,
+          payload: response.payload,
+        });
       } else {
         setCompleted({
           result: response.result,
           feedback: createFeedbackContext(trimmed, response.payload),
+        });
+        rememberCalculation({
+          kind: "result",
+          rawRequest: trimmed,
+          payload: response.payload,
+          productType: response.result.productType,
+          model: response.result.model,
+          price: response.result.retailPrice,
         });
       }
     } catch (error) {
@@ -131,6 +145,11 @@ export function CalculatorChat() {
       setFailedAttempt({
         rawRequest: trimmed,
         feedback: createFeedbackContext(trimmed, errorResult),
+      });
+      rememberCalculation({
+        kind: "error",
+        rawRequest: trimmed,
+        payload: errorResult,
       });
     } finally {
       setIsLoading(false);

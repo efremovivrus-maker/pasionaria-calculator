@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 
 import { ProposalCoverMessage } from "@/components/ProposalCoverMessage";
+import { ProposalSaveControl } from "@/components/ProposalSaveControl";
 import {
   ProposalItemColorField,
   ProposalItemDetails,
@@ -648,6 +649,7 @@ export function ProposalScreen() {
           >
             Сопроводительное сообщение
           </button>
+          <ProposalSaveControl />
         </div>
         {pdfState === "failed" ? (
           <p role="alert" className="mt-3 text-sm text-stone-700">

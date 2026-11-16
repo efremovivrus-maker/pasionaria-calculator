@@ -1,6 +1,7 @@
 "use client";
 
 import { CalculatorChat } from "@/components/CalculatorChat";
+import { AccountMenu } from "@/components/AccountMenu";
 import { ProposalProvider, useProposal } from "@/components/ProposalProvider";
 import { ProposalScreen } from "@/components/ProposalScreen";
 
@@ -45,6 +46,7 @@ function ProposalApp() {
             <p className="hidden text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-stone-500 md:block">
               AI calculator
             </p>
+            <AccountMenu />
             <button
               type="button"
               onClick={openProposal}

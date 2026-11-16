@@ -76,6 +76,7 @@ type ProposalContextValue = {
   kpCountPulse: number;
   kpToastOpen: boolean;
   dismissKpToast: () => void;
+  hydrated: boolean;
 };
 
 const ProposalContext = createContext<ProposalContextValue | null>(null);
@@ -117,6 +118,10 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setProposal(loadProposal());
+    if (sessionStorage.getItem("pasionaria.account-open") === "proposal") {
+      sessionStorage.removeItem("pasionaria.account-open");
+      setView("proposal");
+    }
     setHydrated(true);
   }, []);
 
@@ -143,6 +148,7 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
       kpCountPulse,
       kpToastOpen,
       dismissKpToast,
+      hydrated,
       goToCalculator,
       openProposal: () => setView("proposal"),
       closeProposal: goToCalculator,
@@ -261,7 +267,7 @@ export function ProposalProvider({ children }: { children: ReactNode }) {
         setProposal(emptyProposal());
       },
     }),
-    [proposal, view, kpCountPulse, kpToastOpen, dismissKpToast, goToCalculator, showKpAddedToast],
+    [proposal, view, hydrated, kpCountPulse, kpToastOpen, dismissKpToast, goToCalculator, showKpAddedToast],
   );
 
   return (

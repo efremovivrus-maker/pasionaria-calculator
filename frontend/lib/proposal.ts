@@ -50,6 +50,8 @@ export type ProposalItem = {
   mediaImageUrl?: string | null;
   mediaColor?: string | null;
   sessionPhotoId?: string | null;
+  storedPhotoId?: string | null;
+  calculationId?: string | null;
 };
 
 export type ProposalRoom = {
@@ -426,6 +428,8 @@ export function createManualItem(input: {
     mediaImageUrl: null,
     mediaColor: null,
     sessionPhotoId: null,
+    storedPhotoId: null,
+    calculationId: null,
   };
 }
 
@@ -508,6 +512,8 @@ export function createProposalItem(
     mediaImageUrl: null,
     mediaColor: null,
     sessionPhotoId: null,
+    storedPhotoId: null,
+    calculationId: null,
   };
 }
 
@@ -720,6 +726,8 @@ function parseItem(value: unknown, roomIds: Set<string>): ProposalItem[] {
       mediaImageUrl: text(source.mediaImageUrl),
       mediaColor: text(source.mediaColor),
       sessionPhotoId: text(source.sessionPhotoId),
+      storedPhotoId: text(source.storedPhotoId),
+      calculationId: text(source.calculationId),
     },
   ];
 }

@@ -308,6 +308,9 @@ export function proposalImageSrc(item: ProposalItem): string | null {
   if (item.sessionPhotoId) {
     return null;
   }
+  if (item.storedPhotoId && /^[0-9a-f-]{36}$/i.test(item.storedPhotoId)) {
+    return `/api/account/photos/${item.storedPhotoId}`;
+  }
   if (item.mediaImageUrl) {
     return `/api/media/image?url=${encodeURIComponent(item.mediaImageUrl)}`;
   }
