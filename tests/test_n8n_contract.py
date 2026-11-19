@@ -78,6 +78,8 @@ class BedspreadSessionContractTests(unittest.TestCase):
             self.guide,
         )
         self.assertIn("Leave the curtain and Roman session", self.guide)
+        self.assertIn("copy that same text into `raw_request`", self.guide)
+        self.assertIn('"accessories"', self.guide)
         self.assertIn("Do not ask a clarifying question for a bedspread.", self.guide)
         self.assertIn("`POST /api/calculate` with `model` omitted or null.", self.guide)
         self.assertNotIn("укажите модель в новом полном запросе", self.guide)

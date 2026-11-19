@@ -24,6 +24,22 @@ class CalculationConfiguration(BaseModel):
         return stripped
 
 
+class AccessoryInput(BaseModel):
+    category: Optional[str] = None
+    name: Optional[str] = None
+    article: Optional[str] = None
+    color: Optional[str] = None
+    placement: Optional[str] = None
+
+    @field_validator("category", "name", "article", "color", "placement")
+    @classmethod
+    def strip_accessory(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        stripped = value.strip()
+        return stripped or None
+
+
 class CalculationRequest(BaseModel):
     product_type: Literal["curtain", "roman", "bedspread"]
     model: Optional[str] = None
@@ -38,6 +54,7 @@ class CalculationRequest(BaseModel):
     stitch: Optional[str] = None
     filling: Optional[str] = None
     extra_operations: list[str] = Field(default_factory=list)
+    accessories: Optional[list[AccessoryInput]] = None
     raw_request: Optional[str] = None
 
     @field_validator("model")
@@ -89,6 +106,10 @@ class CalculationRequest(BaseModel):
             "configuration": self.configuration.model_dump(),
             "extra_operations": self.extra_operations,
         }
+        if self.accessories is not None:
+            payload["accessories"] = [
+                item.model_dump(exclude_none=True) for item in self.accessories
+            ]
         if self.day_fabric is not None:
             payload["day_fabric"] = self.day_fabric
         if self.face_fabric is not None:

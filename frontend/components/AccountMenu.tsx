@@ -59,6 +59,9 @@ export function AccountMenu() {
           <Link href="/account/documents" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
             Мои документы
           </Link>
+          <Link href="/account/price-lists" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
+            Прайс-листы
+          </Link>
           <Link href="/account/password" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
             Сменить пароль
           </Link>

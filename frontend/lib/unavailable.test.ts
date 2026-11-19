@@ -84,6 +84,17 @@ describe("formatUnavailableMessage", () => {
     ).toBe("Не могу надёжно рассчитать этот вариант.");
   });
 
+  it("shows the structured trim clarification with the complete example", () => {
+    expect(
+      formatUnavailableMessage({
+        status: "unavailable",
+        reason_code: "TRIM_INCOMPLETE",
+        message:
+          "Не хватает данных: модель фурнитуры. Отправьте запрос заново целиком, например: «Римская штора Вандер с бахромой Сальса по низу 150×170 см».",
+      }),
+    ).toContain("модель фурнитуры");
+  });
+
   it("keeps the specific problematic-model message", () => {
     expect(
       formatUnavailableMessage({

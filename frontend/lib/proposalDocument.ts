@@ -277,6 +277,16 @@ export function clientPdfDetailLines(item: ProposalItem): string[] {
   if (secondary) {
     lines.push(secondary);
   }
+  for (const component of item.components) {
+    if (component.category !== "trim" && component.category !== "trim_labor") {
+      continue;
+    }
+    const meters =
+      component.quantity !== undefined
+        ? ` · ${component.quantity} ${component.unit ?? "пог. м"}`
+        : "";
+    lines.push(`${component.name}${meters}`);
+  }
   const color = item.fabricColor?.trim();
   if (color) {
     lines.push(

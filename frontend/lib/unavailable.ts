@@ -59,6 +59,9 @@ export function formatUnavailableMessage(value: unknown): string {
     asString(details.reason) ??
     asString(payload.reason) ??
     asString(payload.explanation);
+  if (reasonCode?.startsWith("TRIM_")) {
+    return asString(payload.message) ?? reason ?? SAFE_FALLBACK;
+  }
 
   if (reasonCode === "MODEL_NOT_FOUND") {
     const model = requestedModel(payload, details);

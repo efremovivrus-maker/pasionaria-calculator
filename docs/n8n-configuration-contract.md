@@ -396,3 +396,54 @@ in the Data Table. Omit a field when it is null:
   "raw_request": "Покрывало Софт 230×250, ромб 10×10"
 }
 ```
+
+## Decorative trim
+
+The browser sends the manager's text unchanged as `message`. The workflow must
+copy that same text into `raw_request` without shortening it and without
+removing the trim name, color, article or placement. The backend prices trim
+from `raw_request` when `accessories` is omitted. A follow-up that no longer
+contains the trim does not keep it: this calculator has no dialog memory, so
+the full request has to be in the current message.
+
+Do not put the trim phrase into `extra_operations`. That array is only for
+named embroidery and other catalog extras. Leave words such as `бахрома
+Сальса по низу` in `raw_request`.
+
+`accessories` is optional. Send it only when the parser has already separated
+each trim. Prices, meters and coefficients are not parser fields; the backend
+calculates them.
+
+```json
+{
+  "product_type": "roman",
+  "model": "Вандер",
+  "width_cm": 150,
+  "height_cm": 170,
+  "quantity": 1,
+  "configuration": {
+    "heading": null,
+    "mechanism": null,
+    "lining": null,
+    "mounting": null
+  },
+  "extra_operations": [],
+  "raw_request": "Римская штора Вандер с бахромой Сальса по низу 150х170 см",
+  "accessories": [
+    {
+      "category": "бахрома",
+      "name": "Сальса",
+      "article": "4629",
+      "color": "Синий",
+      "placement": "по низу"
+    }
+  ]
+}
+```
+
+If `accessories` is present, the backend uses that array and does not also
+parse `raw_request`. Each item may use a placement phrase (`по низу`,
+`по двум боковым краям`) or an internal key (`bottom`, `both_sides`).
+`снизу и сбоку` is ambiguous. `снизу и по бокам` means the bottom and both
+sides. Roman blinds cannot take trim on the top or around the whole perimeter.
+

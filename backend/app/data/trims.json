@@ -1,0 +1,294 @@
+{
+  "source": "Фурнитура для калькулятора.xlsx",
+  "source_date": null,
+  "unit": "пог. м",
+  "allowance_rate": "1.10",
+  "allowance_note": "К длине отделки добавляется 10% материала. Пришивание считается по длине отделки без этого запаса.",
+  "markup_by_category": {
+    "бахрома": 3,
+    "тесьма": 3,
+    "декоративная лента": 3,
+    "бордюр": 3,
+    "кант": 3
+  },
+  "labor_by_category": {
+    "бахрома": "OP_129",
+    "тесьма": "OP_129",
+    "декоративная лента": "OP_129",
+    "бордюр": "OP_129",
+    "кант": "OP_129"
+  },
+  "labor_note": "OP_129 — пришивание декоративной фурнитуры, 80 ₽ за погонный метр длины отделки. Коэффициент ×3 относится только к материалу.",
+  "records": [
+    {
+      "article": "6018",
+      "name": "Тесьма \"Баблс\" Большой",
+      "color": "Белый",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 750,
+      "photo": null
+    },
+    {
+      "article": "3068",
+      "name": "Тесьма \"Арбузики\"",
+      "color": "Сиреневый",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 260,
+      "photo": null
+    },
+    {
+      "article": "3045",
+      "name": "Тесьма \"Перу\"",
+      "color": "Морская волна",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 560,
+      "photo": null
+    },
+    {
+      "article": "4465",
+      "name": "Тесьма \"Ягодки\"",
+      "color": "Оранжевый",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 975,
+      "photo": null
+    },
+    {
+      "article": "4511",
+      "name": "Тесьма \"Италия\"",
+      "color": "Коричневый",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 260,
+      "photo": null
+    },
+    {
+      "article": "3052",
+      "name": "Однотонная репсовая лента",
+      "color": "Серый",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 60,
+      "photo": null
+    },
+    {
+      "article": "2978",
+      "name": "Однотонная репсовая лента",
+      "color": "Оранжевый",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 60,
+      "photo": null
+    },
+    {
+      "article": "3262",
+      "name": "Однотонная репсовая лента",
+      "color": "Молочный",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 60,
+      "photo": null
+    },
+    {
+      "article": "7438",
+      "name": "Однотонная репсовая лента",
+      "color": "Бежевый",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 60,
+      "photo": null
+    },
+    {
+      "article": "7388",
+      "name": "Декоративная лента \"Ягодки\"",
+      "color": "Бежевый",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 220,
+      "photo": null
+    },
+    {
+      "article": "6168",
+      "name": "Бахрома Кисея \"Хелен\"",
+      "color": "Молочный",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 830,
+      "photo": null
+    },
+    {
+      "article": "5046",
+      "name": "Бахрома \"Византия\"",
+      "color": "Серый",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 1560,
+      "photo": null
+    },
+    {
+      "article": "4758",
+      "name": "Бахрома \"Мира\"",
+      "color": "Темная бирюза",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 232,
+      "photo": null
+    },
+    {
+      "article": "5812",
+      "name": "Бахрома \"Браш\"",
+      "color": "Белый",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 900,
+      "photo": null
+    },
+    {
+      "article": "4688",
+      "name": "Бахрома \"Мексика\"",
+      "color": "Морская волна",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 220,
+      "photo": null
+    },
+    {
+      "article": "4629",
+      "name": "Бахрома \"Сальса\"",
+      "color": "Синий",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 260,
+      "photo": null
+    },
+    {
+      "article": "3057",
+      "name": "Бахрома \"Моника\"",
+      "color": "Коричневый",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 434,
+      "photo": null
+    },
+    {
+      "article": "7199",
+      "name": "Тесьма \"Горошина\"",
+      "color": "Белый",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 450,
+      "photo": null
+    },
+    {
+      "article": "5578",
+      "name": "Тесьма \"Бусинки\" №1",
+      "color": "Черное античное серебро",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 625,
+      "photo": null
+    },
+    {
+      "article": "4038",
+      "name": "Тесьма \"Деревянные кружочки\"",
+      "color": "Молочно-бежевый",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 688,
+      "photo": null
+    },
+    {
+      "article": "3780",
+      "name": "Тесьма \"Металлические шарики\"",
+      "color": "Горчица",
+      "category": "тесьма",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 356,
+      "photo": null
+    },
+    {
+      "article": "6242",
+      "name": "Бахрома \"Скандинавия\"",
+      "color": "Молочный",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 640,
+      "photo": null
+    },
+    {
+      "article": "7372",
+      "name": "Бахрома \"Ягодки\"",
+      "color": "Бежевый",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 820,
+      "photo": null
+    },
+    {
+      "article": "4753",
+      "name": "Бахрома \"Кристина\"",
+      "color": "Фиолетовый",
+      "category": "бахрома",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 260,
+      "photo": null
+    },
+    {
+      "article": "6112",
+      "name": "Бордюр \"Симпл с кантом\"",
+      "color": "107 с кантом 513а",
+      "category": "бордюр",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 390,
+      "photo": null
+    },
+    {
+      "article": "6134",
+      "name": "Бордюр \"Симпл с вышивкой\"",
+      "color": "107 с вышивкой 19 терракот",
+      "category": "бордюр",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 580,
+      "photo": null
+    },
+    {
+      "article": "4311",
+      "name": "Лента ДЛС \"Ромбы\"",
+      "color": "Бежевый",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 60,
+      "photo": null
+    },
+    {
+      "article": "2147",
+      "name": "Сутажная лента №2",
+      "color": "Коричневый",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 104,
+      "photo": null
+    },
+    {
+      "article": "3850",
+      "name": "Замшевая декоративная лента 4 см",
+      "color": "Бордо",
+      "category": "декоративная лента",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 780,
+      "photo": null
+    },
+    {
+      "article": "6008",
+      "name": "Кант Лён 5мм",
+      "color": "Бежевый",
+      "category": "кант",
+      "unit": "пог. м",
+      "purchase_price_rub_per_m": 195,
+      "photo": null
+    }
+  ]
+}

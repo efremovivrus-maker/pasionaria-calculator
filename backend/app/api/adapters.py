@@ -34,6 +34,10 @@ def _component_category(
     is_extra: bool,
 ) -> str:
     group = str(line["group"]).casefold()
+    if group == "фурнитура":
+        return "trim"
+    if "пришиван" in group:
+        return "trim_labor"
     if "вышив" in group:
         return "embroidery"
     if is_extra:

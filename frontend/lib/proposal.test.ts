@@ -348,6 +348,20 @@ describe("proposal discount", () => {
     expect(wholeRubles(35200 * 0.1)).toBe(3520);
   });
 
+  it("keeps a saved trim price after the source calculation object changes", () => {
+    const components = [
+      { category: "trim", name: "Бахрома «Сальса», арт. 4629", cost: 1287, quantity: 1.65, unit: "пог. м" },
+      { category: "trim_labor", name: "Пришивание фурнитуры", cost: 120, quantity: 1.5, unit: "пог. м", operationId: "OP_129" },
+    ];
+    const result = { ...curtain, productType: "roman", quantity: 1, retailPrice: 14810, components };
+    const item = createProposalItem(result);
+    result.retailPrice = 1;
+    components[0].cost = 1;
+    expect(item.unitPrice).toBe(14810);
+    expect(item.components[0].cost).toBe(1287);
+    expect(item.components[1].cost).toBe(120);
+  });
+
   it("persists discount settings in sessionStorage", () => {
     const proposal = emptyProposal();
     proposal.discount = { enabled: true, kind: "percent", value: "10", until: "2026-10-31" };

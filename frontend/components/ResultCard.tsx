@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { CalculationResult } from "@/lib/types";
+import type { CalculationResult, CostComponent } from "@/lib/types";
 
 type ResultCardProps = {
   result: CalculationResult;
@@ -18,6 +18,16 @@ const rubles = new Intl.NumberFormat("ru-RU", {
 const decimal = new Intl.NumberFormat("ru-RU", {
   maximumFractionDigits: 2,
 });
+
+function trimQuantity(component: CostComponent) {
+  if (
+    (component.category !== "trim" && component.category !== "trim_labor") ||
+    component.quantity === undefined
+  ) {
+    return "";
+  }
+  return ` · ${decimal.format(component.quantity)} ${component.unit ?? "пог. м"}`;
+}
 
 function productName(type?: string) {
   if (type === "roman") {
@@ -52,7 +62,9 @@ export function calculationCopyText(result: CalculationResult): string {
   }
   lines.push(`Итого: ${rubles.format(result.retailPrice)}`);
   for (const component of result.components ?? []) {
-    lines.push(`${component.name}: ${rubles.format(component.cost)}`);
+    lines.push(
+      `${component.name}${trimQuantity(component)}: ${rubles.format(component.cost)}`,
+    );
   }
   return lines.join("\n");
 }
@@ -117,7 +129,9 @@ export function ResultCard({
         component.category === "fabric"
           ? "Ткань"
           : component.category === "embroidery" ||
-              component.category === "extra"
+              component.category === "extra" ||
+              component.category === "trim" ||
+              component.category === "trim_labor"
             ? "Дополнительные операции"
             : "Пошив и комплектующие";
       groups.set(label, (groups.get(label) ?? 0) + component.cost);
@@ -213,7 +227,10 @@ export function ResultCard({
                       }
                       className="flex justify-between gap-5"
                     >
-                      <span>{component.name}</span>
+                      <span>
+                        {component.name}
+                        {trimQuantity(component)}
+                      </span>
                       <span className="shrink-0 tabular-nums">
                         {rubles.format(component.cost)}
                       </span>

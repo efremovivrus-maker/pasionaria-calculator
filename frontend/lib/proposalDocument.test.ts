@@ -520,4 +520,33 @@ describe("proposal pdf model", () => {
     });
     expect(clientPdfDetailLines(sameModelOtherColor).at(-1)).toBe("Цвет: Белый");
   });
+
+  it("lists decorative trim and its sewing line without replacing the product photo", () => {
+    const product = item({
+      id: "trim",
+      title: "Римская штора",
+      mediaImageUrl: "http://pro.pasionaria.ru/vander.jpg",
+      components: [
+        {
+          category: "trim",
+          name: "Бахрома «Сальса», арт. 4629, Синий — по низу",
+          cost: 1170,
+          quantity: 1.5,
+          unit: "пог. м",
+        },
+        {
+          category: "trim_labor",
+          name: "Пришивание фурнитуры",
+          cost: 120,
+          quantity: 1.5,
+          unit: "пог. м",
+        },
+      ],
+    });
+    expect(clientPdfDetailLines(product).slice(0, 2)).toEqual([
+      "Бахрома «Сальса», арт. 4629, Синий — по низу · 1.5 пог. м",
+      "Пришивание фурнитуры · 1.5 пог. м",
+    ]);
+    expect(proposalImageSrc(product)).toContain("/api/media/image?url=");
+  });
 });

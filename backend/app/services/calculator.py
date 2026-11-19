@@ -17,6 +17,7 @@ from .fabric_calculator import calculate_fabric_consumption
 from .model_matching import normalize_model_name, resolve_model
 from .pricing import build_pricing, money
 from .quantity_rule import resolve_quantity
+from .trims import apply_trims, is_trim_text
 
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -897,8 +898,25 @@ def calculate(
 ) -> dict[str, Any]:
     """Calculate and always attempt to append one independent audit record."""
     audit: dict[str, Any] = {}
+    request = dict(request)
+    extras = request.get("extra_operations") or []
+    if isinstance(extras, list):
+        kept = []
+        trim_notes = []
+        for value in extras:
+            if isinstance(value, str) and is_trim_text(value):
+                trim_notes.append(value.strip())
+                continue
+            kept.append(value)
+        request["extra_operations"] = kept
+        if trim_notes:
+            request["_trim_text"] = " ".join(trim_notes)
     try:
         result = _calculate(request, audit, raw_request)
+        if isinstance(result, dict) and result.get("status") == "success":
+            adjusted = apply_trims(result, request, raw_request)
+            if adjusted is not None:
+                result = adjusted
     except Exception as error:
         error_result = {
             "status": "error",
