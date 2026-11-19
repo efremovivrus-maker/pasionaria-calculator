@@ -1,8 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 
+import { AccountMenu } from "@/components/AccountMenu";
+import { SiteNav } from "@/components/SiteNav";
 import { accountBrowser } from "@/lib/account/browser";
 
 export default function AccountLayout({ children }: { children: ReactNode }) {
@@ -37,5 +40,24 @@ export default function AccountLayout({ children }: { children: ReactNode }) {
     });
   }, [path]);
 
-  return children;
+  if (path === "/account/login") {
+    return children;
+  }
+
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-40 border-b border-stone-300/90 bg-[#f4f1e9]/95">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-5 py-3">
+          <Link href="/" className="text-sm font-bold tracking-[0.24em] text-stone-950">
+            PASIONARIA
+          </Link>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <SiteNav />
+            <AccountMenu />
+          </div>
+        </div>
+      </header>
+      {children}
+    </div>
+  );
 }

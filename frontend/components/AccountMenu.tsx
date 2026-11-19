@@ -56,11 +56,11 @@ export function AccountMenu() {
       </button>
       {open ? (
         <div className="absolute right-0 z-50 mt-1 w-48 border border-stone-300 bg-[#f8f6f0] p-2 text-sm">
-          <Link href="/account/documents" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
-            Мои документы
+          <Link href="/account/calculations" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
+            Мои расчёты
           </Link>
-          <Link href="/account/price-lists" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
-            Прайс-листы
+          <Link href="/account/archive" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
+            Архив
           </Link>
           <Link href="/account/password" className="block px-2 py-1.5 hover:bg-stone-200" onClick={() => setOpen(false)}>
             Сменить пароль

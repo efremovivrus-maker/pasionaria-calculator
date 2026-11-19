@@ -60,7 +60,7 @@ _PLACEMENT_PATTERNS = (
     (
         ("both_sides",),
         re.compile(
-            r"по двум боковым краям|по двум боковым|по боковым краям|по бокам|с двух сторон|по двум сторонам"
+            r"по обоим боковым краям|по двум боковым краям|по обоим боковым|по двум боковым|по обоим бокам|по двум бокам|по боковым краям|по бокам|с двух сторон|по двум сторонам"
         ),
     ),
     (("perimeter",), re.compile(r"по периметру")),
@@ -162,6 +162,13 @@ def _stem(token: str) -> str:
     return token
 
 
+_GENERIC_STEMS = {"однотонн", "декоративн"}
+_MOUNTING_HINTS = (
+    (re.compile(r"люверс"), "Люверсы"),
+    (re.compile(r"шторн\w*\s+лент"), "шторная лента"),
+)
+
+
 def _alias_in_text(text: str, alias: str) -> bool:
     if _contains_term(text, alias):
         return True
@@ -169,7 +176,41 @@ def _alias_in_text(text: str, alias: str) -> bool:
     if not alias_stems:
         return False
     text_stems = {_stem(part) for part in text.split()}
-    return all(stem in text_stems for stem in alias_stems)
+    if all(stem in text_stems for stem in alias_stems):
+        return True
+    distinctive = [stem for stem in alias_stems if stem not in _GENERIC_STEMS]
+    return bool(distinctive) and all(stem in text_stems for stem in distinctive)
+
+
+def release_trim_heading(
+    request: dict[str, Any],
+    raw_request: Any,
+) -> dict[str, Any]:
+    """Drop decorative trim that a parser stored as a curtain heading.
+
+    An explicit mounting word in the same value is kept. A heading that only
+    names trim returns to the model's standard fastening.
+    """
+    configuration = request.get("configuration")
+    if not isinstance(configuration, dict):
+        return request
+    heading = configuration.get("heading")
+    if not isinstance(heading, str) or not heading.strip():
+        return request
+    text = normalize(heading)
+    if not is_trim_text(text):
+        return request
+    mounting = next(
+        (label for pattern, label in _MOUNTING_HINTS if pattern.search(text)),
+        None,
+    )
+    updated = dict(configuration)
+    updated["heading"] = mounting
+    request = {**request, "configuration": updated}
+    raw = raw_request if isinstance(raw_request, str) else ""
+    if not is_trim_text(raw) and not request.get("_trim_text"):
+        request["_trim_text"] = heading.strip()
+    return request
 
 
 def is_trim_text(value: str) -> bool:
@@ -578,6 +619,18 @@ def quote_accessories(
     return {"status": "priced", "lines": lines, "accessories": previews}
 
 
+def _placement_from_request(raw_request: str) -> list[str]:
+    """Placement named in the original text, when it is unambiguous."""
+    found = [
+        list(clause.get("placements") or [])
+        for clause in parse_text(raw_request)
+        if clause.get("error") is None and clause.get("placements")
+    ]
+    if len(found) != 1:
+        return []
+    return found[0]
+
+
 def apply_trims(
     result: dict[str, Any],
     request: dict[str, Any],
@@ -598,6 +651,19 @@ def apply_trims(
             for item in structured
             if isinstance(item, dict)
         ]
+        # A parser can name the trim and drop the placement. The original
+        # sentence still has it; an explicit placement on the item stays.
+        recovered = _placement_from_request(text) if text else []
+        open_clauses = [
+            index
+            for index, clause in enumerate(clauses)
+            if not clause.get("placements")
+            and not clause.get("placement_invalid")
+            and not clause.get("error")
+        ]
+        if recovered and len(open_clauses) == 1:
+            index = open_clauses[0]
+            clauses[index] = {**clauses[index], "placements": list(recovered)}
     else:
         source = text if is_trim_text(text) else hint
         if not source or not is_trim_text(source):

@@ -133,6 +133,14 @@ export function formatUnavailableMessage(value: unknown): string {
       fieldLabel &&
       requestedValue
     ) {
+      const trimMisfiled =
+        field === "heading" &&
+        /бахром|репсов|тесьм|бордюр|декоративн[а-яё]*\s+лент|(?:^|[\s,])кант/iu.test(
+          requestedValue,
+        );
+      if (trimMisfiled || (field === "heading" && availableOptions.length > 8)) {
+        return `«${requestedValue}» — это не способ крепления к карнизу. Напишите декоративную отделку отдельно, например: «Портьера Софт 140×260 с бахромой Сальса по низу». Крепление указывайте только если нужно заменить стандартное: «Люверсы» или «шторная лента».`;
+      }
       const optionsText =
         availableOptions.length > 0
           ? ` Доступные варианты: ${quotedList(availableOptions)}.`

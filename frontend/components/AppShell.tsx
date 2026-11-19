@@ -2,6 +2,7 @@
 
 import { CalculatorChat } from "@/components/CalculatorChat";
 import { AccountMenu } from "@/components/AccountMenu";
+import { SiteNav } from "@/components/SiteNav";
 import { ProposalProvider, useProposal } from "@/components/ProposalProvider";
 import { ProposalScreen } from "@/components/ProposalScreen";
 
@@ -42,10 +43,8 @@ function ProposalApp() {
           >
             PASIONARIA
           </button>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <p className="hidden text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-stone-500 md:block">
-              AI calculator
-            </p>
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+            <SiteNav onCalculator={goToCalculator} />
             <AccountMenu />
             <button
               type="button"

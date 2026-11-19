@@ -29,6 +29,20 @@ describe("formatUnavailableMessage", () => {
     ).toBe(reason);
   });
 
+  it("does not dump the fastening catalog when decorative trim was misread", () => {
+    const message = formatUnavailableMessage({
+      status: "unavailable",
+      reason_code: "CONFIGURATION_OPTION_NOT_FOUND",
+      details: {
+        field: "heading",
+        requested_value: "однотонная репсовая лента серого цвета по двум бокам",
+        available_options: ["Шторная лента 6 см белая, без слоя", "Люверсы"],
+      },
+    });
+    expect(message).toContain("не способ крепления");
+    expect(message).not.toContain("Шторная лента 6 см");
+  });
+
   it("formats an unknown mechanism using backend options", () => {
     expect(
       formatUnavailableMessage({

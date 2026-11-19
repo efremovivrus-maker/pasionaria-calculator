@@ -410,6 +410,20 @@ Do not put the trim phrase into `extra_operations`. That array is only for
 named embroidery and other catalog extras. Leave words such as `бахрома
 Сальса по низу` in `raw_request`.
 
+`configuration.heading` is only the curtain fastening: `Люверсы`, `шторная
+лента` and the other catalog variants. Decorative ribbon, braid, fringe,
+border and piping are not a heading. For `портьеры Софт с однотонной
+репсовой лентой серого цвета по двум бокам` the heading stays null and the
+trim words remain in `raw_request`. Do not ask the user to choose a fastening
+when they named decorative trim and did not name a fastening. The backend
+also drops a heading value that is only decorative trim and keeps an explicit
+`Люверсы` or `шторная лента`.
+
+`по бокам`, `по двум бокам`, `с двух сторон` and `по обоим боковым краям`
+are the same placement. Copy one of those phrases into `accessories.placement`
+or leave it in `raw_request`. Do not drop it. `снизу и сбоку` stays ambiguous
+and must not be rewritten as both sides.
+
 `accessories` is optional. Send it only when the parser has already separated
 each trim. Prices, meters and coefficients are not parser fields; the backend
 calculates them.

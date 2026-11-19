@@ -60,6 +60,17 @@ class TrimCalculationTests(unittest.TestCase):
         self.log_path_patcher.stop()
         self.temporary_directory.cleanup()
 
+    def _curtain(self, text, **fields):
+        payload = {
+            "product_type": "шторы",
+            "model": "Софт",
+            "width_cm": 140,
+            "height_cm": 260,
+            "quantity": 1,
+            **fields,
+        }
+        return calculate(payload, raw_request=text)
+
     def test_product_without_trim_keeps_the_existing_price(self):
         result = _roman(BASE)
         self.assertEqual(result["status"], "success")
@@ -164,6 +175,124 @@ class TrimCalculationTests(unittest.TestCase):
         self.assertEqual(result["reason_code"], "TRIM_AMBIGUOUS")
         self.assertEqual(articles, {"3052", "2978", "3262", "7438"})
         self.assertTrue(all("purchase_price_rub_per_m" not in option for option in result["details"]["options"]))
+
+    def test_decorative_ribbon_is_not_treated_as_a_heading(self):
+        text = "Портьеры Софт 130×261 см, 2 штуки, с однотонной репсовой лентой серого цвета по двум бокам"
+        plain = calculate(
+            {
+                "product_type": "шторы",
+                "model": "Софт",
+                "width_cm": 130,
+                "height_cm": 261,
+                "quantity": 2,
+            },
+            raw_request="Портьеры Софт 130×261 см, 2 штуки",
+        )
+        result = calculate(
+            {
+                "product_type": "шторы",
+                "model": "Софт",
+                "width_cm": 130,
+                "height_cm": 261,
+                "quantity": 2,
+                "configuration": {"heading": "однотонная репсовая лента серого цвета по двум бокам"},
+            },
+            raw_request=text,
+        )
+        self.assertEqual(plain["status"], "success")
+        self.assertEqual(result["status"], "success")
+        preview = result["accessories"][0]
+        self.assertEqual(preview["article"], "3052")
+        self.assertEqual(preview["placement"], "both_sides")
+        self.assertEqual(preview["meters"], 10.44)
+        self.assertEqual(preview["material_meters"], 11.484)
+        self.assertEqual(preview["labor_cost_rub"], 835.2)
+        self.assertEqual(preview["client_price_rub_per_m"], 180.0)
+        self.assertEqual(preview["material_cost_rub"], 2067.12)
+        self.assertEqual(
+            result["pricing"]["retail_price"],
+            round(plain["pricing"]["retail_price"] + 2067.12 + 835.2, 2),
+        )
+        self.assertIn("OP_001", [line["operation_id"] for line in result["operations"]["base"]])
+        self.assertIsNone(result["request"]["configuration"]["heading"])
+
+    def test_explicit_heading_stays_when_trim_is_also_requested(self):
+        result = self._curtain(
+            "Портьера Софт 140×260 на люверсах с бахромой Сальса по низу",
+            configuration={"heading": "Люверсы и бахрома Сальса по низу"},
+        )
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["request"]["configuration"]["heading"], "Люверсы")
+        self.assertEqual(result["accessories"][0]["article"], "4629")
+        self.assertIn("OP_021", [line["operation_id"] for line in result["operations"]["base"]])
+
+    def test_trim_phrases_ask_only_for_missing_details(self):
+        gray = self._curtain("Портьеры Софт 130×261, 2 шт., с серой репсовой лентой по бокам", width_cm=130, height_cm=261, quantity=2)
+        ribbon = self._curtain("Портьера Софт 140×260 с декоративной лентой по низу")
+        braid = self._curtain("Портьера Софт 140×260 с тесьмой по двум бокам")
+        salsa = self._curtain("Портьера Софт 140×260 с бахромой Сальса по низу")
+        piping = self._curtain("Портьера Софт 140×260 с кантом по периметру")
+        unnamed = _roman("Римская штора Вандер 150×170 с бахромой по низу")
+        priced = _roman(SALSA)
+        tape = self._curtain(
+            "Портьера Софт 140×260 на шторной ленте",
+            configuration={"heading": "шторная лента"},
+        )
+        self.assertEqual(gray["accessories"][0]["article"], "3052")
+        self.assertEqual(gray["accessories"][0]["meters"], 10.44)
+        self.assertEqual(ribbon["reason_code"], "TRIM_INCOMPLETE")
+        self.assertIn("trim_model", ribbon["details"]["missing_fields"])
+        self.assertEqual(braid["reason_code"], "TRIM_INCOMPLETE")
+        self.assertIn("trim_model", braid["details"]["missing_fields"])
+        self.assertEqual(salsa["accessories"][0]["article"], "4629")
+        self.assertEqual(piping["reason_code"], "TRIM_INCOMPLETE")
+        self.assertEqual(unnamed["details"]["missing_fields"], ["trim_model"])
+        self.assertEqual(priced["pricing"]["retail_price"], 14810.0)
+        self.assertEqual(tape["status"], "success")
+        self.assertNotIn("accessories", tape)
+
+    def test_both_side_phrases_have_the_same_length(self):
+        phrases = (
+            "по бокам",
+            "по двум бокам",
+            "с двух сторон",
+            "по обоим боковым краям",
+        )
+        for phrase in phrases:
+            result = self._curtain(
+                f"Портьеры Софт 130×261 см, 2 штуки, с однотонной репсовой лентой серого цвета {phrase}",
+                width_cm=130,
+                height_cm=261,
+                quantity=2,
+            )
+            preview = result["accessories"][0]
+            self.assertEqual(result["status"], "success", phrase)
+            self.assertEqual(preview["article"], "3052", phrase)
+            self.assertEqual(preview["placement"], "both_sides", phrase)
+            self.assertEqual(preview["meters"], 10.44, phrase)
+            self.assertEqual(preview["material_meters"], 11.484, phrase)
+            self.assertEqual(preview["material_cost_rub"], 2067.12, phrase)
+            self.assertEqual(preview["labor_cost_rub"], 835.2, phrase)
+            self.assertEqual(result["pricing"]["retail_price"], 7239.32, phrase)
+        from_parser = self._curtain(
+            "Портьеры Софт 130×261 см, 2 штуки, с однотонной репсовой лентой серого цвета по двум бокам",
+            width_cm=130,
+            height_cm=261,
+            quantity=2,
+            accessories=[{"name": "однотонная репсовая лента", "color": "серый"}],
+        )
+        self.assertEqual(from_parser["accessories"][0]["placement"], "both_sides")
+        self.assertEqual(from_parser["pricing"]["retail_price"], 7239.32)
+        explicit = self._curtain(
+            "Портьеры Софт 130×261 см, 2 штуки, с однотонной репсовой лентой серого цвета по двум бокам",
+            width_cm=130,
+            height_cm=261,
+            quantity=2,
+            accessories=[{"article": "3052", "placement": "по низу"}],
+        )
+        self.assertEqual(explicit["accessories"][0]["placement"], "bottom")
+        ambiguous = self._curtain("Портьера Софт 140×260 с бахромой Сальса снизу и сбоку")
+        self.assertEqual(ambiguous["reason_code"], "TRIM_PLACEMENT_AMBIGUOUS")
 
     def test_api_control_calculation_hides_purchase_fields(self):
         with TestClient(app) as client:

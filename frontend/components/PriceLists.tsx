@@ -13,6 +13,8 @@ type Catalog = {
   tables: Table[];
 };
 
+const STORAGE_KEY = "pasionaria.price-list";
+
 const TABS = [
   { id: "works", label: "Работы" },
   { id: "fabrics", label: "Ткани" },
@@ -28,18 +30,59 @@ function cell(value: unknown): string {
   return String(value);
 }
 
+function storedView(): { catalogId: (typeof TABS)[number]["id"]; query: string; category: string } | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "") as {
+      catalogId?: string;
+      query?: string;
+      category?: string;
+    };
+    const catalogId = TABS.find((tab) => tab.id === parsed.catalogId)?.id;
+    if (!catalogId) {
+      return null;
+    }
+    return {
+      catalogId,
+      query: typeof parsed.query === "string" ? parsed.query : "",
+      category: typeof parsed.category === "string" ? parsed.category : "",
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function PriceLists() {
   const [catalogId, setCatalogId] = useState<(typeof TABS)[number]["id"]>("works");
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
+  const [restored, setRestored] = useState(false);
+
+  useEffect(() => {
+    const stored = storedView();
+    if (stored) {
+      setCatalogId(stored.catalogId);
+      setQuery(stored.query);
+      setCategory(stored.category);
+    }
+    setRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!restored) {
+      return;
+    }
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ catalogId, query, category }));
+  }, [restored, catalogId, query, category]);
 
   useEffect(() => {
     let cancelled = false;
     setCatalog(null);
     setMessage("");
-    setCategory("");
     void fetch(`/api/account/price-lists?catalog=${catalogId}`)
       .then(async (response) => {
         if (!response.ok) {
@@ -116,7 +159,10 @@ export function PriceLists() {
           <button
             key={tab.id}
             type="button"
-            onClick={() => setCatalogId(tab.id)}
+            onClick={() => {
+              setCatalogId(tab.id);
+              setCategory("");
+            }}
             className={`min-h-10 border px-3 text-sm ${catalogId === tab.id ? "border-stone-950 bg-stone-950 text-[#f7f4ec]" : "border-stone-300"}`}
           >
             {tab.label}

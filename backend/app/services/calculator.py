@@ -17,7 +17,7 @@ from .fabric_calculator import calculate_fabric_consumption
 from .model_matching import normalize_model_name, resolve_model
 from .pricing import build_pricing, money
 from .quantity_rule import resolve_quantity
-from .trims import apply_trims, is_trim_text
+from .trims import apply_trims, is_trim_text, release_trim_heading
 
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -911,6 +911,7 @@ def calculate(
         request["extra_operations"] = kept
         if trim_notes:
             request["_trim_text"] = " ".join(trim_notes)
+    request = release_trim_heading(request, raw_request)
     try:
         result = _calculate(request, audit, raw_request)
         if isinstance(result, dict) and result.get("status") == "success":

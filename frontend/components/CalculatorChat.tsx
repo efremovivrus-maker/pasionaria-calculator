@@ -34,6 +34,7 @@ const EXAMPLES = [
 ];
 const CALCULATION_ERROR_MESSAGE =
   "Не удалось выполнить расчёт. Попробуйте ещё раз.";
+const CHAT_DRAFT_KEY = "pasionaria.chat-draft";
 
 type CompletedCalculation = {
   result: CalculationResult;
@@ -67,7 +68,35 @@ export function CalculatorChat() {
   useEffect(() => {
     setSessionId(createId());
     void warmUpBackend();
+    try {
+      const draft = JSON.parse(sessionStorage.getItem(CHAT_DRAFT_KEY) ?? "") as {
+        input?: string;
+        messages?: ChatMessage[];
+        completed?: CompletedCalculation | null;
+      };
+      if (Array.isArray(draft.messages)) {
+        setMessages(draft.messages);
+      }
+      if (typeof draft.input === "string") {
+        setInput(draft.input);
+      }
+      if (draft.completed?.result) {
+        setCompleted(draft.completed);
+      }
+    } catch {
+      sessionStorage.removeItem(CHAT_DRAFT_KEY);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!sessionId) {
+      return;
+    }
+    sessionStorage.setItem(
+      CHAT_DRAFT_KEY,
+      JSON.stringify({ input, messages, completed }),
+    );
+  }, [sessionId, input, messages, completed]);
 
   useEffect(() => {
     if (hasConversation) {

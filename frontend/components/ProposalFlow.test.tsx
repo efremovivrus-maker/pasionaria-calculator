@@ -201,6 +201,8 @@ describe("commercial proposal", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
 
     fireEvent.click(screen.getByRole("button", { name: /Вернуться к расчётам/ }));
+    expect(await screen.findByText("Покрывало «Софт»")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Новый расчёт" }));
     await submitCalculation("Римская штора Вандер 165 × 180");
     expect(await screen.findByText("Римская штора «Вандер»")).toBeTruthy();
     expect(text(screen.getByText(/4\s*555/).textContent)).toContain("4 555");
