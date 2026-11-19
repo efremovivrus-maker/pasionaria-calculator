@@ -1,8 +1,10 @@
 "use client";
 
-import { SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { Fragment, SyntheticEvent, useEffect, useMemo, useState } from "react";
 
-type Column = { key: string; label: string };
+type Column = { key: string; label: string; export_only?: boolean };
+type DetailRow = { label: string; value: string };
+type RowDetails = { groups: Array<{ title: string; rows: DetailRow[] }>; questions: string[] };
 type Table = { id: string; title: string; columns: Column[]; rows: Array<Record<string, unknown>> };
 type Catalog = {
   catalog: string;
@@ -24,10 +26,45 @@ const TABS = [
 ] as const;
 
 function cell(value: unknown): string {
-  if (value === null || value === undefined || value === "") {
-    return "—";
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return value === "" ? "—" : String(value);
   }
-  return String(value);
+  return "—";
+}
+
+function searchableText(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(searchableText).join(" ");
+  }
+  if (value && typeof value === "object") {
+    return Object.values(value).map(searchableText).join(" ");
+  }
+  return "";
+}
+
+function rowDetails(row: Record<string, unknown>): RowDetails | null {
+  const details = row.details;
+  if (!details || typeof details !== "object" || Array.isArray(details)) {
+    return null;
+  }
+  const groups = (details as { groups?: unknown }).groups;
+  const questions = (details as { questions?: unknown }).questions;
+  if (!Array.isArray(groups)) {
+    return null;
+  }
+  return {
+    groups: groups.filter(
+      (group): group is { title: string; rows: DetailRow[] } =>
+        Boolean(group) &&
+        typeof group === "object" &&
+        typeof (group as { title?: unknown }).title === "string" &&
+        Array.isArray((group as { rows?: unknown }).rows),
+    ),
+    questions: Array.isArray(questions) ? questions.filter((item): item is string => typeof item === "string") : [],
+  };
 }
 
 function storedView(): { catalogId: (typeof TABS)[number]["id"]; query: string; category: string } | null {
@@ -61,6 +98,7 @@ export function PriceLists() {
   const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
   const [restored, setRestored] = useState(false);
+  const [openRow, setOpenRow] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = storedView();
@@ -128,7 +166,7 @@ export function PriceLists() {
       if (!needle) {
         return true;
       }
-      return Object.values(row).some((value) => String(value ?? "").toLocaleLowerCase("ru").includes(needle));
+      return searchableText(row).toLocaleLowerCase("ru").includes(needle);
     });
   }
 
@@ -162,6 +200,7 @@ export function PriceLists() {
             onClick={() => {
               setCatalogId(tab.id);
               setCategory("");
+              setOpenRow(null);
             }}
             className={`min-h-10 border px-3 text-sm ${catalogId === tab.id ? "border-stone-950 bg-stone-950 text-[#f7f4ec]" : "border-stone-300"}`}
           >
@@ -208,33 +247,96 @@ export function PriceLists() {
       ) : null}
       {catalog?.note ? <p className="mt-2 max-w-3xl text-sm leading-6 text-stone-700">{catalog.note}</p> : null}
       {message ? <p className="mt-4 text-sm text-stone-800">{message}</p> : null}
-      {catalog?.tables.map((table) => (
+      {catalog?.tables.map((table) => {
+        const shownColumns = table.columns.filter((column) => !column.export_only);
+        const rows = visibleRows(table);
+        const expandable = rows.some((row) => rowDetails(row));
+        return (
         <section key={table.id} className="mt-8 overflow-x-auto">
           {catalog.tables.length > 1 ? <h2 className="mb-3 text-lg">{table.title}</h2> : null}
           <table className="w-full border-collapse text-left text-sm">
             <thead>
               <tr>
-                {table.columns.map((column) => (
+                {shownColumns.map((column) => (
                   <th key={column.key} className="border-b border-stone-300 px-2 py-2 font-medium">
                     {column.label}
                   </th>
                 ))}
+                {expandable ? (
+                  <th className="border-b border-stone-300 px-2 py-2 font-medium">
+                    <span className="sr-only">Подробности</span>
+                  </th>
+                ) : null}
               </tr>
             </thead>
             <tbody>
-              {visibleRows(table).map((row, index) => (
-                <tr key={`${table.id}-${index}`}>
-                  {table.columns.map((column) => (
-                    <td key={column.key} className="border-b border-stone-200 px-2 py-2 align-top">
-                      {cell(row[column.key])}
-                    </td>
-                  ))}
-                </tr>
-              ))}
+              {rows.map((row, index) => {
+                const rowKey = `${table.id}-${String(row.article ?? row.model ?? index)}`;
+                const details = rowDetails(row);
+                const open = openRow === rowKey;
+                return (
+                  <Fragment key={rowKey}>
+                    <tr>
+                      {shownColumns.map((column) => (
+                        <td key={column.key} className="border-b border-stone-200 px-2 py-2 align-top">
+                          {cell(row[column.key])}
+                        </td>
+                      ))}
+                      {expandable ? (
+                        <td className="border-b border-stone-200 px-2 py-2 align-top">
+                          {details ? (
+                            <button
+                              type="button"
+                            aria-expanded={open}
+                            aria-label={open ? `Скрыть карточку ${row.model ?? ""}` : `Подробнее о ${row.model ?? ""}`}
+                            onClick={() => setOpenRow(open ? null : rowKey)}
+                              className="min-h-9 text-xs text-stone-800 underline"
+                            >
+                              {open ? "Скрыть" : "Подробнее"}
+                            </button>
+                          ) : null}
+                        </td>
+                      ) : null}
+                    </tr>
+                    {open && details ? (
+                      <tr>
+                        <td colSpan={shownColumns.length + 1} className="border-b border-stone-200 bg-[#f8f6f0] px-3 py-4">
+                          <div className="grid gap-5 md:grid-cols-2">
+                            {details.groups.map((group) => (
+                              <section key={group.title}>
+                                <h3 className="text-sm font-medium text-stone-950">{group.title}</h3>
+                                <dl className="mt-2 space-y-1">
+                                  {group.rows.map((item) => (
+                                    <div key={item.label} className="grid gap-1 sm:grid-cols-[11rem_1fr]">
+                                      <dt className="text-stone-500">{item.label}</dt>
+                                      <dd>{item.value}</dd>
+                                    </div>
+                                  ))}
+                                </dl>
+                              </section>
+                            ))}
+                          </div>
+                          {details.questions.length > 0 ? (
+                            <section className="mt-5">
+                              <h3 className="text-sm font-medium text-stone-950">Открытые вопросы</h3>
+                              <ul className="mt-2 list-disc space-y-1 pl-5">
+                                {details.questions.map((question) => (
+                                  <li key={question}>{question}</li>
+                                ))}
+                              </ul>
+                            </section>
+                          ) : null}
+                        </td>
+                      </tr>
+                    ) : null}
+                  </Fragment>
+                );
+              })}
             </tbody>
           </table>
         </section>
-      ))}
+        );
+      })}
     </main>
   );
 }

@@ -1,11 +1,16 @@
+import json
 import os
 import unittest
+from io import BytesIO
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
+from openpyxl import load_workbook
 
 from backend.app.main import app
-from backend.app.services.price_lists import price_list
+from backend.app.services.bedspread import _models as bedspread_models
+from backend.app.services.bedspread import classify_model
+from backend.app.services.price_lists import BEDSPREAD_DRAFT, price_list, workbook_bytes
 
 
 class PriceListProjectionTests(unittest.TestCase):
@@ -53,3 +58,68 @@ class PriceListProjectionTests(unittest.TestCase):
         self.assertNotIn("purchase_price_rub_per_m", allowed.text)
         self.assertEqual(exported.status_code, 200)
         self.assertIn("spreadsheetml", exported.headers["content-type"])
+
+    def test_bedspread_rows_show_values_instead_of_objects(self):
+        source = json.loads(BEDSPREAD_DRAFT.read_text(encoding="utf-8"))
+        self.assertFalse(source["connected_to_calculator"])
+        payload = price_list("bedspreads", admin=False)
+        admin = price_list("bedspreads", admin=True)
+        models = payload["tables"][0]
+        soft = next(row for row in models["rows"] if row["model"] == "Софт")
+        bruno = next(row for row in models["rows"] if row["model"] == "Бруно")
+        shown = [column["key"] for column in models["columns"] if not column.get("export_only")]
+        for row in models["rows"]:
+            for key in shown:
+                self.assertNotIsInstance(row[key], (dict, list))
+        self.assertEqual(soft["construction"], "Стёганое, планки")
+        self.assertEqual(soft["face_fabric"], "Софт")
+        self.assertEqual(soft["default_stitch"], "Квадрат 10х10 см")
+        self.assertEqual(soft["calculator_status"], "готова к расчёту")
+        self.assertEqual(soft["card_status"], "Не завершена")
+        self.assertTrue(any("Подкладка не упомянута" in item for item in soft["details"]["questions"]))
+        self.assertNotIn("Исходная цена", [item["label"] for group in soft["details"]["groups"] for item in group["rows"]])
+        admin_soft = next(row for row in admin["tables"][0]["rows"] if row["model"] == "Софт")
+        self.assertIn(
+            "Исходная цена",
+            [item["label"] for group in admin_soft["details"]["groups"] for item in group["rows"]],
+        )
+        self.assertEqual(bruno["calculator_status"], "Индивидуальный расчёт недоступен")
+        self.assertEqual(bruno["card_status"], "Не завершена")
+        forbidden = {
+            row["model"]
+            for row in models["rows"]
+            if row["calculator_status"] == "Индивидуальный расчёт недоступен"
+        }
+        ready = [
+            row["model"]
+            for row in models["rows"]
+            if row["calculator_status"] == "готова к расчёту"
+        ]
+        self.assertEqual(forbidden, {"Бруно", "Лео", "Шифу", "Зоуи", "Тина", "Перси"})
+        self.assertEqual(len(ready), 39)
+        self.assertEqual(len(models["rows"]), 45)
+        self.assertTrue(all(row["card_status"] == "Не завершена" for row in models["rows"]))
+        engine_bruno = next(model for model in bedspread_models() if model["model"] == "Бруно")
+        self.assertEqual(classify_model(engine_bruno)["calculation_status"], "требуется уточнение")
+        bruno_status = next(
+            item["value"]
+            for group in bruno["details"]["groups"]
+            if group["title"] == "Расчёт"
+            for item in group["rows"]
+            if item["label"] == "Возможность расчёта"
+        )
+        self.assertEqual(bruno_status, "Индивидуальный расчёт недоступен")
+        book = load_workbook(BytesIO(workbook_bytes(admin)))
+        sheet = book["Модели"]
+        headers = [cell.value for cell in next(sheet.iter_rows(max_row=1))]
+        self.assertIn("Открытые вопросы", headers)
+        self.assertNotIn("not_ready", [cell.value for row in sheet.iter_rows(min_row=2) for cell in row])
+        exported = "\n".join(str(cell.value) for row in sheet.iter_rows() for cell in row)
+        self.assertNotIn("[object Object]", exported)
+        self.assertNotIn("{'quilted'", exported)
+        self.assertIn("Стёганое, планки", exported)
+        status_column = headers.index("Расчёт")
+        statuses = [row[status_column].value for row in sheet.iter_rows(min_row=2)]
+        self.assertEqual(statuses.count("готова к расчёту"), 39)
+        self.assertEqual(statuses.count("Индивидуальный расчёт недоступен"), 6)
+        self.assertFalse(any(isinstance(cell.value, dict) for row in sheet.iter_rows() for cell in row))
