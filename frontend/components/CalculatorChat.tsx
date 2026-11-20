@@ -3,11 +3,13 @@
 import {
   FormEvent,
   KeyboardEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
 
+import { ExampleLibrary } from "@/components/ExampleLibrary";
 import { FeedbackPrompt } from "@/components/FeedbackPrompt";
 import { Message } from "@/components/Message";
 import { useProposal } from "@/components/ProposalProvider";
@@ -21,6 +23,7 @@ import {
 } from "@/lib/api";
 import { createFeedbackContext } from "@/lib/feedback";
 import { createProposalItem } from "@/lib/proposal";
+import type { CalculationExample } from "@/lib/exampleLibrary";
 import type {
   CalculationResult,
   ChatMessage,
@@ -60,6 +63,8 @@ export function CalculatorChat() {
   const [failedAttempt, setFailedAttempt] =
     useState<FailedAttempt | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<HTMLTextAreaElement>(null);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const { addItemFromCalculation } = useProposal();
 
   const hasConversation =
@@ -197,6 +202,19 @@ export function CalculatorChat() {
     }
   }
 
+  const closeLibrary = useCallback(() => setLibraryOpen(false), []);
+
+  const useExample = useCallback((example: CalculationExample) => {
+    setLibraryOpen(false);
+    setInput(example.request);
+    requestAnimationFrame(() => {
+      const field = requestRef.current;
+      field?.focus();
+      const end = example.request.length;
+      field?.setSelectionRange(end, end);
+    });
+  }, []);
+
   function resetCalculation() {
     setSessionId(createId());
     setInput("");
@@ -240,6 +258,7 @@ export function CalculatorChat() {
             <div className="border-y border-stone-300 bg-[#f8f6f0] px-5 py-5 sm:px-7 sm:py-7">
               <textarea
                 id="initial-request"
+                ref={requestRef}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={handleKeyDown}
@@ -271,7 +290,20 @@ export function CalculatorChat() {
                 {example}
               </button>
             ))}
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              onClick={() => setLibraryOpen(true)}
+              className="min-h-10 border border-stone-300 px-4 text-left text-xs leading-5 text-stone-600 transition-colors duration-200 hover:border-stone-500 hover:text-stone-950"
+            >
+              Ещё 25 вариантов
+            </button>
           </div>
+          <ExampleLibrary
+            open={libraryOpen}
+            onClose={closeLibrary}
+            onSelect={useExample}
+          />
         </section>
       ) : (
         <section className="min-h-0">
